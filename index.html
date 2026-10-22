@@ -54,7 +54,7 @@ footer{position:absolute;bottom:12px;right:18px;z-index:5;font-size:12px;color:#
 <header><h1>Laksamana Baio</h1><p>Interactive portfolio · Walkable District 2077</p></header>
 <div id="game" role="application" aria-label="2D exploration game. Move with WASD or arrow keys."></div>
 <div class="touch" aria-label="Touch movement controls"><button data-dir="left" aria-label="Left">←</button><button data-dir="up" aria-label="Up">↑</button><button data-dir="down" aria-label="Down">↓</button><button data-dir="right" aria-label="Right">→</button></div>
-<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 08 — opening cinematic</span></footer>
+<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 10.6 — English Edition</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -314,7 +314,7 @@ if (!window.Phaser) {
      {kind:'woman',shirt:0xd9a1aa,route:'line',ax:670,ay:800,bx:970,by:800,speed:.17,phase:2.4},
      {kind:'man',shirt:0x7c9ac4,route:'line',ax:680,ay:437,bx:965,by:437,speed:.19,phase:1.7}
     ];
-    const npcStories=[["Raka","Pagi yang cerah, ya! Air mancur ini pusat Baio Garden.","Kalau mau mengenal Baio, mulailah dari HOME di sisi barat laut."],["Nadia","Aku suka jalan pagi mengelilingi plaza. Desain tamannya nyaman!","LABORATORY ada di timur laut. Di sana kamu bisa menelusuri pengalaman kerjanya."],["Pak Bima","Dulu taman ini lebih sepi. Sekarang ramai pengunjung.","Tip dari saya: ikuti jalur batu, dan lihat ikon lokasi pada minimap."],["Maya","Hai! Aku baru lewat depan HOME.","Di dalam HOME ada bagian perkenalan. Tekan E dekat pintu untuk masuk."],["Dimas","Selamat datang di dekat LABORATORY!","Kalau penasaran dengan pengalaman Baio di bidang UI/UX, tempat itu tujuanmu."],["Nenek Sari","Jalannya santai saja, Nak. Bunganya sedang cantik.","WORKSHOP berada di arah tenggara taman. Di sana ada area proyek."],["Kakek Arman","Saya suka menyusuri taman saat pagi.","CONTACT HUB ada di barat daya. Cocok untuk mencari cara menghubungi Baio."],["Lina","Tadi aku dari arah Contact Hub. Jalur selatan menyenangkan!","Lihat papan nama di depan bangunan untuk memastikan tujuanmu."],["Reno","Halo! Aku sedang mencari ide untuk proyek baru.","WORKSHOP berisi tempat untuk menjelajahi proyek-proyek Baio."],["Nenek Ratih","Jangan lupa menikmati pemandangan selama berjalan.","Kalau tersesat, lihat titik kuning di minimap: itu posisimu."],["Adit","Bagian favoritku adalah jalur taman di sisi timur.","Empat bangunan utama bisa dimasuki, sementara gedung lain menjadi latar kota."],["Tara","Udara pagi ini enak untuk berjalan kaki.","Kamu bisa menjelajah dengan WASD atau tombol panah."],["Pak Jaya","Santai saja, tidak perlu terburu-buru.","Dari LABORATORY kamu juga bisa menuju WORKSHOP lewat portal."],["Citra","Aku suka suara gemericik air di plaza.","Coba kunjungi setiap bangunan agar perjalanan portfoliomu lengkap."],["Fajar","Hai, penjelajah! Kota kecil ini penuh cerita.","Kalau melihat petunjuk interaksi, tekan E, Space, atau ketuk layar."]];
+    const npcStories=[["Raka","Beautiful morning, isn't it? The fountain is the heart of Baio Garden.","Want to get to know Baio? Start at HOME, in the northwest part of the district."],["Nadia","I love taking a morning walk around the plaza. It's such a peaceful place.","Visit the LABORATORY to explore Baio's professional experience in design."],["Mr. Bima","This garden used to be much quieter. It's wonderful to see people enjoying it.","A little tip: follow the stone pathways and use the minimap to find your way."],["Maya","Hey there! I just walked past HOME.","That's where Baio introduces himself. Press E near the entrance to step inside."],["Dimas","Welcome to the LABORATORY neighborhood!","Curious about Baio's UI/UX background? The LABORATORY is a great place to start."],["Grandma Sari","Take your time, dear. The flowers are lovely this morning.","You'll find the WORKSHOP in the southeast, where Baio's projects are showcased."],["Grandpa Arman","A morning stroll through the garden is my favorite routine.","Looking to connect with Baio? The CONTACT HUB is in the southwest."],["Lina","I just came from the Contact Hub. The southern path is lovely!","Look for the signs on each building so you know where you're headed."],["Reno","Hello! I'm looking for inspiration for my next creative project.","The WORKSHOP is where you can discover what Baio has been working on."],["Grandma Ratih","Don't forget to enjoy the scenery along the way.","If you get lost, look for the yellow dot on your minimap. That's you!"],["Adit","The eastern garden pathway is my favorite part of the district.","You can enter the four main portfolio buildings. The others bring the city to life."],["Tara","What a refreshing morning for a walk!","Use WASD or the arrow keys to explore. On mobile, try the touch controls."],["Mr. Jaya","There's no rush. Take your time and explore.","You can also travel between the LABORATORY and WORKSHOP using their portals."],["Citra","I could listen to the fountain all morning.","Visit each of the four main buildings to get the full portfolio experience."],["Fajar","Hey, explorer! There are stories waiting around every corner.","Whenever an interaction prompt appears, press E or Space, or tap the screen."]];
     this.parkVisitors.forEach((npc,i)=>{
      npc.name=npcStories[i][0];
      npc.pages=npcStories[i].slice(1);
@@ -355,17 +355,17 @@ if (!window.Phaser) {
     rect(439,469,82,36,0x223b47);rect(449,475,62,25,0x80a9b0);
     this.add.text(480,118,destinations[this.place].name+' / '+destinations[this.place].sub,{fontFamily:'monospace',fontSize:'20px',color:'#584d43'}).setOrigin(.5,0);
     this.add.text(480,434,'EXIT TO DISTRICT',{fontFamily:'monospace',fontSize:'14px',color:'#584d43'}).setOrigin(.5);
-    this.zones=[{x:480,y:452,r:68,label:'Exit to District',to:'district'}];
+    this.zones=[{x:480,y:452,r:68,label:'Return to Baio District',to:'district'}];
     if(this.place==='workshop'){
      // Return portal: paired with the Laboratory workstation portal.
      rect(220,195,120,56,0x345d6c);
      rect(235,203,90,34,0x70a9b4);
      this.add.text(280,205,'LAB PORTAL',{fontFamily:'monospace',fontSize:'12px',color:'#173542'}).setOrigin(.5);
-     this.zones.push({x:280,y:282,r:70,label:'Return to Laboratory',to:'lab'});
+     this.zones.push({x:280,y:282,r:70,label:'Travel to Laboratory',to:'lab'});
     }
     if(this.place==='lab'){
      rect(220,195,120,56,0x345d6c);rect(620,195,120,56,0x345d6c);
-     this.zones.push({x:280,y:282,r:70,label:'View project in Workshop',to:'workshop'});
+     this.zones.push({x:280,y:282,r:70,label:'Explore Projects in Workshop',to:'workshop'});
      this.add.text(280,205,'WORKSTATION',{fontFamily:'monospace',fontSize:'12px',color:'#e2e8df'}).setOrigin(.5);
     }
    }
@@ -441,7 +441,7 @@ if (!window.Phaser) {
    if(!npc)return;
    this.dialogName.setText(npc.name.toUpperCase());
    this.dialogText.setText(npc.pages[this.dialogPage]);
-   this.dialogNext.setText(this.dialogPage<npc.pages.length-1?'E / SPACE / TAP  ▸':'E / SPACE / TAP  ✕');
+   this.dialogNext.setText(this.dialogPage<npc.pages.length-1?'E / SPACE / TAP  NEXT ▸':'E / SPACE / TAP  CLOSE ✕');
    const g=this.dialogAvatar;g.clear();
    const x=280,y=424;
    const draw=(dx,dy,w,h,c)=>{g.fillStyle(c);g.fillRect(x+dx,y+dy,w,h)};
@@ -555,7 +555,7 @@ if (!window.Phaser) {
      if(distance<nearest){nearest=distance;npcNearby=npc}
     }
    }
-   this.near=door||(npcNearby?{npc:npcNearby,label:'Talk to '+npcNearby.name}:null);
+   this.near=door||(npcNearby?{npc:npcNearby,label:'Speak with '+npcNearby.name}:null);
    this.prompt.setVisible(!this.dialogNpc);
    this.prompt.setText(this.near?'[E / TAP] '+this.near.label:'WASD / ARROWS TO MOVE');
    if(this.npcHint){
