@@ -116,6 +116,30 @@ if (!window.Phaser) {
      let start=0;for(const [top,bottom] of horizontal){rect(xx,start,5,top-start,curb);start=bottom}
      rect(xx,start,5,this.worldH-start,curb);
     }
+    // Hand-laid garden path texture: warm pixel paving, no traffic lane markings.
+    for(const [top,bottom] of horizontal){
+     for(let yy=top+12;yy<bottom-10;yy+=24)for(let xx=8;xx<this.worldW-12;xx+=48){
+      if(vertical.some(([l,r])=>xx>=l-6&&xx<=r+6))continue;
+      rect(xx+(Math.floor(yy/24)%2)*21,yy,31,2,0xded2bc);
+      rect(xx+8,yy+9,3,3,0xb2a68f);
+     }
+    }
+    for(const [left,right] of vertical){
+     for(let xx=left+12;xx<right-10;xx+=24)for(let yy=8;yy<this.worldH-12;yy+=48){
+      if(horizontal.some(([t,b])=>yy>=t-6&&yy<=b+6))continue;
+      rect(xx,yy+(Math.floor(xx/24)%2)*19,2,30,0xe0d4bf);
+     }
+    }
+    // Pixel flower planters on grass verges; keep walking corridors clear.
+    for(const [px,py] of [[360,555],[1220,560],[370,680],[1225,680],[145,555],[1700,550],[155,695],[1730,695],[750,65],[890,65],[745,1080],[900,1080]]){
+     rect(px-26,py-12,52,25,0x7d8b73);
+     rect(px-23,py-15,46,22,0x477e58);
+     for(let i=0;i<5;i++){
+      const xx=px-18+i*9,yy=py-8+(i%2)*8;
+      rect(xx,yy,7,7,i%2?0xf4c1c4:0xf6df9b);
+      rect(xx+2,yy+2,3,3,0xfff2d5);
+     }
+    }
     // Baio Garden Plaza: a genuinely round pedestrian loop with a tiered fountain.
     const fx=820,fy=620;
     // The circular stone plaza joins the four garden promenades seamlessly.
@@ -180,6 +204,9 @@ if (!window.Phaser) {
      g.fillStyle(0x83c88a);g.fillCircle(tx-7,ty-8,11);
      g.fillStyle(0xa6dca1);g.fillCircle(tx+6,ty-10,5);
     }
+    // Fountain spray is a separate graphics layer, animated during gameplay.
+    this.fountainSpray=this.add.graphics().setDepth(12);
+    this.fountainTime=0;
     this.zones=[];
     for(const b of this.buildings){
      const themes={
@@ -381,6 +408,21 @@ if (!window.Phaser) {
     if(this.avatarClock>145){this.avatarClock=0;this.avatarStep=(this.avatarStep+1)%3}
    }else{this.avatarStep=0;this.avatarClock=0}
    this.drawAvatar(this.avatarDirection,this.avatarStep);
+   if(this.place==='district'&&this.fountainSpray){
+    this.fountainTime+=Math.min(delta,50);
+    const t=this.fountainTime/1000,fg=this.fountainSpray;
+    fg.clear();
+    // Glinting animated droplets over the center jet.
+    for(let i=0;i<12;i++){
+     const phase=t*1.9+i*0.62;
+     const rx=820+Math.sin(phase+i)* (12+i%4*6);
+     const ry=558+((phase*28+i*13)%54);
+     fg.fillStyle(i%3===0?0xffffff:0xb2edf5,0.8);
+     fg.fillRect(Math.round(rx),Math.round(ry),i%3===0?4:3,i%3===0?4:6);
+    }
+    const pulse=2+Math.round((Math.sin(t*3)+1)*2);
+    fg.lineStyle(2,0xe0fbf7,0.55);fg.strokeCircle(820,620,55+pulse);
+   }
    this.near=this.zones.find(z=>Math.hypot(this.player.x-z.x,this.player.y-z.y)<z.r)||null;
    this.prompt.setText(this.near?'[E / TAP] '+this.near.label:'WASD / ARROWS TO MOVE');
    if(this.place==='district'){
