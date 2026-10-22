@@ -90,50 +90,56 @@ if (!window.Phaser) {
    if(this.place==='district'){
     this.worldW=1920;this.worldH=1260;
     this.buildings=[{id:'home',x:170,y:155,w:190,h:158},{id:'lab',x:1350,y:150,w:204,h:168},{id:'workshop',x:1370,y:905,w:210,h:130},{id:'hub',x:200,y:905,w:200,h:130}];
-    rect(0,0,this.worldW,this.worldH,0x1b3540);
-    for(let x=0;x<this.worldW;x+=80)for(let y=0;y<this.worldH;y+=80){rect(x+4,y+4,70,70,0x24434e);rect(x+12,y+12,4,4,0x31535e)}
-    // Connected street network: continuous north/south and east/west corridors.
-    const road=0x53636c,curb=0x687780,mark=0xb5b6a1;
+    // Sunny garden district: grass parcels and continuous pedestrian promenades.
+    rect(0,0,this.worldW,this.worldH,0x86b88d);
+    for(let x=0;x<this.worldW;x+=64)for(let y=0;y<this.worldH;y+=64){
+     rect(x+8,y+8,28,8,0x93c798);rect(x+44,y+42,9,9,0x6ca67e);
+    }
+    const road=0xcbbfa9,curb=0xe8dfc9,mark=0xb8ad99;
     const horizontal=[[350,530],[710,890],[1060,1190]];
     const vertical=[[440,640],[1000,1200]];
     for(const [top,bottom] of horizontal)rect(0,top,this.worldW,bottom-top,road);
     for(const [left,right] of vertical)rect(left,0,right-left,this.worldH,road);
-    // Consistent neutral-gray curbs, INSIDE each road edge. No murky teal bars.
-    // Cut every curb at intersections so roads connect seamlessly.
-    for(const [top,bottom] of horizontal){
-     for(const yy of [top,bottom-5]){
-      let start=0;
-      for(const [left,right] of vertical){
-       if(left>start)rect(start,yy,left-start,5,curb);
-       start=right;
-      }
-      if(start<this.worldW)rect(start,yy,this.worldW-start,5,curb);
-     }
+    // Paver seams, subtle enough to read as a park path rather than a highway.
+    for(const [top,bottom] of horizontal)for(let yy=top+18;yy<bottom;yy+=38)
+     for(let xx=0;xx<this.worldW;xx+=76)rect(xx+(Math.floor(yy/38)%2)*38,yy,33,3,0xbcb09c);
+    for(const [left,right] of vertical)for(let xx=left+20;xx<right;xx+=42)
+     for(let yy=0;yy<this.worldH;yy+=75)rect(xx,yy,3,32,0xbcb09c);
+    // Repaint intersection surfaces, removing seams that could look like lane markings.
+    for(const [top,bottom] of horizontal)for(const [left,right] of vertical)
+     rect(left,top,right-left,bottom-top,road);
+    for(const [top,bottom] of horizontal)for(const yy of [top, bottom-5]){
+     let start=0;for(const [left,right] of vertical){rect(start,yy,left-start,5,curb);start=right}
+     rect(start,yy,this.worldW-start,5,curb);
     }
-    for(const [left,right] of vertical){
-     for(const xx of [left,right-5]){
-      let start=0;
-      for(const [top,bottom] of horizontal){
-       if(top>start)rect(xx,start,5,top-start,curb);
-       start=bottom;
-      }
-      if(start<this.worldH)rect(xx,start,5,this.worldH-start,curb);
-     }
+    for(const [left,right] of vertical)for(const xx of [left,right-5]){
+     let start=0;for(const [top,bottom] of horizontal){rect(xx,start,5,top-start,curb);start=bottom}
+     rect(xx,start,5,this.worldH-start,curb);
     }
-    // Centerline dashes are omitted inside junctions for uninterrupted intersections.
-    for(const [top,bottom] of horizontal){
-     const cy=Math.floor((top+bottom)/2);
-     for(let x=20;x<this.worldW;x+=84){
-      if(vertical.some(([l,r])=>x+45>l&&x<r))continue;
-      rect(x,cy-2,45,5,mark);
-     }
+    // Central round garden: the former empty block is now a landmark plaza.
+    const fx=820,fy=620;
+    g.fillStyle(0x6da77c);g.fillCircle(fx,fy,153);
+    g.lineStyle(9,0xe8dfc9);g.strokeCircle(fx,fy,145);
+    g.lineStyle(3,0x4d916f);g.strokeCircle(fx,fy,133);
+    // Radial paving and flower beds surrounding the fountain.
+    for(let i=0;i<12;i++){
+     const ang=i*Math.PI/6,xx=fx+112*Math.cos(ang),yy=fy+112*Math.sin(ang);
+     g.fillStyle(i%2?0xe9bd77:0xf4d9a0);g.fillCircle(xx,yy,10);
+     g.fillStyle(0x3c865e);g.fillCircle(xx-5,yy+7,5);
     }
-    for(const [left,right] of vertical){
-     const cx=Math.floor((left+right)/2);
-     for(let y=30;y<this.worldH;y+=54){
-      if(horizontal.some(([t,b])=>y+28>t&&y<b))continue;
-      rect(cx-2,y,5,28,mark);
-     }
+    g.fillStyle(0xded8c9);g.fillCircle(fx,fy,89);
+    g.fillStyle(0x7e9fa4);g.fillCircle(fx,fy,79);
+    g.fillStyle(0x65b9c6);g.fillCircle(fx,fy,70);
+    g.fillStyle(0x9bdce4);g.fillCircle(fx-12,fy-12,48);
+    g.fillStyle(0x56a6bc);g.fillCircle(fx,fy,39);
+    g.fillStyle(0xece4d2);g.fillCircle(fx,fy,19);
+    g.fillStyle(0x8bd4e0);g.fillCircle(fx,fy-11,13);
+    g.fillStyle(0xe6f9f4);g.fillCircle(fx-4,fy-17,6);
+    // Decorative tree clusters outside the walking corridors.
+    for(const [tx,ty] of [[670,570],[970,565],[680,680],[965,680],[75,320],[1790,320],[90,1030],[1800,1030]]){
+     g.fillStyle(0x5e8c5e);g.fillCircle(tx+5,ty+7,21);
+     g.fillStyle(0x3e996c);g.fillCircle(tx,ty,19);
+     g.fillStyle(0x80c58a);g.fillCircle(tx-7,ty-7,9);
     }
     this.zones=[];
     for(const b of this.buildings){
@@ -221,7 +227,7 @@ if (!window.Phaser) {
     for(const [x,y] of [[750,250],[850,1030],[1570,580],[120,630],[1660,1060]]){
      rect(x,y,74,54,0x294b57);rect(x+8,y+8,58,28,0x397080);rect(x+14,y+13,46,4,0x87c3bc);
     }
-    this.add.text(860,625,'BAIO DISTRICT  //  SECTOR 2077',{fontFamily:'monospace',fontSize:'23px',color:'#9cc6c4'}).setOrigin(.5);
+    this.add.text(820,792,'BAIO GARDEN  //  CENTRAL PLAZA',{fontFamily:'monospace',fontSize:'18px',color:'#55785f'}).setOrigin(.5);
     this.minimap=this.add.graphics().setScrollFactor(0).setDepth(100);
     this.add.text(24,373,'DISTRICT MAP',{fontFamily:'monospace',fontSize:'12px',color:'#c4e3df'}).setScrollFactor(0).setDepth(101);
     this.cameras.main.setBounds(0,0,this.worldW,this.worldH);
@@ -324,7 +330,7 @@ if (!window.Phaser) {
     const nextY=Phaser.Math.Clamp(this.player.y+y/length*speed,minY,maxY);
     if(this.place==='district'){
      // Collision footprint: character feet cannot enter building walls/roofs.
-     const blocked=(px,py)=>[...this.buildings,...this.sceneryBuildings].some(b=>
+     const blocked=(px,py)=>Math.hypot(px-820,py-620)<85||[...this.buildings,...this.sceneryBuildings].some(b=>
       px>b.x-14&&px<b.x+b.w+14&&py>b.y-18&&py<b.y+b.h+9);
      if(!blocked(nextX,this.player.y))this.player.x=nextX;
      if(!blocked(this.player.x,nextY))this.player.y=nextY;
@@ -343,9 +349,12 @@ if (!window.Phaser) {
     m.clear();m.fillStyle(0x0b202c,0.93);m.fillRect(mx-5,my-23,mw+10,mh+28);
     m.lineStyle(2,0x6aa6a8);m.strokeRect(mx-5,my-23,mw+10,mh+28);
     // Minimap uses exactly the same street coordinates as the playable district.
-    m.fillStyle(0x4b6470);
+    m.fillStyle(0xcbbfa9);
     for(const [top,bottom] of [[350,530],[710,890],[1060,1190]])m.fillRect(mx,my+top*sy,mw,(bottom-top)*sy);
     for(const [left,right] of [[440,640],[1000,1200]])m.fillRect(mx+left*sx,my,(right-left)*sx,mh);
+    // Central fountain landmark on the real map coordinates.
+    m.fillStyle(0x5c9e77);m.fillCircle(mx+820*sx,my+620*sy,11);
+    m.fillStyle(0x8dd6df);m.fillCircle(mx+820*sx,my+620*sy,6);
     // Four tiny pixel pictograms, each anchored at its building's true location.
     for(const b of this.buildings){
      const bx=mx+(b.x+b.w/2)*sx,by=my+(b.y+b.h/2)*sy;
