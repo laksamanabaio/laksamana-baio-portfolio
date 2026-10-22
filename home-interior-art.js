@@ -1,5 +1,5 @@
 /*
- * BAIO DISTRICT 2077 — HOME 13.0 / SUNRISE LOFT
+ * BAIO DISTRICT 2077 — HOME 13.1 / FURNITURE POSITIONING
  * Uses the seven approved isolated transparent PNGs, cropped and optimized
  * for the 960x540 game stage. The furniture, walls, rug and window are native
  * pixel art; Phaser Graphics is only used for the architectural shell, floor,
@@ -66,15 +66,16 @@ function renderHomeWithAssets(scene){
  strip(918,196,3,55,0x73d8e9);
  strip(66,489,37,2,0x70d6e3);
  strip(857,489,36,2,0xffb269);
- // 2. Seven genuine artwork assets placed like the approved morning loft mockup.
- // Behind characters and all dialogue/quest controls.
- mount('window',258,12,342,94,1.6);      // panoramic MORNING skyline, north wall
- mount('bed',76,47,213,157,2.0);        // northwest, rug integrated
- mount('workstation',606,50,248,112,2.0);// north-east, screen + chair
- mount('blueprint',819,84,74,48,2.8);  // wall panel below top-right HUD
- mount('kitchen',53,211,352,192,2.3);  // west kitchen + built-in partition wall
- mount('dining',170,352,158,98,2.8);   // southwest, table and two chairs
- mount('lounge',564,271,286,173,2.6); // southeast, sofa + whole rug + table
+ // 2. Reference-driven wall-attached furniture positions, kept inside the room.
+ // The bedroom rug ends against the kitchen wall; the kitchen sprite is in
+ // front of it, so the partition neatly hides any overlap at their seam.
+ mount('window',258,12,342,94,1.6);       // morning panorama attached to north wall
+ mount('bed',76,81,213,157,1.8);          // +34px down, behind the kitchen divider
+ mount('workstation',606,78,248,112,2.0); // +28px down, screens within north wall
+ mount('blueprint',819,84,74,48,2.8);    // keep readable below compact quest HUD
+ mount('kitchen',39,236,352,192,2.6);    // -14px left/+25px down: wall meets west shell
+ mount('dining',95,380,158,98,3.0);      // -75px left/+28px down, lower-left corner
+ mount('lounge',602,295,286,173,2.6);   // +38px right/+24px down, lower-right corner
  // 3. The exit is visually connected to the same architecture.
  const door=scene.add.graphics().setDepth(1.2);
  door.fillStyle(0x13273b);door.fillRect(419,478,122,31);
@@ -87,28 +88,28 @@ function renderHomeWithAssets(scene){
  // 4. Keep the current Home objective and optional discoveries.
  scene.zones=[
   {x:480,y:447,r:59,label:'Return to Baio District',to:'district'},
-  {x:729,y:203,r:86,label:'Read About Me',object:'home'},
-  {x:722,y:409,r:79,label:'Read Design Notes',object:'home-notebook'},
+  {x:729,y:231,r:86,label:'Read About Me',object:'home'},
+  {x:760,y:433,r:79,label:'Read Design Notes',object:'home-notebook'},
   {x:859,y:159,r:73,label:'Inspect District Blueprint',object:'home-blueprint'}
  ];
  // Only solid furniture/wall silhouettes collide. Rugs, neon, and the floor are walkable.
  // The bottom of the kitchen partition has an open path for entering the dining nook.
  scene.homeFurniture=[
-  {x:130,y:66,w:116,h:110},  // bed mattress, not its floor rug
-  {x:57,y:213,w:344,h:12},   // kitchen upper built-in wall
-  {x:381,y:219,w:21,h:171},  // east kitchen divider, open at south
-  {x:92,y:268,w:272,h:70},   // kitchen counters and fridge
-  {x:174,y:370,w:152,h:75},  // dining set, position matches the reference
-  {x:629,y:95,w:217,h:57},   // worktable
-  {x:691,y:140,w:61,h:39},   // office chair
-  {x:605,y:290,w:219,h:69},  // sofa frame, not the rug
-  {x:652,y:366,w:144,h:50}   // lounge coffee table
+  {x:130,y:100,w:116,h:110}, // bed mattress moved 34px south; rug remains walkable
+  {x:43,y:238,w:344,h:12},   // kitchen wall touches west shell; higher render layer
+  {x:367,y:244,w:21,h:171},  // east kitchen divider, southern passage remains open
+  {x:78,y:293,w:272,h:70},   // kitchen counters and refrigerator
+  {x:99,y:398,w:152,h:75},   // dining footprint moved to southwest corner
+  {x:629,y:123,w:217,h:57},  // workstation moved 28px below north border
+  {x:691,y:168,w:61,h:39},   // workstation chair
+  {x:643,y:314,w:219,h:69},  // sofa frame (rug is walkable)
+  {x:690,y:390,w:144,h:50}   // lounge coffee table moved southeast
  ];
  const tag=(x,y,value,size,color,bg)=>scene.add.text(x,y,value,{
   fontFamily:'monospace',fontSize:size+'px',color,
   backgroundColor:bg,padding:{x:6,y:3}
  }).setOrigin(.5,0).setDepth(9);
  tag(480,451,'EXIT TO DISTRICT',11,'#dcefed','#213748');
- tag(728,198,'ABOUT ME COMPUTER',11,'#e6f1e8','#243b4b');
+ tag(728,226,'ABOUT ME COMPUTER',11,'#e6f1e8','#243b4b');
  tag(858,151,'BLUEPRINT',10,'#e5d5b4','#20364a');
 }
