@@ -10,7 +10,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#091923;col
 main{position:relative;width:100vw;height:100dvh;overflow:hidden;background:#091923}
 #game{position:absolute;inset:0;width:100%;height:100%;overflow:hidden;background:#142733}
 #game canvas{display:block;image-rendering:pixelated}
-header{position:absolute;top:14px;left:18px;z-index:5;pointer-events:none;text-shadow:0 2px 5px #091923}
+header{position:absolute;top:10px;left:10px;z-index:5;pointer-events:none;text-shadow:0 2px 5px #091923}
 h1{font-size:clamp(1rem,2vw,1.5rem);margin:0 0 3px;letter-spacing:.08em}
 p{margin:0;color:#c2d5d9;font-size:clamp(.65rem,1.1vw,.85rem)}
 footer{position:absolute;bottom:12px;right:18px;z-index:5;font-size:12px;color:#c7d5d8;text-shadow:0 2px 4px #091923;pointer-events:none}
@@ -21,12 +21,12 @@ footer{position:absolute;bottom:12px;right:18px;z-index:5;font-size:12px;color:#
 .touch button[data-dir="down"]{grid-column:2;grid-row:2}
 .touch button[data-dir="right"]{grid-column:3;grid-row:2}
 @media(pointer:fine){.touch{display:none}}
-@media(max-width:700px){header{top:8px;left:10px}footer{bottom:7px;right:8px;font-size:10px;max-width:45%;text-align:right}.touch{bottom:12px;left:10px}}
+@media(max-width:700px){header{top:10px;left:10px}footer{bottom:7px;right:8px;font-size:10px;max-width:45%;text-align:right}.touch{bottom:12px;left:10px}}
 
 /* Opening experience */
 #opening{position:absolute;inset:0;z-index:20;overflow:hidden;background:radial-gradient(ellipse at 50% 75%,#284c57 0%,#132d3c 55%,#091923 100%);color:#f4e7d0}
 #opening[hidden]{display:none}
-#opening .brand{position:absolute;left:clamp(20px,4vw,72px);top:clamp(24px,5vh,56px);font-size:clamp(19px,2.5vw,36px);font-weight:800;letter-spacing:.09em;max-width:52%}
+#opening .brand{position:absolute;left:10px;top:10px;font-size:clamp(19px,2.5vw,36px);font-weight:800;letter-spacing:.09em;max-width:52%}
 #opening .brand small{display:block;color:#83c5c5;font-size:12px;letter-spacing:.28em;margin-bottom:10px}
 #opening .profile{position:absolute;right:clamp(20px,4vw,72px);top:clamp(28px,5vh,60px);text-align:right;color:#cce1df;font-size:clamp(11px,1.2vw,16px);line-height:1.7}
 #opening .profile strong{display:block;color:#f3d4a3;font-size:clamp(16px,1.8vw,24px)}
@@ -342,9 +342,9 @@ if (!window.Phaser) {
     }
     this.visitorClock=0;
 
-    // Outer minimap frame is exactly 40 px from the left and bottom of the game viewport.
+    // Outer minimap frame is 10 game pixels from left and bottom of the viewport.
     // The frame extends 5 px beyond the map on each side and 23 px above for its heading.
-    this.minimapLayout={x:45,y:H-40-124-5,w:188,h:124};
+    this.minimapLayout={x:15,y:H-10-124-5,w:188,h:124};
     this.minimap=this.add.graphics().setScrollFactor(0).setDepth(100);
     this.add.text(this.minimapLayout.x+6,this.minimapLayout.y-18,'DISTRICT MAP',{fontFamily:'monospace',fontSize:'12px',color:'#c4e3df'}).setScrollFactor(0).setDepth(101);
     this.cameras.main.setBounds(0,0,this.worldW,this.worldH);
@@ -413,7 +413,7 @@ if (!window.Phaser) {
    this.player=this.add.container(pos.x,pos.y,[cg]);
    if(this.place==='district')this.cameras.main.startFollow(this.player,true,0.12,0.12);
    this.keys=this.input.keyboard.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,E,SPACE');
-   this.prompt=this.add.text(W-40,H-40,'',{fontFamily:'monospace',fontSize:'17px',color:'#fff2d4',backgroundColor:'#1c3442',padding:{x:12,y:6}}).setOrigin(1,1).setScrollFactor(0).setDepth(102);
+   this.prompt=this.add.text(W-10,H-10,'',{fontFamily:'monospace',fontSize:'17px',color:'#fff2d4',backgroundColor:'#1c3442',padding:{x:12,y:6}}).setOrigin(1,1).setScrollFactor(0).setDepth(102);
    this.near=null;
    this.dialogNpc=null;
    this.dialogPage=0;
