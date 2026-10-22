@@ -55,7 +55,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 <header><h1>Laksamana Baio</h1><p>Interactive portfolio · Walkable District 2077</p></header>
 <div id="game" role="application" aria-label="2D exploration game. Move with WASD or arrow keys."></div>
 <div class="touch" aria-label="Touch movement controls"><button data-dir="left" aria-label="Left">←</button><button data-dir="up" aria-label="Up">↑</button><button data-dir="down" aria-label="Down">↓</button><button data-dir="right" aria-label="Right">→</button></div>
-<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 11 — Interactive Portfolio Objects</span></footer>
+<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 11.1 — Home Studio</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -104,9 +104,10 @@ if (!window.Phaser) {
   "subtitle": "HOME / PERSONAL DESKTOP",
   "accent": 8243908,
   "pages": [
-   "Hi, I'm Laksamana Baio, a designer with five years of experience in UI/UX design. I enjoy crafting digital experiences that feel intuitive, useful, and human.",
-   "My work combines product thinking, interface design, and visual storytelling. I like simplifying complex problems and paying attention to the details that make products easier to use.",
-   "I'm interested in opportunities to collaborate with international teams. Baio District is my playful way of sharing my approach to design and interaction."
+   "HELLO, I'M BAIO\n\nI'm Laksamana Baio, a designer with five years of UI/UX experience. My focus is creating clear, thoughtful digital experiences that balance usefulness and visual craft.",
+   "MY JOURNEY\n\nMy background includes UI/UX and graphic design. Moving between product experiences and visual communication has shaped how I think about both function and expression.",
+   "HOW I APPROACH DESIGN\n\nI start with the problem and the people behind it. I value simple interactions, strong visual hierarchy, and refining ideas through feedback and iteration.",
+   "WHAT'S NEXT\n\nI'm looking to grow through product design opportunities with international teams. This interactive portfolio reflects my curiosity about storytelling, systems, and playful experiences."
   ]
  },
  "lab": {
@@ -141,6 +142,30 @@ if (!window.Phaser) {
   "pages": [
    "LET'S CONNECT\n\nI'm interested in thoughtful digital products, meaningful design challenges, and opportunities to collaborate with international teams.",
    "CONTACT DETAILS COMING SOON\n\nDirect email and professional profile links will be added here once they are confirmed. Thanks for taking the time to explore my portfolio."
+  ]
+ },
+ "home-notebook": {
+  "label": "DESIGN SKETCHBOOK",
+  "verb": "Read Design Notes",
+  "title": "DESIGN NOTES",
+  "subtitle": "HOME / PERSONAL SKETCHBOOK",
+  "accent": 8243908,
+  "pages": [
+   "MAKE IT UNDERSTANDABLE\n\nI believe good interfaces should reduce uncertainty. Clear language, thoughtful hierarchy, and helpful feedback make complex tasks easier to navigate.",
+   "LET DETAILS DO THE WORK\n\nTiny decisions can change the experience: how a button responds, how content is grouped, and how someone finds their next step.",
+   "KEEP LEARNING\n\nDesign is a practice of asking better questions, exploring possibilities, and improving through collaboration and feedback."
+  ]
+ },
+ "home-blueprint": {
+  "label": "DISTRICT BLUEPRINT",
+  "verb": "Inspect District Blueprint",
+  "title": "WHY A GAME?",
+  "subtitle": "HOME / DISTRICT BLUEPRINT",
+  "accent": 8243908,
+  "pages": [
+   "WHY BAIO DISTRICT?\n\nInstead of a conventional list of pages, I wanted this portfolio to feel like a place you could explore.",
+   "EACH SPACE TELLS A STORY\n\nHome introduces me. Laboratory explores experience. Workshop highlights projects. Contact Hub opens the door to conversation.",
+   "AN EXPERIMENT IN INTERACTION\n\nThe district is a personal design experiment in navigation, spatial storytelling, and making a professional introduction more memorable."
   ]
  }
 };
@@ -451,9 +476,53 @@ if (!window.Phaser) {
     rect(623,250,116,13,0x596a70);
     for(let i=0;i<8;i++)rect(629+13*i,256,9,3,0xd4cbb7);
     if(this.place==='home'){
-     rect(139,195,186,75,0x52747a);rect(148,186,164,14,0xe8cfaa);
-     rect(168,283,117,23,0x8eaa91);rect(790,176,22,83,0x806549);
-     rect(785,161,33,24,0x7cb08b);
+     // Warm morning home studio: light through the windows, living space and design artifacts.
+     rect(79,142,255,141,0x34505b); // large balcony window frame
+     rect(88,151,237,123,0xe0d4ab);
+     rect(95,158,106,106,0xaed8cf);rect(207,158,109,106,0xaed8cf);
+     rect(95,232,106,32,0x93bf99);rect(207,232,109,32,0x93bf99);
+     rect(202,152,6,118,0x6a8585);rect(91,206,230,5,0xeae0c5);
+     // Left wall shelving and books.
+     rect(93,282,240,12,0x876a54);rect(103,291,219,15,0xb18b6c);
+     rect(100,306,8,64,0x8d715d);rect(309,306,8,64,0x8d715d);
+     for(let i=0;i<17;i++){
+      const shades=[0x547f85,0x8e797e,0xc19a68,0x659a89,0x746d91];
+      rect(114+i*11,270-(i%3)*5,8,13+(i%3)*5,shades[i%shades.length]);
+     }
+     // Cozy couch and coffee table, inset to the left of the walkway.
+     rect(116,378,233,17,0x4f716b);rect(118,365,229,20,0x709a88);
+     rect(135,344,192,27,0x96b2a0);rect(116,349,19,37,0x618474);
+     rect(328,349,18,37,0x618474);
+     rect(159,403,132,11,0xb69070);rect(168,414,9,9,0x756453);
+     rect(273,414,9,9,0x756453);
+     // Low book + sketchbook as a separate optional inspectable item.
+     rect(199,402,43,6,0xf2e2bf);rect(205,393,30,9,0x6da4ae);
+     rect(216,394,2,7,0xe9f5ed);
+     // District blueprint pinned to the wall nearer the workstation.
+     rect(358,167,145,102,0x836c5b);rect(365,174,131,87,0xdad1b9);
+     rect(378,188,103,60,0xb8c7b4);
+     rect(391,188,7,60,0xf0e4c9);rect(452,188,7,60,0xf0e4c9);
+     rect(378,204,103,7,0xf0e4c9);rect(378,230,103,7,0xf0e4c9);
+     rect(412,214,31,21,0x84b8c7);rect(422,221,12,8,0x4f9db1);
+     rect(415,177,22,3,0x947966);
+     // Desk light, cup, and gentle cyan accent around the quest computer.
+     rect(762,245,7,16,0x5c6768);rect(755,242,22,7,0xeac49b);
+     rect(774,258,10,10,0xc4dad3);rect(779,257,7,3,0x789caa);
+     // Floor rug and additional window sunlight for a brighter, welcoming room.
+     rect(378,354,153,49,0xcebea7);rect(389,361,130,35,0xe9dcc4);
+     for(let i=0;i<6;i++)rect(398+i*19,367,10,3,0xcbb49c);
+     this.add.text(224,320,'DESIGN SKETCHBOOK',{
+      fontFamily:'monospace',fontSize:'13px',color:'#4c575a'
+     }).setOrigin(.5);
+     this.add.text(428,281,'DISTRICT BLUEPRINT',{
+      fontFamily:'monospace',fontSize:'12px',color:'#455a62'
+     }).setOrigin(.5);
+     this.add.text(478,150,'YOUR STORY STARTS AT THE COMPUTER',{
+      fontFamily:'monospace',fontSize:'12px',color:'#48666a'
+     }).setOrigin(.5,0);
+     // Optional lore objects enrich the room; only the computer advances the quest.
+     this.zones.push({x:220,y:325,r:83,label:'Read Design Notes',object:'home-notebook'});
+     this.zones.push({x:423,y:258,r:68,label:'Inspect District Blueprint',object:'home-blueprint'});
     }else if(this.place==='lab'){
      rect(136,195,159,84,0x3a6174);rect(146,207,135,15,0x80d0ce);
      rect(146,235,109,9,0x709caa);rect(778,183,31,95,0x446272);
@@ -647,10 +716,10 @@ if (!window.Phaser) {
    g.fillStyle(0xd9f1e7);g.fillRect(161,285,42,5);
    g.fillStyle(0x5d7883);g.fillRect(204,316,18,24);
    g.fillStyle(0x9cb7b3);g.fillRect(178,340,70,8);
-   add(this.add.text(138,97,station.title,{
+   this.readerTitle=add(this.add.text(138,97,station.title,{
     fontFamily:'monospace',fontSize:'26px',fontStyle:'bold',color:'#f4e8d5'
    }).setScrollFactor(0).setDepth(252));
-   add(this.add.text(138,138,station.subtitle,{
+   this.readerSubtitle=add(this.add.text(138,138,station.subtitle,{
     fontFamily:'monospace',fontSize:'13px',color:'#a8dad2'
    }).setScrollFactor(0).setDepth(252));
    this.readerBody=add(this.add.text(321,189,'',{
@@ -672,6 +741,8 @@ if (!window.Phaser) {
   updateReaderPage(){
    const station=PORTFOLIO_STATIONS[this.readerObject];
    if(!station)return;
+   this.readerTitle.setText(station.title);
+   this.readerSubtitle.setText(station.subtitle);
    this.readerBody.setText(station.pages[this.readerPage]);
    this.readerCount.setText((this.readerPage+1)+' / '+station.pages.length);
    this.readerNext.setText(this.readerPage+1<station.pages.length?'[ E / SPACE ] NEXT  ▸':'[ E / SPACE ] CLOSE  ✕');
