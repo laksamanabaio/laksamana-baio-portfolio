@@ -1,16 +1,35 @@
 /*
- * BAIO DISTRICT 2077 — HOME APARTMENT / PROTOTYPE 11.4
+ * BAIO DISTRICT 2077 — HOME APARTMENT / PROTOTYPE 11.8
  * Proportional furniture for a ~24x55px avatar, with pixel-art pseudo-depth:
  * highlighted top planes, shaded sides, cast/contact shadows, and restrained glows.
  * Native Phaser Graphics; no 3D engine or downloaded sprite assets.
  */
 function renderHomeInterior(scene){
  const g=scene.add.graphics();
+ // Scale individual furniture clusters, not the room shell, floor, or player.
+ // Pixel coordinates remain rounded so the room retains crisp 16-bit artwork.
+ const FURNITURE_SCALE=.90;
+ let artRegion={cx:0,cy:0,scale:1};
+ const objectGroup=(cx,cy)=>{artRegion={cx,cy,scale:FURNITURE_SCALE}};
+ const endGroup=()=>{artRegion={cx:0,cy:0,scale:1}};
+ const transformed=(x,y)=>({
+  x:Math.round(artRegion.cx+(x-artRegion.cx)*artRegion.scale),
+  y:Math.round(artRegion.cy+(y-artRegion.cy)*artRegion.scale)
+ });
  const R=(x,y,w,h,c,a=1)=>{
-  g.fillStyle(c,a);g.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));
+  const p=transformed(x,y);
+  g.fillStyle(c,a);
+  g.fillRect(p.x,p.y,Math.max(1,Math.round(w*artRegion.scale)),Math.max(1,Math.round(h*artRegion.scale)));
  };
  const L=(x1,y1,x2,y2,c,w=2,a=1)=>{
-  g.lineStyle(w,c,a);g.lineBetween(x1,y1,x2,y2);
+  const p=transformed(x1,y1),q=transformed(x2,y2);
+  g.lineStyle(Math.max(1,Math.round(w*artRegion.scale)),c,a);
+  g.lineBetween(p.x,p.y,q.x,q.y);
+ };
+ const E=(x,y,w,h,c)=>{
+  const p=transformed(x,y);
+  g.fillStyle(c);
+  g.fillEllipse(p.x,p.y,Math.max(1,Math.round(w*artRegion.scale)),Math.max(1,Math.round(h*artRegion.scale)));
  };
  const SH=(x,y,w,h,a=.19)=>{
   R(x+5,y+h+2,w-5,7,0x101722,a);
@@ -46,7 +65,7 @@ function renderHomeInterior(scene){
   const leaves=[[-9,-13,0x346c50],[6,-20,0x569b68],
    [-2,-25,0x72ad79],[13,-7,0x3a825c],[-13,-5,0x73b384]];
   for(const [dx,dy,c] of leaves){
-   g.fillStyle(c);g.fillEllipse(x+v(dx),y+v(dy),v(17),v(10));
+   E(x+v(dx),y+v(dy),v(17),v(10),c);
    R(x+v(dx-4),y+v(dy-3),v(6),v(2),0xc0dda7,.29);
   }
  };
@@ -116,6 +135,7 @@ function renderHomeInterior(scene){
  R(263,45,9,139,0x20394a);R(554,45,9,139,0x20394a);
  R(263,44,299,10,0x192f40);R(263,175,299,10,0x455661);
  GL(271,45,283,2,0x78d7e7);
+ objectGroup(155,193);
  // 3. Scaled bedroom NW: mattress roughly 2.5 avatar heights, no huge billboard bed.
  SH(71,143,137,110,.22);
  PANEL(72,133,131,15,0x77879a,0x33485a,0x1e3242);
@@ -136,6 +156,8 @@ function renderHomeInterior(scene){
   R(x+4,76,18,9,[0x4c9aa1,0x9e806c,0x6897b0][i]);
  }
  plant(249,197,.65);
+ endGroup();
+ objectGroup(414,195);
  // Panorama bench, kept narrow to leave the middle of Home walkable.
  BOX(290,182,248,10,4,0xad896c,0x505766,0x344052);
  for(let i=0;i<5;i++){
@@ -143,6 +165,8 @@ function renderHomeInterior(scene){
   R(299+i*48,196,34,2,0x88909c);
  }
  plant(297,181,.5);plant(527,184,.57);
+ endGroup();
+ objectGroup(689,188);
  // 4. Workstation pushed against the north wall beside the blueprint.
  // Desktop at y=171. Every monitor stem terminates on that same surface.
  SH(603,171,182,64,.23);
@@ -186,6 +210,8 @@ function renderHomeInterior(scene){
  BOX(664,251,50,7,4,0x2d4659,0x233848,0x172b3c);
  R(687,260,6,11,0x293d4e);
  R(670,270,41,3,0x334958);
+ endGroup();
+ objectGroup(843,130);
  // 5. Blueprint stays mounted on the north wall beside the shifted desk.
  SH(817,102,52,57,.10);
  BOX(820,101,47,54,4,0xf7e6c6,0xdccbaf,0xb29b7b);
@@ -196,6 +222,8 @@ function renderHomeInterior(scene){
  }
  R(837,125,13,9,0x78afbf);R(840,128,7,5,0x347b92);
  R(838,104,11,3,0xb48f69);
+ endGroup();
+ objectGroup(191,368);
  // 6. Kitchen SW: separate furniture components instead of a single giant slab.
  SH(61,328,252,82,.17);
  BOX(62,330,56,70,6,0xb8bec2,0x818f9b,0x576877); // fridge
@@ -218,6 +246,8 @@ function renderHomeInterior(scene){
  BOX(306,322,10,80,4,0x647586,0x455767,0x303d4d); // divider
  GL(313,350,2,34,0xffaa64);
  plant(322,326,.48);
+ endGroup();
+ objectGroup(197,450);
  // 7. Smaller dining table with two chairs, visibly detached from the kitchen.
  SH(136,430,118,28,.21);
  BOX(136,430,112,23,5,0xe3b385,0xbf8a5c,0x875d40);
@@ -226,6 +256,8 @@ function renderHomeInterior(scene){
  R(154,478,3,8,0x374c5d);R(218,478,3,8,0x384b59);
  plant(159,427,.32);
  R(224,425,8,10,0xe7e1d5);R(225,424,7,2,0x8198a6);
+ endGroup();
+ objectGroup(765,383);
  // 8. Scaled living area SE. Lighter sofa top, darker front and realistic floor shadow.
  // Textured carpet is slightly larger than the couch, but not the whole quarter.
  R(681,332,171,103,0x404b5a);
@@ -242,6 +274,8 @@ function renderHomeInterior(scene){
  SH(724,404,87,21,.24);
  BOX(726,404,84,17,4,0xd8a170,0xa96f45,0x794b35);
  book(743,408,0x8ec5c8);R(789,408,9,7,0xe1dacc);
+ endGroup();
+ objectGroup(850,410);
  // Living-room TV now faces upward from the bottom wall, not the right wall.
  plant(849,312,.48);
  plant(892,423,.36);
@@ -254,6 +288,7 @@ function renderHomeInterior(scene){
  R(857,457,17,7,0x2c7296);
  GL(887,454,2,13,0x67d4e7);
  R(835,475,23,3,0x354b5c);R(844,478,6,5,0x273947);
+ endGroup();
  // 9. Compact south door with walkable space on either side.
  R(418,471,122,36,0x1a2e40);R(435,476,90,32,0x2f4658);
  R(442,482,77,23,0x4c6272);R(449,488,63,9,0x344f63);
@@ -268,17 +303,23 @@ function renderHomeInterior(scene){
   {x:843,y:177,r:62,label:'Inspect District Blueprint',object:'home-blueprint'}
  ];
  // Furniture footprints match visible solid areas (carpet, windows, shadows are walkable).
+ // Match collision footprints to the scaled furniture artwork.
+ const fit=(x,y,w,h,cx,cy)=>{
+  const k=FURNITURE_SCALE;
+  return {x:Math.round(cx+(x-cx)*k),y:Math.round(cy+(y-cy)*k),
+   w:Math.max(1,Math.round(w*k)),h:Math.max(1,Math.round(h*k))};
+ };
  scene.homeFurniture=[
-  {x:79,y:145,w:125,h:102},  // bed
-  {x:62,y:330,w:56,h:76},   // refrigerator
-  {x:130,y:340,w:165,h:68},// kitchen cabinet block
-  {x:306,y:322,w:10,h:84}, // divider
-  {x:136,y:430,w:112,h:29},// dining table
-  {x:604,y:171,w:180,h:63},// workstation against upper wall
-  {x:669,y:225,w:41,h:49}, // desk chair
-  {x:706,y:350,w:127,h:57},// sofa and chaise
-  {x:726,y:404,w:84,h:23}, // coffee table
-  {x:803,y:447,w:86,h:36}  // TV mounted along bottom wall
+  fit(79,145,125,102,155,193),  // bed
+  fit(62,330,56,76,191,368),   // refrigerator
+  fit(130,340,165,68,191,368), // kitchen cabinets
+  fit(306,322,10,84,191,368),  // divider
+  fit(136,430,112,29,197,450), // dining table
+  fit(604,171,180,63,689,188), // workstation
+  fit(669,225,41,49,689,188),  // desk chair
+  fit(706,350,127,57,765,383), // sofa
+  fit(726,404,84,23,765,383),  // coffee table
+  fit(803,447,86,36,850,410)   // television
  ];
  const caption=(x,y,t,size,c,bg)=>{
   scene.add.text(x,y,t,{
@@ -287,6 +328,6 @@ function renderHomeInterior(scene){
   }).setOrigin(.5,0);
  };
  caption(480,450,'EXIT TO DISTRICT',11,'#e3efe4','#1e3545');
- caption(686,283,'ABOUT ME COMPUTER',11,'#eddbba','#293c49');
+ caption(686,279,'ABOUT ME COMPUTER',11,'#eddbba','#293c49');
  caption(845,181,'BLUEPRINT',10,'#f4ddb8');
 }
