@@ -78,24 +78,72 @@ if (!window.Phaser) {
  }
  // Four portfolio locations are a light exploration quest, not a gate to content.
  const JOURNEY_STOPS=[
-  {id:'home',name:'HOME',detail:'About Me',hint:'Discover who Baio is',direction:'Northwest'},
-  {id:'lab',name:'LABORATORY',detail:'Experience',hint:'Explore professional experience',direction:'Northeast'},
-  {id:'workshop',name:'WORKSHOP',detail:'Projects',hint:'Browse selected work',direction:'Southeast'},
-  {id:'hub',name:'CONTACT HUB',detail:'Contact',hint:'Find ways to connect',direction:'Southwest'}
+  {id:'home',name:'HOME',detail:'About Me',hint:'Read the Home computer',direction:'Northwest'},
+  {id:'lab',name:'LABORATORY',detail:'Experience',hint:'Access the career terminal',direction:'Northeast'},
+  {id:'workshop',name:'WORKSHOP',detail:'Projects',hint:'Inspect the project board',direction:'Southeast'},
+  {id:'hub',name:'CONTACT HUB',detail:'Contact',hint:'Open the contact console',direction:'Southwest'}
  ];
- const JOURNEY_STORAGE='baio-portfolio-journey-v1';
+ const JOURNEY_STORAGE='baio-portfolio-discoveries-v2';
  const visitedStops=new Set();
  try{
   const stored=JSON.parse(localStorage.getItem(JOURNEY_STORAGE)||'[]');
   if(Array.isArray(stored))for(const id of stored)if(JOURNEY_STOPS.some(stop=>stop.id===id))visitedStops.add(id);
  }catch(e){/* Private browsing may disallow storage; in-session progress still works. */}
- let journeyStarted=false;
+ // Progress is only earned by opening a portfolio object.
  function visitPortfolioLocation(id){
   if(!JOURNEY_STOPS.some(stop=>stop.id===id)||visitedStops.has(id))return false;
   visitedStops.add(id);
   try{localStorage.setItem(JOURNEY_STORAGE,JSON.stringify([...visitedStops]))}catch(e){}
   return true;
  }
+ const PORTFOLIO_STATIONS={
+ "home": {
+  "label": "PERSONAL COMPUTER",
+  "verb": "Read About Me",
+  "title": "ABOUT ME",
+  "subtitle": "HOME / PERSONAL DESKTOP",
+  "accent": 8243908,
+  "pages": [
+   "Hi, I'm Laksamana Baio, a designer with five years of experience in UI/UX design. I enjoy crafting digital experiences that feel intuitive, useful, and human.",
+   "My work combines product thinking, interface design, and visual storytelling. I like simplifying complex problems and paying attention to the details that make products easier to use.",
+   "I'm interested in opportunities to collaborate with international teams. Baio District is my playful way of sharing my approach to design and interaction."
+  ]
+ },
+ "lab": {
+  "label": "CAREER TERMINAL",
+  "verb": "Explore Experience",
+  "title": "EXPERIENCE ARCHIVE",
+  "subtitle": "LABORATORY / CAREER WORKSTATION",
+  "accent": 8571865,
+  "pages": [
+   "5 YEARS IN UI/UX DESIGN\n\nMy background spans UI/UX work and visual design. I care about the whole experience: from how a product is structured to how it feels to use.",
+   "DESIGN APPROACH\n\nUnderstand the problem. Explore possible solutions. Refine interactions and visual systems. Keep the user's goals at the center.",
+   "A detailed career timeline, teams, and responsibilities will be added here as the portfolio content is finalized."
+  ]
+ },
+ "workshop": {
+  "label": "PROJECT BOARD",
+  "verb": "View Project Showcase",
+  "title": "SELECTED WORK",
+  "subtitle": "WORKSHOP / PROJECT DISPLAY",
+  "accent": 14724470,
+  "pages": [
+   "PROJECT SHOWCASE\n\nThis space will feature selected product design case studies, focusing on the problem, my role, and the thinking behind each solution.",
+   "CASE STUDIES IN PREPARATION\n\nProject visuals, process details, and outcomes will be published here once ready. I want each story to be clear and accurate rather than filled with placeholder results."
+  ]
+ },
+ "hub": {
+  "label": "CONTACT CONSOLE",
+  "verb": "Open Contact Console",
+  "title": "LET'S CONNECT",
+  "subtitle": "CONTACT HUB / COMMUNICATION STATION",
+  "accent": 12166378,
+  "pages": [
+   "LET'S CONNECT\n\nI'm interested in thoughtful digital products, meaningful design challenges, and opportunities to collaborate with international teams.",
+   "CONTACT DETAILS COMING SOON\n\nDirect email and professional profile links will be added here once they are confirmed. Thanks for taking the time to explore my portfolio."
+  ]
+ }
+};
  const destinations={
   home:{name:'HOME',sub:'About Me',color:0x537b82},
   lab:{name:'LABORATORY',sub:'Experience',color:0x467f87},
@@ -392,6 +440,33 @@ if (!window.Phaser) {
      this.zones.push({x:280,y:282,r:70,label:'Explore Projects in Workshop',to:'workshop'});
      this.add.text(280,205,'WORKSTATION',{fontFamily:'monospace',fontSize:'12px',color:'#e2e8df'}).setOrigin(.5);
     }
+    // Portfolio objects are available inside each room, independent of its doorway.
+    const station=PORTFOLIO_STATIONS[this.place],sx=680,sy=225,accent=station.accent;
+    rect(560,296,240,68,0xa9957b);rect(576,305,210,5,0xcdb89c);
+    rect(565,221,225,23,0x735d53);rect(574,214,209,9,0xddbc95);
+    rect(604,150,152,70,0x172d3a);rect(612,158,136,55,0x294652);
+    rect(617,163,126,44,accent);rect(624,170,112,6,0xe3f2e5);
+    rect(624,183,88,4,0x315664);rect(624,192,70,4,0x315664);
+    rect(674,220,12,14,0x344652);rect(648,234,61,8,0x455a60);
+    rect(623,250,116,13,0x596a70);
+    for(let i=0;i<8;i++)rect(629+13*i,256,9,3,0xd4cbb7);
+    if(this.place==='home'){
+     rect(139,195,186,75,0x52747a);rect(148,186,164,14,0xe8cfaa);
+     rect(168,283,117,23,0x8eaa91);rect(790,176,22,83,0x806549);
+     rect(785,161,33,24,0x7cb08b);
+    }else if(this.place==='lab'){
+     rect(136,195,159,84,0x3a6174);rect(146,207,135,15,0x80d0ce);
+     rect(146,235,109,9,0x709caa);rect(778,183,31,95,0x446272);
+    }else if(this.place==='workshop'){
+     rect(117,164,189,130,0x95775b);rect(129,174,165,110,0xdec59c);
+     for(let i=0;i<3;i++){rect(144+i*48,185,38,27,0x345967);rect(144+i*48,226,38,34,0x829e9c)}
+    }else{
+     rect(134,180,173,88,0x473c65);rect(149,191,144,13,0xb9a3db);
+     rect(151,222,116,9,0x866cb2);rect(781,162,16,112,0x64537c);
+    }
+    this.add.text(sx,275,station.label,{fontFamily:'monospace',fontSize:'14px',color:'#40545b'}).setOrigin(.5);
+    // Quest is completed only when this object is activated.
+    this.zones.push({x:sx,y:290,r:103,label:station.verb,object:this.place});
    }
    // Pixel character adapted from Baio's supplied reference: glasses, black shirt,
    // blue jeans, dark hair and brown shoes. All directions use the same footprint.
@@ -432,7 +507,7 @@ if (!window.Phaser) {
    this.drawAvatar('down',0);
    const pos=this.spawn||(this.place==='district'?{x:265,y:410}:{x:480,y:340});
    this.player=this.add.container(pos.x,pos.y,[cg]);
-   const freshVisit=journeyStarted&&visitPortfolioLocation(this.place);
+   const freshVisit=false;
    if(this.place==='district')this.cameras.main.startFollow(this.player,true,0.12,0.12);
    this.keys=this.input.keyboard.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,E,SPACE');
    this.prompt=this.add.text(W-HUD_EDGE,H-HUD_EDGE,'',{fontFamily:'monospace',fontSize:'17px',color:'#fff2d4',backgroundColor:'#1c3442',padding:{x:12,y:6}}).setOrigin(1,1).setScrollFactor(0).setDepth(102);
@@ -522,7 +597,7 @@ if (!window.Phaser) {
     add(this.add.text(290,yy+5,stop.name+'  /  '+stop.detail,{
      fontFamily:'monospace',fontSize:'15px',fontStyle:'bold',color:done?'#e1f6e6':'#e8e4d8'
     }).setScrollFactor(0).setDepth(302));
-    add(this.add.text(290,yy+27,done?'VISITED':stop.direction+' · '+stop.hint,{
+    add(this.add.text(290,yy+27,done?'CONTENT DISCOVERED':stop.hint,{
      fontFamily:'monospace',fontSize:'11px',color:done?'#99d7bb':'#acc8ca'
     }).setScrollFactor(0).setDepth(302));
    }
@@ -723,7 +798,7 @@ if (!window.Phaser) {
  const opening=document.getElementById('opening');
  const loading=document.getElementById('loading');
  document.getElementById('startGame').addEventListener('click',()=>{
-  journeyStarted=true;
+  // The journey starts at Home, but entering it does not finish the quest.
   opening.hidden=true;
   loading.classList.add('active');
   requestAnimationFrame(()=>{document.getElementById('loadFill').style.width='100%'});
