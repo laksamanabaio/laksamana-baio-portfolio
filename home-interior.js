@@ -1,5 +1,5 @@
 /*
- * BAIO DISTRICT 2077 — HOME APARTMENT / PROTOTYPE 11.3
+ * BAIO DISTRICT 2077 — HOME APARTMENT / PROTOTYPE 11.4
  * Proportional furniture for a ~24x55px avatar, with pixel-art pseudo-depth:
  * highlighted top planes, shaded sides, cast/contact shadows, and restrained glows.
  * Native Phaser Graphics; no 3D engine or downloaded sprite assets.
@@ -51,16 +51,21 @@ function renderHomeInterior(scene){
   }
  };
  const book=(x,y,c)=>{R(x+2,y+2,13,9,0x152633,.29);R(x,y,13,8,c);R(x,y,3,8,0xe4d5ab);R(x+4,y+2,6,1,0xf3ead0,.68)};
- const monitor=(x,y,w,h)=>{
-  SH(x,y,w,h,.12);
-  R(x-3,y-3,w+6,h+6,0x172635);
-  R(x,y,w,h,0x244b62);
-  R(x+3,y+4,w-6,4,0x528fad);
-  for(let i=0;i<3;i++)R(x+4,y+13+i*6,w-11-(i%2)*9,2,i%2?0x83d9dd:0x8db4ca);
-  R(x+5,y+h-9,w-15,2,0x38778e);
-  GL(x+2,y+2,w-4,1,0x71d3e5);
-  R(x+Math.floor(w/2)-2,y+h+4,4,6,0x293b49);
-  R(x+Math.floor(w/2)-10,y+h+10,20,3,0x526575);
+ const monitor=(x,y,w,h,deskY)=>{
+  // Display housing, contact shadow, and stand that reaches the desk surface.
+  R(x-3,y-3,w+6,h+6,0x162535);
+  R(x,y,w,h,0x20485f);
+  R(x+3,y+4,w-6,4,0x568da7);
+  for(let i=0;i<3;i++)
+   R(x+4,y+13+i*6,w-11-(i%2)*8,2,i%2?0x83d9dd:0x8db4ca);
+  R(x+5,y+h-9,w-15,2,0x39748b);
+  GL(x+2,y+2,w-4,1,0x70d4e3);
+  const middle=x+Math.floor(w/2);
+  const stemTop=y+h+3;
+  R(middle-3,stemTop,6,Math.max(2,deskY-stemTop),0x293c49);
+  R(middle-2,stemTop,2,Math.max(2,deskY-stemTop),0x668396);
+  R(middle-10,deskY-1,20,3,0x4d6874);
+  R(middle-9,deskY,18,1,0x142e3b,.38);
  };
  // 1. Architecture: dark-cutaway apartment, warm walnut planks.
  R(0,0,960,540,0x07111c);
@@ -138,47 +143,59 @@ function renderHomeInterior(scene){
   R(299+i*48,196,34,2,0x88909c);
  }
  plant(297,181,.5);plant(527,184,.57);
- // 4. Compact designer workstation NE — more proportional to the player.
- // Three small but readable monitors and wood desktop, side drawers, chair.
- SH(583,214,167,72,.23);
- BOX(585,214,156,22,7,0xe6bd92,0xbb8a64,0x896345);
- BOX(587,243,28,43,5,0x60707a,0x3a4a59,0x293641);
- BOX(715,243,28,43,5,0x657078,0x3a4858,0x263540);
- for(const x of [590,720])for(let i=0;i<2;i++){
-  PANEL(x,254+i*17,23,13,0x576a7c,0x364858,0x273745);
-  R(x+7,260+i*17,9,2,0xe8b27b);
+ // 4. Workstation pushed against the north wall beside the blueprint.
+ // Desktop at y=171. Every monitor stem terminates on that same surface.
+ SH(603,171,182,64,.23);
+ BOX(604,171,180,23,6,0xe9bc8e,0xbc8e68,0x8a654c);
+ R(609,177,168,2,0xf3d4a7,.38);
+ BOX(607,195,30,35,4,0x607381,0x3c4f60,0x273b49);
+ BOX(751,195,30,35,4,0x5e7180,0x3b4e5f,0x273847);
+ for(const xx of [610,754])for(let i=0;i<2;i++){
+  PANEL(xx,202+i*15,23,12,0x556c7b,0x344959,0x233643);
+  R(xx+7,207+i*15,10,2,0xe3b57f);
  }
- monitor(597,164,34,33);
- monitor(638,152,48,42);
- monitor(693,163,36,34);
- // Pixel chart on the central display.
- L(646,185,657,173,0x8ce6d8,2);L(657,173,669,182,0x8ce6d8,2);
- L(669,182,679,165,0x8ce6d8,2);
- for(const [x,y] of [[646,185],[657,173],[669,182],[679,165]])R(x-1,y-1,3,3,0xf0e9d9);
- PANEL(624,230,76,8,0x455a68,0x263746,0x182939);
- for(let i=0;i<10;i++)R(632+i*6,234,4,1,i%3?0x97c9cb:0xe3b780);
- R(708,231,11,7,0xe3ded0);R(713,231,4,2,0x7b9aa6);
- // Chair shadow separates the chair from the desk.
- SH(645,258,47,31,.27);
- BOX(650,254,40,25,5,0x526779,0x344b60,0x213445);
- BOX(645,281,49,8,4,0x2c4456,0x233848,0x192c3d);
- R(665,293,6,14,0x2b4050);
- R(648,308,46,3,0x2f4150);
- // Books & decorative items at reduced scale.
- R(749,92,59,5,0x334353);
- for(let i=0;i<2;i++){
-  R(749,111+i*21,59,4,0x3f4852);
-  for(let j=0;j<7;j++)R(754+j*8,96+i*21,5,15,
-   [0x70a1a3,0xb99869,0x718faa,0x66a58b][j%4]);
+ // Books and small ornaments are above the monitors, never over the screen pixels.
+ R(619,96,144,5,0x2d3d49);
+ GL(620,95,143,1,0xffb46e);
+ for(let i=0;i<8;i++){
+  const xx=624+i*17;
+  R(xx,82+(i%3)*2,10,14-(i%3)*2,
+   [0x6b9ca0,0xb9956d,0x8fa0b4,0x648f80][i%4]);
+  R(xx+2,84+(i%3)*2,2,9,0xe6cfaa,.66);
  }
- plant(751,203,.38);
- // 5. Compact interactive blueprint board to the right of workstation.
- SH(801,102,54,57,.12);
- BOX(804,102,48,53,4,0xf6e6c4,0xdbcaac,0xb29b78);
- R(810,112,36,38,0xc3d9d0);
- for(let i=0;i<3;i++){R(819+i*8,114,1,33,0xf2ecda);R(811,121+i*10,34,1,0xf1e9d5)}
- R(821,124,13,9,0x75b1c0);R(825,126,7,5,0x32768e);
- R(822,105,12,3,0xb48f6a);
+ plant(776,155,.32);
+ // Monitors and their stands are actually attached to the rear of the desk.
+ monitor(618,127,33,32,172);
+ monitor(662,120,44,39,172);
+ monitor(717,127,34,32,172);
+ // Product-flow chart on the main display.
+ L(669,148,678,137,0x91e2d9,2);
+ L(678,137,688,145,0x91e2d9,2);
+ L(688,145,700,130,0x91e2d9,2);
+ for(const [x,y] of [[669,148],[678,137],[688,145],[700,130]])
+  R(x-1,y-1,3,3,0xecf6e9);
+ // Keyboard, mouse, tablet, and a coffee mug rest on the visible desktop.
+ PANEL(644,182,84,8,0x526572,0x253644,0x192b39);
+ for(let i=0;i<12;i++)
+  R(651+i*6,186,4,1,i%3?0x9fc6c3:0xe3b47d);
+ R(734,180,8,9,0x243747);R(737,181,3,2,0x92b9bb);
+ R(748,180,13,9,0xdcd3bf);R(752,179,5,3,0x799aa1);
+ // Compact ergonomic chair below the workstation.
+ SH(666,230,45,33,.25);
+ BOX(669,225,41,26,4,0x567183,0x364e62,0x223748);
+ BOX(664,251,50,7,4,0x2d4659,0x233848,0x172b3c);
+ R(687,260,6,11,0x293d4e);
+ R(670,270,41,3,0x334958);
+ // 5. Blueprint stays mounted on the north wall beside the shifted desk.
+ SH(817,102,52,57,.10);
+ BOX(820,101,47,54,4,0xf7e6c6,0xdccbaf,0xb29b7b);
+ R(826,111,35,39,0xc4dad1);
+ for(let i=0;i<3;i++){
+  R(835+i*8,113,1,34,0xf7ecdc);
+  R(828,119+i*10,31,1,0xf5ebda);
+ }
+ R(837,125,13,9,0x78afbf);R(840,128,7,5,0x347b92);
+ R(838,104,11,3,0xb48f69);
  // 6. Kitchen SW: separate furniture components instead of a single giant slab.
  SH(61,328,252,82,.17);
  BOX(62,330,56,70,6,0xb8bec2,0x818f9b,0x576877); // fridge
@@ -225,12 +242,18 @@ function renderHomeInterior(scene){
  SH(724,404,87,21,.24);
  BOX(726,404,84,17,4,0xd8a170,0xa96f45,0x794b35);
  book(743,408,0x8ec5c8);R(789,408,9,7,0xe1dacc);
- // Smaller TV and lamps.
- PANEL(871,335,22,49,0x719baa,0x243f53,0x172f45);
- R(876,343,12,34,0x51a5be);R(879,351,7,11,0x7ec2cf);
- GL(892,346,2,30,0x59d8e9);
- plant(849,314,.50);plant(854,426,.45);
- R(862,298,4,42,0x6a5f52);GL(857,294,14,3,0xffb96b);
+ // Living-room TV now faces upward from the bottom wall, not the right wall.
+ plant(849,312,.48);
+ plant(892,423,.36);
+ R(864,299,4,45,0x6a5f52);GL(859,296,14,3,0xffb96b);
+ SH(802,448,88,29,.15);
+ PANEL(803,447,86,27,0x739eaf,0x213e53,0x152d43);
+ R(809,452,74,16,0x50acc4);
+ R(813,455,67,2,0x8bd9e6,.55);
+ R(816,461,31,2,0x70d5d5);
+ R(857,457,17,7,0x2c7296);
+ GL(887,454,2,13,0x67d4e7);
+ R(835,475,23,3,0x354b5c);R(844,478,6,5,0x273947);
  // 9. Compact south door with walkable space on either side.
  R(418,471,122,36,0x1a2e40);R(435,476,90,32,0x2f4658);
  R(442,482,77,23,0x4c6272);R(449,488,63,9,0x344f63);
@@ -240,9 +263,9 @@ function renderHomeInterior(scene){
  // Home computer completes its quest; book and blueprint are optional reading.
  scene.zones=[
   {x:480,y:449,r:56,label:'Return to Baio District',to:'district'},
-  {x:664,y:286,r:76,label:'Read About Me',object:'home'},
+  {x:686,y:247,r:91,label:'Read About Me',object:'home'},
   {x:771,y:421,r:62,label:'Read Design Notes',object:'home-notebook'},
-  {x:827,y:179,r:59,label:'Inspect District Blueprint',object:'home-blueprint'}
+  {x:843,y:177,r:62,label:'Inspect District Blueprint',object:'home-blueprint'}
  ];
  // Furniture footprints match visible solid areas (carpet, windows, shadows are walkable).
  scene.homeFurniture=[
@@ -251,11 +274,11 @@ function renderHomeInterior(scene){
   {x:130,y:340,w:165,h:68},// kitchen cabinet block
   {x:306,y:322,w:10,h:84}, // divider
   {x:136,y:430,w:112,h:29},// dining table
-  {x:585,y:214,w:156,h:71},// workstation
-  {x:650,y:254,w:40,h:52}, // desk chair
+  {x:604,y:171,w:180,h:63},// workstation against upper wall
+  {x:669,y:225,w:41,h:49}, // desk chair
   {x:706,y:350,w:127,h:57},// sofa and chaise
   {x:726,y:404,w:84,h:23}, // coffee table
-  {x:871,y:335,w:22,h:49}  // TV
+  {x:803,y:447,w:86,h:36}  // TV mounted along bottom wall
  ];
  const caption=(x,y,t,size,c,bg)=>{
   scene.add.text(x,y,t,{
@@ -264,6 +287,6 @@ function renderHomeInterior(scene){
   }).setOrigin(.5,0);
  };
  caption(480,450,'EXIT TO DISTRICT',11,'#e3efe4','#1e3545');
- caption(665,314,'ABOUT ME COMPUTER',11,'#eddbba','#293c49');
- caption(829,187,'BLUEPRINT',10,'#f4ddb8');
+ caption(686,283,'ABOUT ME COMPUTER',11,'#eddbba','#293c49');
+ caption(845,181,'BLUEPRINT',10,'#f4ddb8');
 }
