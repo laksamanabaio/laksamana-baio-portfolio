@@ -182,6 +182,42 @@ if (!window.Phaser) {
      // Entrance remains directly below the building, outside its collision.
      this.zones.push({x:cx,y:dy+32,r:65,label:'Enter '+destinations[b.id].name,to:b.id});
     }
+    // Background city blocks: atmospheric scenery, intentionally non-enterable.
+    // Every footprint stays inside a parcel and outside the road corridors.
+    this.sceneryBuildings=[
+     {x:690,y:115,w:220,h:192,type:'arcade',name:'NEON ARCADE',glow:0x69bfc4},
+     {x:1610,y:112,w:205,h:194,type:'tower',name:'DATA TOWER',glow:0x82a9e2},
+     {x:690,y:915,w:235,h:122,type:'cafe',name:'NIGHT CAFE',glow:0xe1a36d},
+     {x:1640,y:914,w:180,h:123,type:'market',name:'CYBER MART',glow:0xc78ed6},
+     {x:65,y:78,w:90,h:195,type:'tower',name:'',glow:0x78a8bc},
+     {x:1270,y:80,w:62,h:190,type:'tower',name:'',glow:0x6da8a9}
+    ];
+    for(const b of this.sceneryBuildings){
+     const c=b.glow,roof=b.type==='cafe'?0x4b3b3c:0x263845;
+     rect(b.x+10,b.y+12,b.w,b.h,0x10232d); // building shadow
+     rect(b.x,b.y+14,b.w,b.h-14,0x334753);
+     rect(b.x-5,b.y+7,b.w+10,17,roof);
+     rect(b.x+5,b.y+26,b.w-10,5,c);
+     if(b.type==='tower'){
+      for(let yy=b.y+42;yy<b.y+b.h-19;yy+=29)
+       for(let xx=b.x+12;xx<b.x+b.w-18;xx+=30){
+        rect(xx,yy,19,18,0x183847);rect(xx+3,yy+3,13,9,c);
+       }
+      rect(b.x+15,b.y-5,b.w-30,13,0x243b49);
+     }else{
+      for(let xx=b.x+16;xx<b.x+b.w-23;xx+=39){
+       rect(xx,b.y+46,29,36,0x173947);
+       rect(xx+4,b.y+50,21,26,c);
+       rect(xx+4,b.y+50,21,5,0xb6d9d6);
+      }
+      rect(b.x+10,b.y+b.h-31,b.w-20,9,roof);
+      rect(b.x+17,b.y+b.h-19,b.w-34,12,0x203b47);
+     }
+     if(b.name)this.add.text(b.x+b.w/2,b.y+30,b.name,{
+      fontFamily:'monospace',fontSize:'12px',color:'#e5e8d8',
+      backgroundColor:'#172a37',padding:{x:6,y:3}
+     }).setOrigin(.5,0);
+    }
     for(const [x,y] of [[750,250],[850,1030],[1570,580],[120,630],[1660,1060]]){
      rect(x,y,74,54,0x294b57);rect(x+8,y+8,58,28,0x397080);rect(x+14,y+13,46,4,0x87c3bc);
     }
@@ -288,7 +324,7 @@ if (!window.Phaser) {
     const nextY=Phaser.Math.Clamp(this.player.y+y/length*speed,minY,maxY);
     if(this.place==='district'){
      // Collision footprint: character feet cannot enter building walls/roofs.
-     const blocked=(px,py)=>this.buildings.some(b=>
+     const blocked=(px,py)=>[...this.buildings,...this.sceneryBuildings].some(b=>
       px>b.x-14&&px<b.x+b.w+14&&py>b.y-18&&py<b.y+b.h+9);
      if(!blocked(nextX,this.player.y))this.player.x=nextX;
      if(!blocked(this.player.x,nextY))this.player.y=nextY;
