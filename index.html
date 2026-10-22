@@ -55,7 +55,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 <header><h1>Laksamana Baio</h1><p>Interactive portfolio · Walkable District 2077</p></header>
 <div id="game" role="application" aria-label="2D exploration game. Move with WASD or arrow keys."></div>
 <div class="touch" aria-label="Touch movement controls"><button data-dir="left" aria-label="Left">←</button><button data-dir="up" aria-label="Up">↑</button><button data-dir="down" aria-label="Down">↓</button><button data-dir="right" aria-label="Right">→</button></div>
-<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 11.5 — Compact Modern HUD</span></footer>
+<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 11.6 — Baio Sprite Avatar</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -178,6 +178,13 @@ if (!window.Phaser) {
  };
  class World extends Phaser.Scene{
   constructor(){super('World')}
+  preload(){
+   // Frames: rows down / up / left / right; each row = idle, walk A, walk B.
+   // The cropped transparent sprites use the approved Baio character design.
+   this.load.spritesheet('baio-player','./assets/baio-player-sprite.png?v=11.6',{
+    frameWidth:40,frameHeight:56,margin:0,spacing:0
+   });
+  }
   init(data){this.place=data.place||'home';this.spawn=data.spawn||null;this.changing=false}
   create(){
    const g=this.add.graphics(),rect=(x,y,w,h,c)=>{g.fillStyle(c);g.fillRect(x,y,w,h)};
@@ -540,45 +547,23 @@ if (!window.Phaser) {
     // Quest is completed only when this object is activated.
     this.zones.push({x:sx,y:290,r:103,label:station.verb,object:this.place});
    }
-   // Pixel character adapted from Baio's supplied reference: glasses, black shirt,
-   // blue jeans, dark hair and brown shoes. All directions use the same footprint.
-   const cg=this.add.graphics();
-   this.avatarGraphic=cg;this.avatarDirection='down';this.avatarStep=0;this.avatarClock=0;
+   // The actual 16-bit sprite sheet replaces the old procedural Graphics avatar.
+   // Animation source: 12 transparent frames, 40 × 56 each.
+   this.avatarDirection='down';this.avatarStep=0;this.avatarClock=0;
+   const avatarShadow=this.add.graphics();
+   avatarShadow.fillStyle(0x12202c,0.25);
+   avatarShadow.fillEllipse(0,22,27,8);
+   this.avatarSprite=this.add.sprite(0,0,'baio-player',0)
+    .setOrigin(0.5,0.53)
+    .setScale(1.08);
    this.drawAvatar=(direction='down',step=0)=>{
-    cg.clear();
-    const px=(x,y,w,h,c)=>{cg.fillStyle(c);cg.fillRect(x,y,w,h)};
-    const side=direction==='left'||direction==='right',back=direction==='up';
-    const stride=step===1?3:step===2?-3:0;
-    // Legs and brown leather shoes
-    px(-10,5,9,17+stride,0x294b80);px(2,5,9,17-stride,0x294b80);
-    px(-10,18+stride,10,5,0x804627);px(2,18-stride,10,5,0x804627);
-    px(-10,20+stride,11,3,0x3b2b2a);px(2,20-stride,11,3,0x3b2b2a);
-    // Short-sleeve charcoal shirt and skin-toned arms
-    px(-12,-10,24,19,0x24252d);px(-13,-8,5,11,0x292a30);
-    px(8,-8,5,11,0x292a30);px(-13,2,5,6,0xd89969);px(8,2,5,6,0xd89969);
-    px(-2,-9,2,17,0x44434a);px(5,-5,5,4,0x373942);
-    // Face and recognizable hairstyle
-    px(-11,-27,22,20,0xdba071);px(-12,-32,24,10,0x161820);
-    px(-13,-28,6,8,0x171a21);px(7,-29,6,8,0x171a21);
-    px(-7,-34,13,4,0x282831);px(-3,-30,9,3,0x3d3c44);
-    if(back){px(-10,-26,20,17,0x20212b);px(-8,-30,12,4,0x37353d)}
-    else if(side){
-     px(direction==='left'?-9:1,-20,8,5,0x171b24);
-     px(direction==='left'?-9:1,-19,8,2,0x8bc2c9);
-     px(direction==='left'?-8:4,-17,3,3,0x2b2525);
-    }else{
-     // Dark glasses with cyan highlights
-     px(-10,-21,9,7,0x111923);px(1,-21,9,7,0x111923);px(-1,-20,2,2,0x111923);
-     px(-8,-19,5,3,0x9ccbd0);px(3,-19,5,3,0x9ccbd0);
-     px(-6,-18,2,2,0x26232a);px(5,-18,2,2,0x26232a);
-     px(-2,-11,5,2,0x8b5547);
-    }
-    // Wristwatch
-    if(!back)px(-14,3,5,3,0x141d25);
+    const rows={down:0,up:1,left:2,right:3};
+    const row=rows[direction]??0;
+    this.avatarSprite.setFrame(row*3+Math.max(0,Math.min(2,step)));
    };
    this.drawAvatar('down',0);
    const pos=this.spawn||(this.place==='district'?{x:265,y:410}:{x:480,y:340});
-   this.player=this.add.container(pos.x,pos.y,[cg]);
+   this.player=this.add.container(pos.x,pos.y,[avatarShadow,this.avatarSprite]);
    const freshVisit=false;
    if(this.place==='district')this.cameras.main.startFollow(this.player,true,0.12,0.12);
    this.keys=this.input.keyboard.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,E,SPACE');
