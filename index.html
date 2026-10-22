@@ -14,7 +14,7 @@ main{width:min(100%,1000px)}header{margin-bottom:18px}h1{font-size:clamp(1.4rem,
 <header><h1>Laksamana Baio</h1><p>Interactive portfolio · Walkable District 2077</p></header>
 <div id="game" role="application" aria-label="2D exploration game. Move with WASD or arrow keys."></div>
 <div class="touch" aria-label="Touch movement controls"><button data-dir="left" aria-label="Left">←</button><button data-dir="up" aria-label="Up">↑</button><button data-dir="down" aria-label="Down">↓</button><button data-dir="right" aria-label="Right">→</button></div>
-<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 03.2 — bidirectional lab portal</span></footer>
+<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 04 — district environment</span></footer>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
 <script>
@@ -41,11 +41,29 @@ if (!window.Phaser) {
    const g=this.add.graphics(),rect=(x,y,w,h,c)=>{g.fillStyle(c);g.fillRect(x,y,w,h)};
    rect(0,0,W,H,0x142733);
    if(this.place==='district'){
-    rect(0,0,W,H,0x253d47);
-    // Slightly angled facade detailing, but walkable ground stays orthogonal.
-    for(let y=0;y<H;y+=32){rect(0,y,W,2,0x2d4953)}
-    rect(0,225,W,190,0x53636a);
-    for(let x=0;x<W;x+=48){rect(x,316,28,4,0x8d9b9b)}
+    rect(0,0,W,H,0x192f3a);
+    // Elevated city skyline behind the walkable street.
+    for(let x=0;x<W;x+=64){
+     const height=30+(x*7%65);
+     rect(x,224-height,58,height,0x203b49);
+     for(let wy=230-height;wy<210;wy+=16)
+      for(let wx=x+9;wx<x+55;wx+=18)rect(wx,wy,6,7,(wx+wy)%3?0x5b969e:0xd0a66c);
+    }
+    // Pedestrian promenade, raised curb and road.
+    rect(0,211,W,27,0x344e5a);
+    rect(0,238,W,171,0x52636a);
+    rect(0,409,W,14,0x344e5a);
+    rect(0,423,W,117,0x263f4b);
+    for(let x=12;x<W;x+=50){rect(x,232,34,3,0x7c9a9d);rect(x,410,34,3,0x79959b)}
+    for(let x=18;x<W;x+=70)rect(x,366,35,4,0x85999b);
+    // Light strips, curb bollards and decorative floor panels.
+    for(let x=30;x<W;x+=116){
+     rect(x,263,8,18,0x294551);rect(x+2,263,4,7,0x86d0cb);
+     rect(x+24,434,58,2,0x355b69);
+     rect(x+24,440,58,2,0x355b69);
+    }
+    this.add.text(480,467,'BAIO DISTRICT  //  SECTOR 2077',{fontFamily:'monospace',fontSize:'17px',color:'#b8d4d1'}).setOrigin(.5);
+    this.add.text(480,492,'HOME  •  EXPERIENCE  •  PROJECTS  •  CONTACT',{fontFamily:'monospace',fontSize:'11px',color:'#85a9b1'}).setOrigin(.5);
     const buildings=[
      {id:'home',x:60,y:52,w:170,h:150},
      {id:'lab',x:282,y:36,w:178,h:166},
@@ -54,17 +72,26 @@ if (!window.Phaser) {
     ];
     this.zones=[];
     for(const b of buildings){
-     rect(b.x+7,b.y+12,b.w,b.h,0x152b35);
+     // Stepped roofline and cyan facade trim give each building a 2077 identity.
+     rect(b.x+7,b.y+13,b.w,b.h,0x102632);
      rect(b.x,b.y,b.w,b.h,destinations[b.id].color);
-     rect(b.x,b.y,b.w,18,0x253b47);
-     rect(b.x+14,b.y+33,b.w-28,38,0x284b60);
-     rect(b.x+14,b.y+79,b.w-28,5,0x87b9bc);
-     rect(b.x+b.w/2-21,b.y+b.h-40,42,40,0x142e3b);
-     rect(b.x+b.w/2-15,b.y+b.h-34,30,34,0x7bb2b9);
-     this.add.text(b.x+b.w/2,b.y+24,destinations[b.id].name,{fontFamily:'monospace',fontSize:'15px',color:'#f8e6c8'}).setOrigin(.5,0);
+     rect(b.x+8,b.y+8,b.w-16,b.h-16,0x294754);
+     rect(b.x-5,b.y+2,b.w+10,13,0x172e3c);
+     rect(b.x+4,b.y+18,b.w-8,4,0x6cb9bb);
+     rect(b.x+15,b.y+48,b.w-30,40,0x142f40);
+     for(let j=0;j<4;j++){
+      rect(b.x+21+j*(b.w-42)/4,b.y+54,(b.w-62)/4,26,0x3c7384);
+      rect(b.x+21+j*(b.w-42)/4,b.y+54,(b.w-62)/4,3,0x86c7c4);
+     }
+     rect(b.x+12,b.y+102,b.w-24,4,0x456d79);
+     rect(b.x+b.w/2-25,b.y+b.h-51,50,51,0x102936);
+     rect(b.x+b.w/2-18,b.y+b.h-44,36,44,0x568d9a);
+     rect(b.x+b.w/2-18,b.y+b.h-44,36,5,0x91d3ce);
+     rect(b.x+b.w/2-29,b.y+b.h-2,58,6,0xd2ac79);
+     this.add.text(b.x+b.w/2,b.y+26,destinations[b.id].name,{fontFamily:'monospace',fontSize:'14px',color:'#f8e6c8'}).setOrigin(.5,0);
      this.zones.push({x:b.x+b.w/2,y:257,r:65,label:'Enter '+destinations[b.id].name,to:b.id});
     }
-    this.add.text(480,459,'BAIO DISTRICT / 2077',{fontFamily:'monospace',fontSize:'18px',color:'#c9d6d2'}).setOrigin(.5);
+
    }else{
     rect(40,35,880,470,0x344d59);rect(56,98,848,388,0xb59a79);
     for(let y=98;y<486;y+=32){rect(56,y,848,2,0x947b61);for(let x=56+(y%64?32:0);x<904;x+=64)rect(x,y+2,2,30,0xa98b6d)}
