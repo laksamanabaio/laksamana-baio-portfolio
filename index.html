@@ -116,30 +116,69 @@ if (!window.Phaser) {
      let start=0;for(const [top,bottom] of horizontal){rect(xx,start,5,top-start,curb);start=bottom}
      rect(xx,start,5,this.worldH-start,curb);
     }
-    // Central round garden: the former empty block is now a landmark plaza.
+    // Baio Garden Plaza: a genuinely round pedestrian loop with a tiered fountain.
     const fx=820,fy=620;
-    g.fillStyle(0x6da77c);g.fillCircle(fx,fy,153);
-    g.lineStyle(9,0xe8dfc9);g.strokeCircle(fx,fy,145);
-    g.lineStyle(3,0x4d916f);g.strokeCircle(fx,fy,133);
-    // Radial paving and flower beds surrounding the fountain.
-    for(let i=0;i<12;i++){
-     const ang=i*Math.PI/6,xx=fx+112*Math.cos(ang),yy=fy+112*Math.sin(ang);
-     g.fillStyle(i%2?0xe9bd77:0xf4d9a0);g.fillCircle(xx,yy,10);
-     g.fillStyle(0x3c865e);g.fillCircle(xx-5,yy+7,5);
+    // The circular stone plaza joins the four garden promenades seamlessly.
+    g.fillStyle(0x648e70);g.fillCircle(fx+5,fy+8,184);
+    g.fillStyle(0xe7dcca);g.fillCircle(fx,fy,179);
+    g.lineStyle(8,0xf6ebd7);g.strokeCircle(fx,fy,175);
+    g.lineStyle(3,0xb7aa9c);g.strokeCircle(fx,fy,160);
+    // Concentric circular paving rings and radial tile joints.
+    for(const rr of [102,120,141,157]){
+     g.lineStyle(2,rr%2?0xc6b7a5:0xd2c5b2,0.8);g.strokeCircle(fx,fy,rr);
     }
-    g.fillStyle(0xded8c9);g.fillCircle(fx,fy,89);
-    g.fillStyle(0x7e9fa4);g.fillCircle(fx,fy,79);
-    g.fillStyle(0x65b9c6);g.fillCircle(fx,fy,70);
-    g.fillStyle(0x9bdce4);g.fillCircle(fx-12,fy-12,48);
-    g.fillStyle(0x56a6bc);g.fillCircle(fx,fy,39);
-    g.fillStyle(0xece4d2);g.fillCircle(fx,fy,19);
-    g.fillStyle(0x8bd4e0);g.fillCircle(fx,fy-11,13);
-    g.fillStyle(0xe6f9f4);g.fillCircle(fx-4,fy-17,6);
-    // Decorative tree clusters outside the walking corridors.
-    for(const [tx,ty] of [[670,570],[970,565],[680,680],[965,680],[75,320],[1790,320],[90,1030],[1800,1030]]){
-     g.fillStyle(0x5e8c5e);g.fillCircle(tx+5,ty+7,21);
-     g.fillStyle(0x3e996c);g.fillCircle(tx,ty,19);
-     g.fillStyle(0x80c58a);g.fillCircle(tx-7,ty-7,9);
+    for(let i=0;i<24;i++){
+     const ang=i*Math.PI/12;
+     const x1=fx+103*Math.cos(ang),y1=fy+103*Math.sin(ang);
+     const x2=fx+158*Math.cos(ang),y2=fy+158*Math.sin(ang);
+     g.lineStyle(2,0xc9baa7,0.7);g.lineBetween(x1,y1,x2,y2);
+    }
+    // Curved planted ring: small shrubs, flowers, and four garden gateways.
+    for(let i=0;i<32;i++){
+     const ang=i*Math.PI/16,xx=fx+168*Math.cos(ang),yy=fy+168*Math.sin(ang);
+     if(Math.abs(Math.sin(ang))<0.22||Math.abs(Math.cos(ang))<0.22)continue;
+     g.fillStyle(0x3d9065);g.fillCircle(xx,yy,10);
+     g.fillStyle(0x74ba7d);g.fillCircle(xx-3,yy-4,6);
+     if(i%3===0){g.fillStyle(0xf4a9bc);g.fillCircle(xx+4,yy-4,3)}
+     if(i%5===0){g.fillStyle(0xf2db87);g.fillCircle(xx-5,yy+3,3)}
+    }
+    // Stone fountain foundation, three levels of blue water and raised pedestal.
+    g.fillStyle(0x8e918d);g.fillCircle(fx+5,fy+7,94);
+    g.fillStyle(0xf5eee1);g.fillCircle(fx,fy,92);
+    g.fillStyle(0x8b9eab);g.fillCircle(fx,fy,85);
+    g.fillStyle(0x4d9fc4);g.fillCircle(fx,fy,79);
+    g.fillStyle(0x7bcce5);g.fillCircle(fx-4,fy-5,70);
+    g.lineStyle(4,0xcaf2f5);g.strokeCircle(fx,fy,72);
+    for(let i=0;i<16;i++){
+     const ang=i*Math.PI/8;
+     const xx=fx+59*Math.cos(ang),yy=fy+59*Math.sin(ang);
+     g.fillStyle(i%2?0xd4f7f5:0x4eaccd);g.fillCircle(xx,yy,4);
+    }
+    g.fillStyle(0xc5c9c5);g.fillCircle(fx+2,fy+4,45);
+    g.fillStyle(0xf3eadc);g.fillCircle(fx,fy,44);
+    g.fillStyle(0x3b98c4);g.fillCircle(fx,fy,37);
+    g.fillStyle(0x8bd9ef);g.fillCircle(fx-3,fy-3,31);
+    g.fillStyle(0xe8e4d8);g.fillRect(fx-11,fy-33,22,27);
+    g.fillStyle(0xa1ddeb);g.fillRect(fx-7,fy-48,14,26);
+    g.fillStyle(0xe4fbfa);g.fillRect(fx-3,fy-65,6,30);
+    g.fillStyle(0xbaf4fb);g.fillCircle(fx,fy-66,8);
+    // Benches placed around the loop, outside the fountain collision footprint.
+    for(const [bx,by] of [[fx-140,fy-86],[fx+91,fy-86],[fx-140,fy+79],[fx+91,fy+79]]){
+     rect(bx+3,by+6,47,13,0x777269);rect(bx,by,47,10,0xa87349);
+     rect(bx+4,by+3,39,3,0xe5ba82);rect(bx+5,by+18,5,8,0x4c5960);
+     rect(bx+38,by+18,5,8,0x4c5960);
+    }
+    // Garden lanterns and planter boxes frame the approaches.
+    for(const [lx,ly] of [[fx-193,fy-105],[fx+193,fy-105],[fx-193,fy+105],[fx+193,fy+105]]){
+     rect(lx-4,ly,8,27,0x52666a);rect(lx-8,ly-13,16,16,0x4c646c);
+     rect(lx-5,ly-10,10,10,0xffe5a3);rect(lx-9,ly-16,18,4,0x364d56);
+    }
+    // Decorative tree clusters on nearby grass parcels.
+    for(const [tx,ty] of [[665,552],[974,552],[665,688],[974,688],[75,320],[1790,320],[90,1030],[1800,1030]]){
+     g.fillStyle(0x568e63);g.fillCircle(tx+5,ty+7,23);
+     g.fillStyle(0x348b61);g.fillCircle(tx,ty,21);
+     g.fillStyle(0x83c88a);g.fillCircle(tx-7,ty-8,11);
+     g.fillStyle(0xa6dca1);g.fillCircle(tx+6,ty-10,5);
     }
     this.zones=[];
     for(const b of this.buildings){
@@ -330,7 +369,7 @@ if (!window.Phaser) {
     const nextY=Phaser.Math.Clamp(this.player.y+y/length*speed,minY,maxY);
     if(this.place==='district'){
      // Collision footprint: character feet cannot enter building walls/roofs.
-     const blocked=(px,py)=>Math.hypot(px-820,py-620)<85||[...this.buildings,...this.sceneryBuildings].some(b=>
+     const blocked=(px,py)=>Math.hypot(px-820,py-620)<93||[...this.buildings,...this.sceneryBuildings].some(b=>
       px>b.x-14&&px<b.x+b.w+14&&py>b.y-18&&py<b.y+b.h+9);
      if(!blocked(nextX,this.player.y))this.player.x=nextX;
      if(!blocked(this.player.x,nextY))this.player.y=nextY;
@@ -353,7 +392,7 @@ if (!window.Phaser) {
     for(const [top,bottom] of [[350,530],[710,890],[1060,1190]])m.fillRect(mx,my+top*sy,mw,(bottom-top)*sy);
     for(const [left,right] of [[440,640],[1000,1200]])m.fillRect(mx+left*sx,my,(right-left)*sx,mh);
     // Central fountain landmark on the real map coordinates.
-    m.fillStyle(0x5c9e77);m.fillCircle(mx+820*sx,my+620*sy,11);
+    m.fillStyle(0x5c9e77);m.fillCircle(mx+820*sx,my+620*sy,15);
     m.fillStyle(0x8dd6df);m.fillCircle(mx+820*sx,my+620*sy,6);
     // Four tiny pixel pictograms, each anchored at its building's true location.
     for(const b of this.buildings){
