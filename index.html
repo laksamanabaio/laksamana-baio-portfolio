@@ -14,7 +14,7 @@ main{width:min(100%,1000px)}header{margin-bottom:18px}h1{font-size:clamp(1.4rem,
 <header><h1>Laksamana Baio</h1><p>Interactive portfolio · Walkable District 2077</p></header>
 <div id="game" role="application" aria-label="2D exploration game. Move with WASD or arrow keys."></div>
 <div class="touch" aria-label="Touch movement controls"><button data-dir="left" aria-label="Left">←</button><button data-dir="up" aria-label="Up">↑</button><button data-dir="down" aria-label="Down">↓</button><button data-dir="right" aria-label="Right">→</button></div>
-<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 03.1 — district navigation fix</span></footer>
+<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 03.2 — bidirectional lab portal</span></footer>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
 <script>
@@ -76,6 +76,13 @@ if (!window.Phaser) {
     this.add.text(480,118,destinations[this.place].name+' / '+destinations[this.place].sub,{fontFamily:'monospace',fontSize:'20px',color:'#584d43'}).setOrigin(.5,0);
     this.add.text(480,434,'EXIT TO DISTRICT',{fontFamily:'monospace',fontSize:'14px',color:'#584d43'}).setOrigin(.5);
     this.zones=[{x:480,y:452,r:68,label:'Exit to District',to:'district'}];
+    if(this.place==='workshop'){
+     // Return portal: paired with the Laboratory workstation portal.
+     rect(220,195,120,56,0x345d6c);
+     rect(235,203,90,34,0x70a9b4);
+     this.add.text(280,205,'LAB PORTAL',{fontFamily:'monospace',fontSize:'12px',color:'#173542'}).setOrigin(.5);
+     this.zones.push({x:280,y:282,r:70,label:'Return to Laboratory',to:'lab'});
+    }
     if(this.place==='lab'){
      rect(220,195,120,56,0x345d6c);rect(620,195,120,56,0x345d6c);
      this.zones.push({x:280,y:282,r:70,label:'View project in Workshop',to:'workshop'});
