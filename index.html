@@ -22,6 +22,31 @@ footer{position:absolute;bottom:12px;right:18px;z-index:5;font-size:12px;color:#
 .touch button[data-dir="right"]{grid-column:3;grid-row:2}
 @media(pointer:fine){.touch{display:none}}
 @media(max-width:700px){header{top:8px;left:10px}footer{bottom:7px;right:8px;font-size:10px;max-width:45%;text-align:right}.touch{bottom:12px;left:10px}}
+
+/* Opening experience */
+#opening{position:absolute;inset:0;z-index:20;overflow:hidden;background:radial-gradient(ellipse at 50% 75%,#284c57 0%,#132d3c 55%,#091923 100%);color:#f4e7d0}
+#opening[hidden]{display:none}
+#opening .brand{position:absolute;left:clamp(20px,4vw,72px);top:clamp(24px,5vh,56px);font-size:clamp(19px,2.5vw,36px);font-weight:800;letter-spacing:.09em;max-width:52%}
+#opening .brand small{display:block;color:#83c5c5;font-size:12px;letter-spacing:.28em;margin-bottom:10px}
+#opening .profile{position:absolute;right:clamp(20px,4vw,72px);top:clamp(28px,5vh,60px);text-align:right;color:#cce1df;font-size:clamp(11px,1.2vw,16px);line-height:1.7}
+#opening .profile strong{display:block;color:#f3d4a3;font-size:clamp(16px,1.8vw,24px)}
+#opening .scene{position:absolute;left:10%;right:10%;top:29%;bottom:21%;border:3px solid #4c7983;box-shadow:0 0 0 8px #0b2533,0 15px 65px #050e18;background:linear-gradient(#213c4a 0 37%,#3e5260 37% 41%,#8e765f 41%);overflow:hidden;image-rendering:pixelated}
+#opening .scene:before{content:"";position:absolute;left:14%;top:10%;width:27%;height:40%;background:linear-gradient(90deg,#1b5266 49%,#416b78 50%);border:12px solid #172f3c;box-shadow:inset 0 0 0 4px #78aeb7}
+#opening .scene:after{content:"";position:absolute;right:12%;bottom:12%;width:27%;height:14%;background:#3c515c;border-top:12px solid #c4a482;box-shadow:0 12px 0 #263b46}
+#opening .desk{position:absolute;right:15%;top:35%;width:24%;height:13%;background:#344d5a;border:8px solid #c4a482}
+#opening .desk:before{content:"";position:absolute;left:18%;bottom:100%;width:50%;height:75%;background:#65b7c0;border:8px solid #182b38}
+#opening .avatar{position:absolute;left:43%;top:57%;width:36px;height:52px;background:linear-gradient(#1c303d 0 18%,#dcb48e 18% 42%,#273e50 42% 84%,#182b38 84%);box-shadow:inset 6px 0 #315b6b;animation:workloop 8s steps(1,end) infinite}
+@keyframes workloop{0%,20%{transform:translate(0,0)}25%,45%{transform:translate(105px,-10px)}50%,70%{transform:translate(105px,-10px) scaleX(-1)}75%,100%{transform:translate(0,0)}}
+#opening .cta{position:absolute;bottom:clamp(56px,8vh,90px);left:50%;transform:translateX(-50%);text-align:center;width:min(90%,460px)}
+#startGame{cursor:pointer;display:block;width:100%;padding:15px 30px;background:#84c7c5;border:3px solid #cce8d9;box-shadow:6px 6px 0 #173e4c;color:#102c37;font:800 clamp(17px,2vw,24px) monospace;letter-spacing:.2em}
+#startGame:hover,#startGame:focus-visible{background:#e8c99d;outline:3px solid #fff0d4}
+#opening .copyright{margin-top:19px;color:#b8ced0;font-size:12px}
+#loading{position:absolute;inset:0;z-index:21;display:none;place-content:center;text-align:center;background:#091923;color:#d4e8e6}
+#loading.active{display:grid}
+#loading h2{letter-spacing:.2em;font:700 clamp(19px,3vw,34px) monospace}
+#loading .track{width:min(70vw,420px);height:18px;border:2px solid #8ec8c6;background:#142f3d;margin:20px auto}
+#loading .fill{height:100%;width:0;background:#83c5c5;transition:width 1.4s linear}
+@media(max-width:650px){#opening .profile{top:100px;left:20px;right:auto;text-align:left}#opening .brand{max-width:95%}#opening .scene{top:29%;left:4%;right:4%;bottom:26%}#opening .cta{bottom:40px}}
 </style>
 </head>
 <body>
@@ -29,7 +54,14 @@ footer{position:absolute;bottom:12px;right:18px;z-index:5;font-size:12px;color:#
 <header><h1>Laksamana Baio</h1><p>Interactive portfolio · Walkable District 2077</p></header>
 <div id="game" role="application" aria-label="2D exploration game. Move with WASD or arrow keys."></div>
 <div class="touch" aria-label="Touch movement controls"><button data-dir="left" aria-label="Left">←</button><button data-dir="up" aria-label="Up">↑</button><button data-dir="down" aria-label="Down">↓</button><button data-dir="right" aria-label="Right">→</button></div>
-<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Fullscreen Landing · Prototype 07</span></footer>
+<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 08 — opening cinematic</span></footer>
+<section id="opening" aria-label="Portfolio opening screen">
+ <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
+ <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
+ <div class="scene" aria-hidden="true"><div class="desk"></div><div class="avatar"></div></div>
+ <div class="cta"><button id="startGame" type="button">▶ START</button><div class="copyright">© Laksamana Baio. All rights reserved.</div></div>
+</section>
+<section id="loading" role="status" aria-live="polite"><div><h2>INITIALIZING BAIO WORLD</h2><p>CONNECTING TO HOME // 2077</p><div class="track"><div class="fill" id="loadFill"></div></div><p id="loadText">Preparing your journey...</p></div></section>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
 <script>
@@ -209,8 +241,20 @@ if (!window.Phaser) {
    }
   }
  }
- new Phaser.Game({type:Phaser.AUTO,parent:'game',width:W,height:H,backgroundColor:'#142733',pixelArt:true,render:{pixelArt:true,antialias:false},scene:[World],scale:{mode:Phaser.Scale.ENVELOP,autoCenter:Phaser.Scale.CENTER_BOTH}});
+ const game=new Phaser.Game({type:Phaser.AUTO,parent:'game',width:W,height:H,backgroundColor:'#142733',pixelArt:true,render:{pixelArt:true,antialias:false},scene:[World],scale:{mode:Phaser.Scale.ENVELOP,autoCenter:Phaser.Scale.CENTER_BOTH}});
+ const opening=document.getElementById('opening');
+ const loading=document.getElementById('loading');
+ document.getElementById('startGame').addEventListener('click',()=>{
+  opening.hidden=true;
+  loading.classList.add('active');
+  requestAnimationFrame(()=>{document.getElementById('loadFill').style.width='100%'});
+  window.setTimeout(()=>{
+   loading.classList.remove('active');
+   document.getElementById('loadText').textContent='Welcome home.';
+   game.scene.getScene('World').scene.restart({place:'home',spawn:{x:480,y:340}});
+  },1650);
+ });
 }
-
+ 
 </script>
 </body></html>
