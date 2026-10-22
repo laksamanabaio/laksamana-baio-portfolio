@@ -176,12 +176,43 @@ if (!window.Phaser) {
      this.add.text(280,205,'WORKSTATION',{fontFamily:'monospace',fontSize:'12px',color:'#e2e8df'}).setOrigin(.5);
     }
    }
+   // Pixel character adapted from Baio's supplied reference: glasses, black shirt,
+   // blue jeans, dark hair and brown shoes. All directions use the same footprint.
    const cg=this.add.graphics();
-   cg.fillStyle(0x223744);cg.fillRect(-13,-11,26,28);
-   cg.fillStyle(0xe0b68e);cg.fillRect(-10,-27,20,17);
-   cg.fillStyle(0x1d303a);cg.fillRect(-11,-30,22,9);
-   cg.fillStyle(0x88bdc5);cg.fillRect(-9,-6,18,10);
-   cg.fillStyle(0x263640);cg.fillRect(-11,15,8,6);cg.fillRect(3,15,8,6);
+   this.avatarGraphic=cg;this.avatarDirection='down';this.avatarStep=0;this.avatarClock=0;
+   this.drawAvatar=(direction='down',step=0)=>{
+    cg.clear();
+    const px=(x,y,w,h,c)=>{cg.fillStyle(c);cg.fillRect(x,y,w,h)};
+    const side=direction==='left'||direction==='right',back=direction==='up';
+    const stride=step===1?3:step===2?-3:0;
+    // Legs and brown leather shoes
+    px(-10,5,9,17+stride,0x294b80);px(2,5,9,17-stride,0x294b80);
+    px(-10,18+stride,10,5,0x804627);px(2,18-stride,10,5,0x804627);
+    px(-10,20+stride,11,3,0x3b2b2a);px(2,20-stride,11,3,0x3b2b2a);
+    // Short-sleeve charcoal shirt and skin-toned arms
+    px(-12,-10,24,19,0x24252d);px(-13,-8,5,11,0x292a30);
+    px(8,-8,5,11,0x292a30);px(-13,2,5,6,0xd89969);px(8,2,5,6,0xd89969);
+    px(-2,-9,2,17,0x44434a);px(5,-5,5,4,0x373942);
+    // Face and recognizable hairstyle
+    px(-11,-27,22,20,0xdba071);px(-12,-32,24,10,0x161820);
+    px(-13,-28,6,8,0x171a21);px(7,-29,6,8,0x171a21);
+    px(-7,-34,13,4,0x282831);px(-3,-30,9,3,0x3d3c44);
+    if(back){px(-10,-26,20,17,0x20212b);px(-8,-30,12,4,0x37353d)}
+    else if(side){
+     px(direction==='left'?-9:1,-20,8,5,0x171b24);
+     px(direction==='left'?-9:1,-19,8,2,0x8bc2c9);
+     px(direction==='left'?-8:4,-17,3,3,0x2b2525);
+    }else{
+     // Dark glasses with cyan highlights
+     px(-10,-21,9,7,0x111923);px(1,-21,9,7,0x111923);px(-1,-20,2,2,0x111923);
+     px(-8,-19,5,3,0x9ccbd0);px(3,-19,5,3,0x9ccbd0);
+     px(-6,-18,2,2,0x26232a);px(5,-18,2,2,0x26232a);
+     px(-2,-11,5,2,0x8b5547);
+    }
+    // Wristwatch
+    if(!back)px(-14,3,5,3,0x141d25);
+   };
+   this.drawAvatar('down',0);
    const pos=this.spawn||(this.place==='district'?{x:265,y:410}:{x:480,y:340});
    this.player=this.add.container(pos.x,pos.y,[cg]);
    if(this.place==='district')this.cameras.main.startFollow(this.player,true,0.12,0.12);
@@ -226,6 +257,12 @@ if (!window.Phaser) {
      if(!blocked(this.player.x,nextY))this.player.y=nextY;
     }else{this.player.x=nextX;this.player.y=nextY;}
    }
+   if(x||y){
+    this.avatarDirection=Math.abs(x)>Math.abs(y)?(x<0?'left':'right'):(y<0?'up':'down');
+    this.avatarClock+=delta;
+    if(this.avatarClock>145){this.avatarClock=0;this.avatarStep=(this.avatarStep+1)%3}
+   }else{this.avatarStep=0;this.avatarClock=0}
+   this.drawAvatar(this.avatarDirection,this.avatarStep);
    this.near=this.zones.find(z=>Math.hypot(this.player.x-z.x,this.player.y-z.y)<z.r)||null;
    this.prompt.setText(this.near?'[E / TAP] '+this.near.label:'WASD / ARROWS TO MOVE');
    if(this.place==='district'){
