@@ -55,7 +55,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 <header><h1>Laksamana Baio</h1><p>Interactive portfolio · Walkable District 2077</p></header>
 <div id="game" role="application" aria-label="2D exploration game. Move with WASD or arrow keys."></div>
 <div class="touch" aria-label="Touch movement controls"><button data-dir="left" aria-label="Left">←</button><button data-dir="up" aria-label="Up">↑</button><button data-dir="down" aria-label="Down">↓</button><button data-dir="right" aria-label="Right">→</button></div>
-<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 11.6 — Baio Sprite Avatar</span></footer>
+<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 11.7 — Hair Sprite Fix</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -181,7 +181,7 @@ if (!window.Phaser) {
   preload(){
    // Frames: rows down / up / left / right; each row = idle, walk A, walk B.
    // The cropped transparent sprites use the approved Baio character design.
-   this.load.spritesheet('baio-player','./assets/baio-player-sprite.png?v=11.6',{
+   this.load.spritesheet('baio-player','./assets/baio-player-sprite.png?v=11.7',{
     frameWidth:40,frameHeight:56,margin:0,spacing:0
    });
   }
