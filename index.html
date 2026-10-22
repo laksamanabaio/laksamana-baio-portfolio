@@ -78,10 +78,10 @@ if (!window.Phaser) {
  }
  // Four portfolio locations are a light exploration quest, not a gate to content.
  const JOURNEY_STOPS=[
-  {id:'home',name:'HOME',detail:'About Me',hint:'Read the Home computer',direction:'Northwest'},
-  {id:'lab',name:'LABORATORY',detail:'Experience',hint:'Access the career terminal',direction:'Northeast'},
-  {id:'workshop',name:'WORKSHOP',detail:'Projects',hint:'Inspect the project board',direction:'Southeast'},
-  {id:'hub',name:'CONTACT HUB',detail:'Contact',hint:'Open the contact console',direction:'Southwest'}
+  {id:'home',name:'HOME',detail:'About Me',hint:'Read the Home computer',direction:'Northwest',action:'USE HOME COMPUTER'},
+  {id:'lab',name:'LABORATORY',detail:'Experience',hint:'Access the career terminal',direction:'Northeast',action:'OPEN CAREER ARCHIVE'},
+  {id:'workshop',name:'WORKSHOP',detail:'Projects',hint:'Inspect the project board',direction:'Southeast',action:'VIEW PROJECT BOARD'},
+  {id:'hub',name:'CONTACT HUB',detail:'Contact',hint:'Open the contact console',direction:'Southwest',action:'OPEN CONTACT CONSOLE'}
  ];
  const JOURNEY_STORAGE='baio-portfolio-discoveries-v2';
  const visitedStops=new Set();
@@ -565,7 +565,7 @@ if (!window.Phaser) {
    this.add.text(x+13,y+9,earned?'✦ BAIO DISTRICT EXPLORER':'EXPLORE BAIO DISTRICT',{
     fontFamily:'monospace',fontSize:'14px',fontStyle:'bold',color:earned?'#f0d28e':'#e3f0eb'
    }).setScrollFactor(0).setDepth(105);
-   this.add.text(x+13,y+35,earned?'ALL LOCATIONS DISCOVERED':'NEXT: '+next.name,{
+   this.add.text(x+13,y+35,earned?'ALL LOCATIONS DISCOVERED':'NEXT: '+next.action,{
     fontFamily:'monospace',fontSize:'12px',color:'#a8d9d4'
    }).setScrollFactor(0).setDepth(105);
    this.add.text(x+287,y+35,completed+'/4',{
