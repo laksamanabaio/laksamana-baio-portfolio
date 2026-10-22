@@ -1,5 +1,5 @@
 /*
- * BAIO DISTRICT 2077 — HOME 13.2 / NORTH WALL ALIGNMENT
+ * BAIO DISTRICT 2077 — HOME 13.3 / SUNRISE LIGHTING AND INTERACTION DETAILS
  * Uses the seven approved isolated transparent PNGs, cropped and optimized
  * for the 960x540 game stage. The furniture, walls, rug and window are native
  * pixel art; Phaser Graphics is only used for the architectural shell, floor,
@@ -25,29 +25,42 @@ function renderHomeWithAssets(scene){
    .setDisplaySize(w,h).setDepth(depth);
   return o;
  };
- // 1. Walnut flooring, shallow pixel bevels, and a slate-blue cutaway wall.
+ // 1. Warm, softly textured sunrise-loft wood planks, matching the approved art.
+ // The walls, window and floor are separate layers, keeping room architecture clear.
  r(0,0,960,540,0x07111d);
  r(24,20,913,488,0x101e30);
  r(33,29,896,471,0x26384d);
- r(42,39,877,453,0xb47f55);
- r(42,39,877,109,0x2b3344);
- for(let x=51;x<909;x+=76){
-  r(x,50,2,83,0x455061,.7);r(x+5,53,1,77,0x718097,.34);
+ r(42,39,877,453,0xb27b51);
+ r(42,39,877,109,0x253040);
+ for(let x=54;x<906;x+=88){
+  r(x,48,2,82,0x3c4759,.60);
+  r(x+6,51,1,76,0x77859a,.22);
  }
- r(43,143,876,6,0x18283d);
- for(let y=149;y<484;y+=19){
-  r(44,y,874,2,0x93613f,.8);r(44,y+3,874,1,0xd69c6a,.42);
-  for(let x=54+(Math.floor(y/19)%3)*44;x<908;x+=139){
-   r(x,y+2,2,16,0x865c43,.48);
-   r(x+12,y+8,32,1,0xdfab78,.12);
+ // The first seam aligns with the north wall's baseboard.
+ r(43,143,876,6,0x192a3d);
+ for(let row=0,y=149;y<484;row++,y+=22){
+  r(44,y,874,2,0x8b5939,.64);
+  r(44,y+3,874,1,0xe2aa78,.28);
+  for(let x=58+(row%3)*48;x<905;x+=151){
+   r(x,y+2,2,18,0x82563a,.40);
+   r(x+16,y+10,34,1,0xe6bd8e,.11);
   }
+  if(row%3===0)r(45,y+9,871,2,0xb77b50,.055);
  }
- // Morning sunlight is behind every object; keep it subtle enough for navigation.
- lighting.fillStyle(0xffdfa8,.13);
- lighting.fillTriangle(337,145,364,145,520,474);
- lighting.fillTriangle(364,145,395,145,592,475);
- lighting.fillStyle(0xffe9ba,.07);
- lighting.fillTriangle(416,145,436,145,722,473);
+ // 2. Morning light originates across the actual 342px-wide window
+ // at x=224..566. Parallel slanted beams fall away from its sill onto
+ // the floor; furniture drawn at depth >=1.6 naturally covers the beams.
+ lighting.fillStyle(0xffdfaa,.095);
+ lighting.fillTriangle(249,145,337,145,434,482);
+ lighting.fillTriangle(337,145,425,145,548,482);
+ lighting.fillTriangle(425,145,545,145,679,482);
+ lighting.fillStyle(0xfff3cb,.053);
+ lighting.fillTriangle(268,145,310,145,424,482);
+ lighting.fillTriangle(348,145,398,145,535,482);
+ lighting.fillTriangle(452,145,503,145,643,482);
+ // Narrow beams of indirect light are still bounded by the window width.
+ lighting.fillStyle(0xe8a56e,.038);
+ lighting.fillTriangle(310,145,325,145,460,482);
  r(28,39,16,458,0x172838);
  r(918,39,14,458,0x15283a);
  r(26,482,907,26,0x16283a);
@@ -105,11 +118,49 @@ function renderHomeWithAssets(scene){
   {x:643,y:314,w:219,h:69},  // sofa frame (rug is walkable)
   {x:690,y:390,w:144,h:50}   // lounge coffee table moved southeast
  ];
- const tag=(x,y,value,size,color,bg)=>scene.add.text(x,y,value,{
-  fontFamily:'monospace',fontSize:size+'px',color,
-  backgroundColor:bg,padding:{x:6,y:3}
- }).setOrigin(.5,0).setDepth(9);
- tag(480,451,'EXIT TO DISTRICT',11,'#dcefed','#213748');
- tag(703,240,'ABOUT ME COMPUTER',11,'#e6f1e8','#243b4b');
- tag(882,151,'BLUEPRINT',10,'#e5d5b4','#20364a');
+ // 5. Floor-integrated EXIT neon replaces the old floating exit label.
+ // These elements are purely cosmetic; the established door zone stays intact.
+ const floorSign=scene.add.graphics().setDepth(1.3);
+ floorSign.fillStyle(0x62d8ec,.09);floorSign.fillRoundedRect(429,442,102,35,5);
+ floorSign.fillStyle(0x142d3e,.89);floorSign.fillRoundedRect(440,445,80,26,4);
+ floorSign.lineStyle(2,0x71e0eb,.83);floorSign.strokeRoundedRect(440,445,80,26,4);
+ floorSign.fillStyle(0x8bf3f0,.73);floorSign.fillRect(451,465,58,2);
+ const exitText=scene.add.text(480,449,'EXIT',{
+  fontFamily:'monospace',fontSize:'14px',fontStyle:'bold',color:'#baf7f6',
+  stroke:'#153743',strokeThickness:2
+ }).setOrigin(.5,0).setDepth(1.4);
+ // Animated, non-text interaction beacons: cyan for About Me, amber for Blueprint.
+ // Position is anchored to each object; the existing E / SPACE / tap gameplay
+ // continues to work normally. No extra collision or clickable screen overlay.
+ const interactionBeacon=(x,y,tint)=>{
+  const marker=scene.add.graphics().setDepth(4.8);
+  const pulse={p:0};
+  const paint=()=>{
+   const wave=pulse.p,dy=-3*Math.sin(wave*Math.PI);
+   const yy=y+dy;
+   marker.clear();
+   marker.fillStyle(tint,.07+.09*wave);
+   marker.fillCircle(x,yy,14+2*wave);
+   marker.lineStyle(2,tint,.60+.30*wave);
+   marker.strokeCircle(x,yy,9+2*wave);
+   marker.fillStyle(0x152b3a,.95);
+   marker.fillCircle(x,yy,7);
+   marker.fillStyle(tint,.95);
+   marker.fillCircle(x,yy,4);
+   marker.fillStyle(0xf1ffff,.88);
+   marker.fillRect(x-1,yy-2,2,3);
+   marker.fillStyle(tint,.85);
+   marker.fillTriangle(x-4,yy-15,x+4,yy-15,x,yy-11);
+  };
+  paint();
+  if(scene.tweens){
+   scene.tweens.add({
+    targets:pulse,p:1,duration:1050,yoyo:true,repeat:-1,
+    ease:'Sine.easeInOut',onUpdate:paint
+   });
+  }
+  return marker;
+ };
+ interactionBeacon(703,224,0x76e4ee);
+ interactionBeacon(881,145,0xffc979);
 }
