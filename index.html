@@ -92,12 +92,48 @@ if (!window.Phaser) {
     this.buildings=[{id:'home',x:170,y:180,w:190,h:158},{id:'lab',x:1150,y:155,w:204,h:168},{id:'workshop',x:1230,y:850,w:210,h:168},{id:'hub',x:240,y:850,w:200,h:168}];
     rect(0,0,this.worldW,this.worldH,0x1b3540);
     for(let x=0;x<this.worldW;x+=80)for(let y=0;y<this.worldH;y+=80){rect(x+4,y+4,70,70,0x24434e);rect(x+12,y+12,4,4,0x31535e)}
-    rect(0,350,this.worldW,180,0x53636c);rect(0,710,this.worldW,180,0x53636c);
-    rect(440,0,200,this.worldH,0x53636c);rect(1000,0,200,this.worldH,0x53636c);
-    rect(0,1060,this.worldW,130,0x53636c);
-    for(const y of [340,530,700,890,1050,1190])rect(0,y,this.worldW,9,0x81a2a1);
-    for(let x=20;x<this.worldW;x+=84){rect(x,437,45,5,0xb5b6a1);rect(x,797,45,5,0xb5b6a1)}
-    for(let y=30;y<this.worldH;y+=54){rect(533,y,5,28,0xb5b6a1);rect(1093,y,5,28,0xb5b6a1)}
+    // Connected street network: continuous north/south and east/west corridors.
+    const road=0x53636c,edge=0x81a2a1,mark=0xb5b6a1;
+    const horizontal=[[350,530],[710,890],[1060,1190]];
+    const vertical=[[440,640],[1000,1200]];
+    for(const [top,bottom] of horizontal)rect(0,top,this.worldW,bottom-top,road);
+    for(const [left,right] of vertical)rect(left,0,right-left,this.worldH,road);
+    // Sidewalk edge lines break cleanly at each junction instead of crossing roads.
+    for(const [top,bottom] of horizontal){
+     for(const yy of [top-9,bottom]){
+      let start=0;
+      for(const [left,right] of vertical){rect(start,yy,left-start,9,edge);start=right}
+      rect(start,yy,this.worldW-start,9,edge);
+     }
+    }
+    for(const [left,right] of vertical){
+     for(const xx of [left-9,right]){
+      let start=0;
+      for(const [top,bottom] of horizontal){rect(xx,start,9,top-start,edge);start=bottom}
+      rect(xx,start,9,this.worldH-start,edge);
+     }
+    }
+    // Centerline dashes are omitted inside junctions for uninterrupted intersections.
+    for(const [top,bottom] of horizontal){
+     const cy=Math.floor((top+bottom)/2);
+     for(let x=20;x<this.worldW;x+=84){
+      if(vertical.some(([l,r])=>x+45>l&&x<r))continue;
+      rect(x,cy-2,45,5,mark);
+     }
+    }
+    for(const [left,right] of vertical){
+     const cx=Math.floor((left+right)/2);
+     for(let y=30;y<this.worldH;y+=54){
+      if(horizontal.some(([t,b])=>y+28>t&&y<b))continue;
+      rect(cx-2,y,5,28,mark);
+     }
+    }
+    // Junction corner accents visually link every street without blocking movement.
+    for(const [top,bottom] of horizontal)for(const [left,right] of vertical){
+     for(const xx of [left-15,right+6])for(const yy of [top-15,bottom+6]){
+      rect(xx,yy,9,9,0x9ac2bd);
+     }
+    }
     this.zones=[];
     for(const b of this.buildings){
      const themes={
