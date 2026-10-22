@@ -433,7 +433,7 @@ if (!window.Phaser) {
      fontFamily:'monospace',fontSize:'17px',color:'#eef6e9',lineSpacing:6,
      wordWrap:{width:552,useAdvancedWrap:true}
     }).setScrollFactor(0).setDepth(212).setVisible(false);
-    this.dialogNext=this.add.text(916,488,'E / SPACE / TAP  ▸',{fontFamily:'monospace',fontSize:'12px',color:'#a8d9d4'}).setOrigin(1,.5).setScrollFactor(0).setDepth(212).setVisible(false);
+    this.dialogNext=this.add.text(916,488,'E / SPACE  ▸',{fontFamily:'monospace',fontSize:'12px',color:'#a8d9d4'}).setOrigin(1,.5).setScrollFactor(0).setDepth(212).setVisible(false);
     this.npcHint=this.add.text(0,-44,'',{fontFamily:'monospace',fontSize:'13px',color:'#fff8db',backgroundColor:'#173947',padding:{x:6,y:3}}).setOrigin(.5).setDepth(120).setVisible(false);
    }
    this.input.keyboard.on('keydown-E',()=>this.interact());
@@ -445,7 +445,7 @@ if (!window.Phaser) {
    if(!npc)return;
    this.dialogName.setText(npc.name.toUpperCase());
    this.dialogText.setText(npc.pages[this.dialogPage]);
-   this.dialogNext.setText(this.dialogPage<npc.pages.length-1?'E / SPACE / TAP  NEXT ▸':'E / SPACE / TAP  CLOSE ✕');
+   this.dialogNext.setText(this.dialogPage<npc.pages.length-1?'E / SPACE  NEXT ▸':'E / SPACE  CLOSE ✕');
    const g=this.dialogAvatar;g.clear();
    const x=300,y=424;
    const draw=(dx,dy,w,h,c)=>{g.fillStyle(c);g.fillRect(x+dx,y+dy,w,h)};
@@ -561,7 +561,7 @@ if (!window.Phaser) {
    }
    this.near=door||(npcNearby?{npc:npcNearby,label:'Speak with '+npcNearby.name}:null);
    this.prompt.setVisible(!this.dialogNpc);
-   this.prompt.setText(this.near?'[E / TAP] '+this.near.label:'WASD / ARROWS TO MOVE');
+   this.prompt.setText(this.near?'[E / SPACE] '+this.near.label:'WASD / ARROWS TO MOVE');
    if(this.npcHint){
     this.npcHint.setVisible(!!npcNearby&&!this.dialogNpc&&!door);
     if(npcNearby&&!this.dialogNpc&&!door){
