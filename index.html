@@ -21,61 +21,90 @@ main{width:min(100%,1000px)}header{margin-bottom:18px}h1{font-size:clamp(1.4rem,
 if (!window.Phaser) {
  document.getElementById('game').textContent='Unable to load Phaser. Please check your internet connection.';
 } else {
- const W=960,H=540, pressed=new Set();
+
+ const W=960,H=540,pressed=new Set();
  for(const button of document.querySelectorAll('[data-dir]')){
   const dir=button.dataset.dir;
   button.addEventListener('pointerdown',e=>{e.preventDefault();pressed.add(dir);button.setPointerCapture(e.pointerId)});
-  for(const type of ['pointerup','pointercancel','lostpointercapture']) button.addEventListener(type,()=>pressed.delete(dir));
+  for(const type of ['pointerup','pointercancel','lostpointercapture'])button.addEventListener(type,()=>pressed.delete(dir));
  }
- class Room extends Phaser.Scene{
-  constructor(){super('Room')}
+ const destinations={
+  home:{name:'HOME',sub:'About Me',color:0x537b82},
+  lab:{name:'LABORATORY',sub:'Experience',color:0x467f87},
+  workshop:{name:'WORKSHOP',sub:'Projects',color:0x986d52},
+  hub:{name:'CONTACT HUB',sub:'Contact',color:0x6d6b96}
+ };
+ class World extends Phaser.Scene{
+  constructor(){super('World')}
+  init(data){this.place=data.place||'home';this.spawn=data.spawn||null}
   create(){
-   // Prototype 02: fixed architectural layer, no furniture or interactive objects.
-   const g=this.add.graphics();
-   const rect=(x,y,w,h,c)=>{g.fillStyle(c);g.fillRect(x,y,w,h)};
-   rect(0,0,W,H,0x172b34);
-   // Soft wooden floor: aligned 32px boards, deliberate pixel clusters.
-   rect(48,106,864,386,0xb99b77);
-   for(let y=106,row=0;y<492;y+=32,row++){
-     rect(48,y,864,2,0x967b61);
-     for(let x=48+(row%2)*32;x<912;x+=64){
-       rect(x,y+2,2,30,0xa78a6a);
-       rect(x+9,y+10,18,2,0xc5aa85);
-     }
+   const g=this.add.graphics(),rect=(x,y,w,h,c)=>{g.fillStyle(c);g.fillRect(x,y,w,h)};
+   rect(0,0,W,H,0x142733);
+   if(this.place==='district'){
+    rect(0,0,W,H,0x253d47);
+    // Slightly angled facade detailing, but walkable ground stays orthogonal.
+    for(let y=0;y<H;y+=32){rect(0,y,W,2,0x2d4953)}
+    rect(0,225,W,190,0x53636a);
+    for(let x=0;x<W;x+=48){rect(x,316,28,4,0x8d9b9b)}
+    const buildings=[
+     {id:'home',x:60,y:52,w:170,h:150},
+     {id:'lab',x:282,y:36,w:178,h:166},
+     {id:'workshop',x:510,y:36,w:180,h:166},
+     {id:'hub',x:742,y:52,w:170,h:150}
+    ];
+    this.zones=[];
+    for(const b of buildings){
+     rect(b.x+7,b.y+12,b.w,b.h,0x152b35);
+     rect(b.x,b.y,b.w,b.h,destinations[b.id].color);
+     rect(b.x,b.y,b.w,18,0x253b47);
+     rect(b.x+14,b.y+33,b.w-28,38,0x284b60);
+     rect(b.x+14,b.y+79,b.w-28,5,0x87b9bc);
+     rect(b.x+b.w/2-21,b.y+b.h-40,42,40,0x142e3b);
+     rect(b.x+b.w/2-15,b.y+b.h-34,30,34,0x7bb2b9);
+     this.add.text(b.x+b.w/2,b.y+24,destinations[b.id].name,{fontFamily:'monospace',fontSize:'15px',color:'#f8e6c8'}).setOrigin(.5,0);
+     this.zones.push({x:b.x+b.w/2,y:b.y+b.h+19,r:57,label:'Enter '+destinations[b.id].name,to:b.id});
+    }
+    this.add.text(480,459,'BAIO DISTRICT / 2077',{fontFamily:'monospace',fontSize:'18px',color:'#c9d6d2'}).setOrigin(.5);
+   }else{
+    rect(40,35,880,470,0x344d59);rect(56,98,848,388,0xb59a79);
+    for(let y=98;y<486;y+=32){rect(56,y,848,2,0x947b61);for(let x=56+(y%64?32:0);x<904;x+=64)rect(x,y+2,2,30,0xa98b6d)}
+    rect(56,40,848,58,destinations[this.place].color);
+    rect(340,48,280,38,0x284c5c);rect(349,55,262,24,0x7ca8b2);
+    rect(40,35,16,470,0x203743);rect(904,35,16,470,0x203743);
+    rect(56,486,848,19,0x354d59);
+    rect(439,469,82,36,0x223b47);rect(449,475,62,25,0x80a9b0);
+    this.add.text(480,118,destinations[this.place].name+' / '+destinations[this.place].sub,{fontFamily:'monospace',fontSize:'20px',color:'#584d43'}).setOrigin(.5,0);
+    this.add.text(480,434,'EXIT TO DISTRICT',{fontFamily:'monospace',fontSize:'14px',color:'#584d43'}).setOrigin(.5);
+    this.zones=[{x:480,y:452,r:68,label:'Exit to District',to:'district'}];
+    if(this.place==='lab'){
+     rect(220,195,120,56,0x345d6c);rect(620,195,120,56,0x345d6c);
+     this.zones.push({x:280,y:282,r:70,label:'View project in Workshop',to:'workshop'});
+     this.add.text(280,205,'WORKSTATION',{fontFamily:'monospace',fontSize:'12px',color:'#e2e8df'}).setOrigin(.5);
+    }
    }
-   // Back wall and architectural trim.
-   rect(48,32,864,76,0x637d81);
-   rect(48,32,864,8,0x344f5c);
-   rect(48,92,864,16,0x405c64);
-   rect(48,108,864,6,0x8b725c);
-   rect(32,32,16,476,0x324b55);
-   rect(912,32,16,476,0x324b55);
-   rect(32,492,896,16,0x324b55);
-   rect(48,492,864,7,0x92785e);
-   // Large permanent window, built from hard-edged pixel rectangles.
-   rect(354,44,252,48,0x2a4554);
-   rect(362,49,236,37,0x7ea9b2);
-   rect(362,68,236,18,0x567e8d);
-   rect(374,54,28,9,0xb7c9b9);
-   rect(422,57,20,6,0xb7c9b9);
-   rect(477,49,6,37,0x2a4554);
-   rect(362,69,236,4,0x2a4554);
-   rect(350,88,260,6,0x324b55);
-   // Subtle, fixed architectural wall accents.
-   for(const x of [86,834]){
-     rect(x,51,40,6,0x415e68);
-     rect(x+4,53,20,2,0x8bb5b4);
-   }
-   rect(48,114,864,5,0x765e4c);
-   this.add.text(72,126,'STUDIO / 01',{fontFamily:'monospace',fontSize:'16px',color:'#675d4e'});
-   const character=this.add.graphics();
-   character.fillStyle(0x34434c);character.fillRect(-13,11,26,7);
-   character.fillStyle(0x253c4b);character.fillRect(-13,-12,26,27);
-   character.fillStyle(0xe5b995);character.fillRect(-10,-26,20,17);
-   character.fillStyle(0x202c35);character.fillRect(-11,-30,22,9);
-   character.fillStyle(0x84bdc5);character.fillRect(-9,-8,18,11);
-   this.player=this.add.container(480,290,[character]);
-   this.keys=this.input.keyboard.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT');
+   const cg=this.add.graphics();
+   cg.fillStyle(0x223744);cg.fillRect(-13,-11,26,28);
+   cg.fillStyle(0xe0b68e);cg.fillRect(-10,-27,20,17);
+   cg.fillStyle(0x1d303a);cg.fillRect(-11,-30,22,9);
+   cg.fillStyle(0x88bdc5);cg.fillRect(-9,-6,18,10);
+   cg.fillStyle(0x263640);cg.fillRect(-11,15,8,6);cg.fillRect(3,15,8,6);
+   const pos=this.spawn||(this.place==='district'?{x:480,y:354}:{x:480,y:340});
+   this.player=this.add.container(pos.x,pos.y,[cg]);
+   this.keys=this.input.keyboard.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,E,SPACE');
+   this.prompt=this.add.text(480,516,'',{fontFamily:'monospace',fontSize:'17px',color:'#fff2d4',backgroundColor:'#1c3442',padding:{x:12,y:6}}).setOrigin(.5);
+   this.near=null;
+   this.input.keyboard.on('keydown-E',()=>this.interact());
+   this.input.keyboard.on('keydown-SPACE',()=>this.interact());
+   this.input.on('pointerdown',()=>{if(this.near)this.interact()});
+  }
+  interact(){
+   if(!this.near||this.changing)return;
+   this.changing=true;
+   const to=this.near.to;
+   this.cameras.main.fadeOut(240,0,0,0);
+   this.cameras.main.once('camerafadeoutcomplete',()=>{
+    this.scene.restart({place:to,spawn:to==='district'?{x:480,y:355}:null});
+   });
   }
   update(_,delta){
    const k=this.keys;let x=0,y=0;
@@ -83,13 +112,18 @@ if (!window.Phaser) {
    if(k.D.isDown||k.RIGHT.isDown||pressed.has('right'))x++;
    if(k.W.isDown||k.UP.isDown||pressed.has('up'))y--;
    if(k.S.isDown||k.DOWN.isDown||pressed.has('down'))y++;
-   if(!x&&!y)return;
-   const length=Math.hypot(x,y),speed=195*Math.min(delta,50)/1000;
-   this.player.x=Phaser.Math.Clamp(this.player.x+x/length*speed,74,886);
-   this.player.y=Phaser.Math.Clamp(this.player.y+y/length*speed,132,465);
+   if(x||y){
+    const length=Math.hypot(x,y),speed=195*Math.min(delta,50)/1000;
+    const minY=this.place==='district'?225:143,maxY=this.place==='district'?479:466;
+    this.player.x=Phaser.Math.Clamp(this.player.x+x/length*speed,70,890);
+    this.player.y=Phaser.Math.Clamp(this.player.y+y/length*speed,minY,maxY);
+   }
+   this.near=this.zones.find(z=>Math.hypot(this.player.x-z.x,this.player.y-z.y)<z.r)||null;
+   this.prompt.setText(this.near?'[E / TAP] '+this.near.label:'WASD / ARROWS TO MOVE');
   }
  }
- new Phaser.Game({type:Phaser.AUTO,parent:'game',width:W,height:H,backgroundColor:'#263b46',pixelArt:true,render:{pixelArt:true,antialias:false},scene:[Room],scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH}});
+ new Phaser.Game({type:Phaser.AUTO,parent:'game',width:W,height:H,backgroundColor:'#142733',pixelArt:true,render:{pixelArt:true,antialias:false},scene:[World],scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH}});
 }
+
 </script>
 </body></html>
