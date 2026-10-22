@@ -295,22 +295,48 @@ if (!window.Phaser) {
     }
     this.add.text(820,792,'BAIO GARDEN  //  CENTRAL PLAZA',{fontFamily:'monospace',fontSize:'18px',color:'#55785f'}).setOrigin(.5);
     // Friendly park visitors follow short, predictable walking loops.
+    // Diverse strolling visitors: plaza loops and short routes near all four landmarks.
+    // Routes stay in public garden space and away from building collision footprints.
     this.parkVisitors=[
-     {cx:820,cy:620,r:125,phase:0,speed:0.28,shirt:0xc87767},
-     {cx:820,cy:620,r:143,phase:2.2,speed:-0.22,shirt:0x6c8bc1},
-     {cx:820,cy:620,r:116,phase:4.1,speed:0.19,shirt:0xd3ad62}
+     {kind:'man',shirt:0xc87767,route:'circle',cx:820,cy:620,r:125,phase:0,speed:.28},
+     {kind:'woman',shirt:0x6c8bc1,route:'circle',cx:820,cy:620,r:143,phase:2.2,speed:-.22},
+     {kind:'grandpa',shirt:0xd3ad62,route:'circle',cx:820,cy:620,r:116,phase:4.1,speed:.16},
+     {kind:'woman',shirt:0xd47eaa,route:'line',ax:210,ay:418,bx:395,by:418,speed:.21,phase:.2},
+     {kind:'man',shirt:0x528db1,route:'line',ax:1350,ay:420,bx:1720,by:420,speed:.16,phase:1.8},
+     {kind:'grandma',shirt:0x957cb4,route:'line',ax:200,ay:785,bx:390,by:785,speed:.14,phase:2.2},
+     {kind:'grandpa',shirt:0x719a7c,route:'line',ax:1350,ay:785,bx:1710,by:785,speed:.12,phase:3.2},
+     {kind:'woman',shirt:0xe09d64,route:'line',ax:270,ay:1095,bx:415,by:1095,speed:.18,phase:.9},
+     {kind:'man',shirt:0x6b9f97,route:'line',ax:1310,ay:1100,bx:1700,by:1100,speed:.2,phase:2.1},
+     {kind:'grandma',shirt:0xb78ca4,route:'line',ax:535,ay:170,bx:535,by:310,speed:.15,phase:1.4},
+     {kind:'man',shirt:0x9a80bb,route:'line',ax:1100,ay:555,bx:1100,by:690,speed:.23,phase:2.8},
+     {kind:'woman',shirt:0x77a6a0,route:'line',ax:530,ay:930,bx:530,by:1020,speed:.17,phase:3.5},
+     {kind:'grandpa',shirt:0x9c9580,route:'line',ax:1120,ay:930,bx:1120,by:1020,speed:.12,phase:1.1},
+     {kind:'woman',shirt:0xd9a1aa,route:'line',ax:670,ay:800,bx:970,by:800,speed:.17,phase:2.4},
+     {kind:'man',shirt:0x7c9ac4,route:'line',ax:680,ay:437,bx:965,by:437,speed:.19,phase:1.7}
     ];
     for(const npc of this.parkVisitors){
      const body=this.add.graphics();
      const p=(x,y,w,h,c)=>{body.fillStyle(c);body.fillRect(x,y,w,h)};
+     const elderly=npc.kind==='grandpa'||npc.kind==='grandma';
+     const woman=npc.kind==='woman'||npc.kind==='grandma';
+     const hair=elderly?0xbfc3c5:(woman?0x513a37:0x302d35);
+     const skin=elderly?0xd8aa85:0xe2af86;
+     // Two walking legs and shoes, readable at the player's game scale.
      p(-7,7,6,10,0x40546e);p(2,7,6,10,0x40546e);
      p(-8,15,7,4,0x69543d);p(2,15,7,4,0x69543d);
-     p(-9,-10,18,20,npc.shirt);p(-12,-5,4,11,0xd9a57e);p(8,-5,4,11,0xd9a57e);
-     p(-8,-25,16,16,0xe2af86);p(-9,-28,18,7,0x34313a);
-     p(-5,-18,3,2,0x34313a);p(3,-18,3,2,0x34313a);
-     npc.sprite=this.add.container(npc.cx+Math.cos(npc.phase)*npc.r,npc.cy+Math.sin(npc.phase)*npc.r,[body]).setDepth(11);
+     if(woman){p(-10,-9,20,17,npc.shirt);p(-11,4,22,6,npc.shirt)}
+     else p(-9,-10,18,20,npc.shirt);
+     p(-12,-5,4,11,skin);p(8,-5,4,11,skin);
+     p(-8,-25,16,16,skin);p(-9,-28,18,7,hair);
+     if(woman){p(-10,-23,4,12,hair);p(7,-23,4,12,hair)}
+     if(elderly){p(-8,-28,16,3,0xe6e5dd);p(-5,-17,4,2,0x666e72);p(2,-17,4,2,0x666e72)}
+     else{p(-5,-18,3,2,0x34313a);p(3,-18,3,2,0x34313a)}
+     if(npc.kind==='grandpa'){p(-1,-12,4,2,0x8a7165)}
+     if(npc.kind==='grandma'){p(-9,-31,18,4,0xcfd0d0)}
+     npc.sprite=this.add.container(0,0,[body]).setDepth(11);
     }
     this.visitorClock=0;
+
     this.minimap=this.add.graphics().setScrollFactor(0).setDepth(100);
     this.add.text(24,373,'DISTRICT MAP',{fontFamily:'monospace',fontSize:'12px',color:'#c4e3df'}).setScrollFactor(0).setDepth(101);
     this.cameras.main.setBounds(0,0,this.worldW,this.worldH);
@@ -428,10 +454,19 @@ if (!window.Phaser) {
    if(this.place==='district'&&this.parkVisitors){
     this.visitorClock+=Math.min(delta,50)/1000;
     for(const npc of this.parkVisitors){
-     const angle=npc.phase+this.visitorClock*npc.speed;
-     npc.sprite.x=npc.cx+Math.cos(angle)*npc.r;
-     npc.sprite.y=npc.cy+Math.sin(angle)*npc.r;
-     npc.sprite.scaleX=Math.cos(angle+Math.sign(npc.speed)*Math.PI/2)<0?-1:1;
+     const t=this.visitorClock*npc.speed+npc.phase;
+     if(npc.route==='circle'){
+      const angle=t;
+      npc.sprite.x=npc.cx+Math.cos(angle)*npc.r;
+      npc.sprite.y=npc.cy+Math.sin(angle)*npc.r;
+      npc.sprite.scaleX=Math.cos(angle+Math.sign(npc.speed)*Math.PI/2)<0?-1:1;
+     }else{
+      const mix=(Math.sin(t)+1)/2;
+      npc.sprite.x=npc.ax+(npc.bx-npc.ax)*mix;
+      npc.sprite.y=npc.ay+(npc.by-npc.ay)*mix;
+      npc.sprite.scaleX=Math.cos(t)<0?-1:1;
+     }
+     npc.sprite.y+=Math.sin(t*8)*1.1;
     }
    }
    if(this.place==='district'&&this.fountainSpray){
