@@ -89,7 +89,7 @@ if (!window.Phaser) {
    rect(0,0,W,H,0x142733);
    if(this.place==='district'){
     this.worldW=1920;this.worldH=1260;
-    this.buildings=[{id:'home',x:170,y:180,w:190,h:158},{id:'lab',x:1150,y:155,w:204,h:168},{id:'workshop',x:1230,y:850,w:210,h:168},{id:'hub',x:240,y:850,w:200,h:168}];
+    this.buildings=[{id:'home',x:170,y:155,w:190,h:158},{id:'lab',x:1350,y:150,w:204,h:168},{id:'workshop',x:1370,y:905,w:210,h:130},{id:'hub',x:200,y:905,w:200,h:130}];
     rect(0,0,this.worldW,this.worldH,0x1b3540);
     for(let x=0;x<this.worldW;x+=80)for(let y=0;y<this.worldH;y+=80){rect(x+4,y+4,70,70,0x24434e);rect(x+12,y+12,4,4,0x31535e)}
     // Connected street network: continuous north/south and east/west corridors.
@@ -306,11 +306,37 @@ if (!window.Phaser) {
     const m=this.minimap,mx=18,my=388,mw=188,mh=124,sx=mw/this.worldW,sy=mh/this.worldH;
     m.clear();m.fillStyle(0x0b202c,0.93);m.fillRect(mx-5,my-23,mw+10,mh+28);
     m.lineStyle(2,0x6aa6a8);m.strokeRect(mx-5,my-23,mw+10,mh+28);
+    // Minimap uses exactly the same street coordinates as the playable district.
     m.fillStyle(0x4b6470);
-    m.fillRect(mx,my+350*sy,mw,180*sy);m.fillRect(mx,my+710*sy,mw,180*sy);
-    m.fillRect(mx+440*sx,my+350*sy,200*sx,540*sy);
-    m.fillRect(mx+1000*sx,my+350*sy,200*sx,540*sy);
-    for(const b of this.buildings){m.fillStyle(destinations[b.id].color);m.fillRect(mx+b.x*sx,my+b.y*sy,Math.max(7,b.w*sx),Math.max(7,b.h*sy))}
+    for(const [top,bottom] of [[350,530],[710,890],[1060,1190]])m.fillRect(mx,my+top*sy,mw,(bottom-top)*sy);
+    for(const [left,right] of [[440,640],[1000,1200]])m.fillRect(mx+left*sx,my,(right-left)*sx,mh);
+    // Four tiny pixel pictograms, each anchored at its building's true location.
+    for(const b of this.buildings){
+     const bx=mx+(b.x+b.w/2)*sx,by=my+(b.y+b.h/2)*sy;
+     const c=destinations[b.id].color;
+     m.fillStyle(0x102531);m.fillRoundedRect(bx-10,by-9,20,18,2);
+     m.lineStyle(1,c);m.strokeRoundedRect(bx-10,by-9,20,18,2);
+     m.fillStyle(c);
+     if(b.id==='home'){
+      // Roof + house body + door.
+      m.fillTriangle(bx-7,by-1,bx,by-7,bx+7,by-1);
+      m.fillRect(bx-5,by-1,10,7);m.fillStyle(0x102531);m.fillRect(bx-1,by+2,3,4);
+     }else if(b.id==='lab'){
+      // Laboratory flask.
+      m.fillRect(bx-2,by-6,4,5);
+      m.fillTriangle(bx-2,by-2,bx-7,by+6,bx+7,by+6);
+      m.fillRect(bx-6,by+4,12,2);
+     }else if(b.id==='workshop'){
+      // Crossed tool motif, readable at small scale.
+      m.fillRect(bx-2,by-6,4,12);m.fillRect(bx-5,by-7,10,3);
+      m.fillRect(bx+4,by-3,2,9);
+     }else{
+      // Contact envelope.
+      m.fillRect(bx-7,by-5,14,10);
+      m.lineStyle(1,0x102531);m.lineBetween(bx-6,by-4,bx,by+1);
+      m.lineBetween(bx,by+1,bx+6,by-4);
+     }
+    }
     m.fillStyle(0xffdf88);m.fillCircle(mx+this.player.x*sx,my+this.player.y*sy,4);
    }
   }
