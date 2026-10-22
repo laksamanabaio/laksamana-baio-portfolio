@@ -93,24 +93,31 @@ if (!window.Phaser) {
     rect(0,0,this.worldW,this.worldH,0x1b3540);
     for(let x=0;x<this.worldW;x+=80)for(let y=0;y<this.worldH;y+=80){rect(x+4,y+4,70,70,0x24434e);rect(x+12,y+12,4,4,0x31535e)}
     // Connected street network: continuous north/south and east/west corridors.
-    const road=0x53636c,edge=0x81a2a1,mark=0xb5b6a1;
+    const road=0x53636c,curb=0x687780,mark=0xb5b6a1;
     const horizontal=[[350,530],[710,890],[1060,1190]];
     const vertical=[[440,640],[1000,1200]];
     for(const [top,bottom] of horizontal)rect(0,top,this.worldW,bottom-top,road);
     for(const [left,right] of vertical)rect(left,0,right-left,this.worldH,road);
-    // Sidewalk edge lines break cleanly at each junction instead of crossing roads.
+    // Consistent neutral-gray curbs, INSIDE each road edge. No murky teal bars.
+    // Cut every curb at intersections so roads connect seamlessly.
     for(const [top,bottom] of horizontal){
-     for(const yy of [top-9,bottom]){
+     for(const yy of [top,bottom-5]){
       let start=0;
-      for(const [left,right] of vertical){rect(start,yy,left-start,9,edge);start=right}
-      rect(start,yy,this.worldW-start,9,edge);
+      for(const [left,right] of vertical){
+       if(left>start)rect(start,yy,left-start,5,curb);
+       start=right;
+      }
+      if(start<this.worldW)rect(start,yy,this.worldW-start,5,curb);
      }
     }
     for(const [left,right] of vertical){
-     for(const xx of [left-9,right]){
+     for(const xx of [left,right-5]){
       let start=0;
-      for(const [top,bottom] of horizontal){rect(xx,start,9,top-start,edge);start=bottom}
-      rect(xx,start,9,this.worldH-start,edge);
+      for(const [top,bottom] of horizontal){
+       if(top>start)rect(xx,start,5,top-start,curb);
+       start=bottom;
+      }
+      if(start<this.worldH)rect(xx,start,5,this.worldH-start,curb);
      }
     }
     // Centerline dashes are omitted inside junctions for uninterrupted intersections.
@@ -126,12 +133,6 @@ if (!window.Phaser) {
      for(let y=30;y<this.worldH;y+=54){
       if(horizontal.some(([t,b])=>y+28>t&&y<b))continue;
       rect(cx-2,y,5,28,mark);
-     }
-    }
-    // Junction corner accents visually link every street without blocking movement.
-    for(const [top,bottom] of horizontal)for(const [left,right] of vertical){
-     for(const xx of [left-15,right+6])for(const yy of [top-15,bottom+6]){
-      rect(xx,yy,9,9,0x9ac2bd);
      }
     }
     this.zones=[];
