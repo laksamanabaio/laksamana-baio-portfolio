@@ -1,188 +1,269 @@
 /*
- * Baio District 2077 — bespoke HOME studio interior.
- * Native Phaser Graphics only: pixel-perfect rectangles, no generated-image dependency.
- * Reference: cozy futuristic studio, panoramic skyline, triple-screen workstation,
- * bedroom NW, kitchenette SW, lounge SE, door at the south.
+ * BAIO DISTRICT 2077 — HOME APARTMENT / PROTOTYPE 11.3
+ * Proportional furniture for a ~24x55px avatar, with pixel-art pseudo-depth:
+ * highlighted top planes, shaded sides, cast/contact shadows, and restrained glows.
+ * Native Phaser Graphics; no 3D engine or downloaded sprite assets.
  */
 function renderHomeInterior(scene){
  const g=scene.add.graphics();
- const R=(x,y,w,h,c,a=1)=>{g.fillStyle(c,a);g.fillRect(x,y,w,h)};
- const L=(x1,y1,x2,y2,c,w=2)=>{g.lineStyle(w,c);g.lineBetween(x1,y1,x2,y2)};
- const G=(x,y,w,h,c)=>{R(x-3,y-3,w+6,h+6,c,.12);R(x-1,y-1,w+2,h+2,c,.24);R(x,y,w,h,c)};
- const leaf=(x,y,w,h,c)=>{g.fillStyle(c);g.fillEllipse(x,y,w,h)};
- const plant=(x,y,k=1)=>{
-  R(x-10*k,y+6*k,20*k,14*k,0x748391);R(x-8*k,y+8*k,16*k,10*k,0xaba5a0);
-  R(x-2*k,y-17*k,4*k,23*k,0x476e54);
-  for(const [dx,dy,c] of [[-11,-8,0x367956],[9,-14,0x57956b],
-    [0,-23,0x72a976],[-8,-21,0x408163],[12,-3,0x6fab7b]])
-   leaf(x+dx*k,y+dy*k,18*k,12*k,c);
+ const R=(x,y,w,h,c,a=1)=>{
+  g.fillStyle(c,a);g.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));
  };
- // Architectural cutaway — bevelled navy shell, timber flooring and amber lights.
- R(0,0,960,540,0x070e18);
- R(26,22,908,489,0x132334);R(36,33,888,468,0x26394c);
- R(46,44,869,448,0xb98254);R(47,44,866,106,0x44444b);
- for(let x=56;x<903;x+=85){R(x,55,2,76,0x76605b);R(x+4,55,1,78,0x283542)}
- R(48,137,866,8,0x172838);
- for(let y=145;y<486;y+=20){
-  R(48,y,867,2,0x936247);R(48,y+4,867,1,0xdba16a,.57);
-  for(let x=56+Math.floor(y/20)%3*44;x<899;x+=150){
-   R(x,y+2,2,17,0x855b45,.72);R(x+6,y+9,28,1,0xd5a06c,.3);
+ const L=(x1,y1,x2,y2,c,w=2,a=1)=>{
+  g.lineStyle(w,c,a);g.lineBetween(x1,y1,x2,y2);
+ };
+ const SH=(x,y,w,h,a=.19)=>{
+  R(x+5,y+h+2,w-5,7,0x101722,a);
+  R(x+2,y+h,w+2,4,0x0b111a,a*.75);
+ };
+ const GL=(x,y,w,h,c)=>{
+  R(x-2,y-2,w+4,h+4,c,.07);
+  R(x-1,y-1,w+2,h+2,c,.17);
+  R(x,y,w,h,c);
+ };
+ // A small pixel-art cuboid viewed from above: light top, shaded front, dark side.
+ const BOX=(x,y,w,h,d,top,front,side)=>{
+  SH(x,y,w,h+d,.16);
+  R(x+3,y+d+2,w,h,side,.85); // right / side face
+  R(x,y+d,w,h,front);
+  R(x,y,w,d,top);
+  R(x,y+2,3,Math.max(3,d-2),0xffffff,.11);
+  R(x+2,y+d+h-3,w-3,3,side);
+  R(x+w-4,y+d+3,4,Math.max(1,h-7),side,.70);
+ };
+ const PANEL=(x,y,w,h,top,front,dark)=>{
+  SH(x,y,w,h,.09);
+  R(x,y,w,h,front);R(x,y,w,3,top);
+  R(x,y+h-3,w,3,dark);R(x+w-3,y+3,3,Math.max(1,h-6),dark);
+ };
+ const plant=(x,y,k=1)=>{
+  const v=n=>Math.max(1,Math.round(n*k));
+  SH(x-v(10),y-v(1),v(21),v(17),.21);
+  R(x-v(10),y+v(5),v(20),v(15),0x667384);
+  R(x-v(8),y+v(5),v(16),v(5),0xa9a69a);
+  R(x-v(8),y+v(12),v(16),v(6),0x495766);
+  R(x-v(1),y-v(12),v(3),v(17),0x557c53);
+  const leaves=[[-9,-13,0x346c50],[6,-20,0x569b68],
+   [-2,-25,0x72ad79],[13,-7,0x3a825c],[-13,-5,0x73b384]];
+  for(const [dx,dy,c] of leaves){
+   g.fillStyle(c);g.fillEllipse(x+v(dx),y+v(dy),v(17),v(10));
+   R(x+v(dx-4),y+v(dy-3),v(6),v(2),0xc0dda7,.29);
   }
+ };
+ const book=(x,y,c)=>{R(x+2,y+2,13,9,0x152633,.29);R(x,y,13,8,c);R(x,y,3,8,0xe4d5ab);R(x+4,y+2,6,1,0xf3ead0,.68)};
+ const monitor=(x,y,w,h)=>{
+  SH(x,y,w,h,.12);
+  R(x-3,y-3,w+6,h+6,0x172635);
+  R(x,y,w,h,0x244b62);
+  R(x+3,y+4,w-6,4,0x528fad);
+  for(let i=0;i<3;i++)R(x+4,y+13+i*6,w-11-(i%2)*9,2,i%2?0x83d9dd:0x8db4ca);
+  R(x+5,y+h-9,w-15,2,0x38778e);
+  GL(x+2,y+2,w-4,1,0x71d3e5);
+  R(x+Math.floor(w/2)-2,y+h+4,4,6,0x293b49);
+  R(x+Math.floor(w/2)-10,y+h+10,20,3,0x526575);
+ };
+ // 1. Architecture: dark-cutaway apartment, warm walnut planks.
+ R(0,0,960,540,0x07111c);
+ R(25,23,911,487,0x101e2c);
+ R(35,32,891,470,0x223646);
+ R(43,40,876,455,0xb98051);
+ R(43,40,876,106,0x494447);
+ for(let x=53;x<908;x+=72){
+  R(x,51,2,82,0x755b54);R(x+4,52,1,79,0x262f3a);
  }
- // Sunbeams from the big north window fall over a clear central walkway.
- g.fillStyle(0xffdd9c,.14);g.fillTriangle(332,146,390,146,592,479);
- g.fillStyle(0xffe9b6,.10);g.fillTriangle(402,146,433,146,725,478);
- R(30,39,19,454,0x192a3a);R(910,39,19,454,0x19293a);
- R(30,479,901,28,0x142335);R(47,485,868,9,0x34495a);
- G(45,91,3,79,0x6ad4e8);G(914,183,3,126,0x71d7eb);
- for(let x=65;x<894;x+=126)G(x,489,44,2,x%3?0xf0ac69:0x69d1ed);
- G(67,131,193,3,0xffae61);G(567,131,320,3,0xffb365);
- // Grand 2077 skyline vista: layered city silhouettes, sunlit river, skybridge.
- R(266,44,296,140,0x1d3144);R(273,49,283,128,0x6ca3bc);
- for(let y=54;y<171;y+=7)
-  R(280,y,268,7,y<101?0x91d1e8:y<135?0xb1ced9:0xcdc6ae);
- R(292,77,49,5,0xe9f2e7,.65);R(377,64,53,4,0xe9f0e4,.62);
- for(const [x,y,w,h] of [
-  [281,125,15,40],[300,99,24,67],[330,110,17,56],
-  [354,86,28,80],[390,113,25,53],[423,97,18,69],
-  [448,75,24,91],[481,109,29,57],[518,88,23,78],[541,129,8,38]
- ]){
-  R(x,y,w,h,x%3===0?0x5d84a4:x%3===1?0x789aae:0x6485a2);
-  R(x+Math.floor(w/2),y-8,2,8,0x51738f);
-  for(let xx=x+3;xx<x+w-2;xx+=7)
-   for(let yy=y+6;yy<165;yy+=10)R(xx,yy,2,3,(xx+yy)%3?0xe5d3ae:0xabe9e6,.78);
+ R(44,137,875,9,0x172a3a);
+ for(let y=146;y<489;y+=19){
+  R(44,y,875,2,0x986447,.85);
+  R(44,y+3,875,1,0xd6a06b,.56);
+  for(let x=52+Math.floor(y/19)%3*46;x<905;x+=139)
+   R(x,y+2,2,16,0x8d573a,.7);
  }
- R(280,154,267,15,0x79b8c7);R(280,159,267,7,0x92c8d1);
- L(284,147,551,147,0x506d82,4);
- for(let x=295;x<545;x+=34)R(x,143,3,17,0x435b70);
- R(267,44,12,141,0x203749);R(551,44,12,141,0x203749);
- R(266,44,296,12,0x183143);R(267,174,296,12,0x465660);
- G(275,45,278,2,0x8fe4ea);
- // Bedroom NW: upholstered headboard, white pillows, navy duvet, gold cushion.
- R(62,121,176,176,0x253649);R(70,131,160,156,0x17283b);
- R(77,138,146,144,0x9cabba);R(84,146,132,42,0xe7e2d8);
- R(89,148,55,34,0xfbf0df);R(153,148,56,34,0xf7ebdf);
- R(87,190,122,84,0x334154);
- for(let i=0;i<6;i++)R(91,202+i*10,109-i*3,2,0x526072,.4);
- R(131,177,30,17,0xe4ab69);R(136,181,21,9,0xf2c27e);
- G(77,281,149,3,0x71d0e8);
- R(233,192,43,73,0x2c3544);R(238,197,32,9,0x88634c);
- R(247,210,15,22,0xffce8c);G(244,209,19,3,0xffb565);
- R(81,88,187,7,0x2b313e);G(82,87,186,2,0xffaa55);
+ // A soft, directional ray of warm daylight on the walking floor.
+ g.fillStyle(0xffe0ab,.12);g.fillTriangle(342,146,391,146,594,473);
+ g.fillStyle(0xffeed2,.09);g.fillTriangle(422,146,440,146,720,475);
+ R(27,39,17,457,0x16283a);R(919,39,13,457,0x162838);
+ R(27,484,906,24,0x172b3d);R(42,489,881,8,0x3c5360);
+ GL(42,88,3,76,0x68d2e4);GL(923,184,3,98,0x67d3e1);
+ for(let x=64;x<904;x+=123)GL(x,491,37,2,x%2?0xe6a063:0x79cfde);
+ GL(55,129,176,2,0xffac5f);GL(582,129,275,2,0xffb366);
+ // 2. Panoramic skyline. Architectural opening stays substantial but is not furniture.
+ R(263,45,299,137,0x192d40);R(270,51,286,125,0xa7d3e4);
+ for(let y=53;y<175;y+=7)
+  R(279,y,269,7,y<105?0x94cfe4:y<139?0xbdd4da:0xdccaa9);
+ R(293,73,49,4,0xf7f5e9,.6);
+ R(384,68,34,3,0xf6f4e2,.54);
+ const skyline=[
+  [279,124,17,47],[299,99,21,72],[324,112,18,59],
+  [347,82,26,89],[380,113,22,58],[409,96,15,75],
+  [431,79,22,92],[459,105,28,66],[494,89,20,82],[518,115,30,56]
+ ];
+ for(let i=0;i<skyline.length;i++){
+  const [x,y,w,h]=skyline[i];
+  R(x,y,w,h,[0x6f96af,0x6087a6,0x799db0][i%3]);
+  R(x+Math.floor(w/2),y-6,2,6,0x567b94);
+  for(let xx=x+4;xx<x+w-2;xx+=7)
+   for(let yy=y+7;yy<169;yy+=10)
+    R(xx,yy,2,3,(xx+yy)%3?0xf5dfb3:0xa3e2df,.83);
+ }
+ R(279,155,269,14,0x76adb9);R(279,161,269,5,0x8fc6cf);
+ L(282,145,553,145,0x516d80,4);
+ for(let x=292;x<543;x+=35)R(x,141,3,16,0x466679);
+ R(263,45,9,139,0x20394a);R(554,45,9,139,0x20394a);
+ R(263,44,299,10,0x192f40);R(263,175,299,10,0x455661);
+ GL(271,45,283,2,0x78d7e7);
+ // 3. Scaled bedroom NW: mattress roughly 2.5 avatar heights, no huge billboard bed.
+ SH(71,143,137,110,.22);
+ PANEL(72,133,131,15,0x77879a,0x33485a,0x1e3242);
+ BOX(79,145,125,88,9,0xb5c1c9,0x8999a9,0x607584);
+ BOX(87,150,46,18,4,0xffffff,0xf0e9de,0xd4d1ca);
+ BOX(143,150,46,18,4,0xfaf5ec,0xe9e1d8,0xc8c5bd);
+ BOX(85,177,112,62,5,0x4b586c,0x344154,0x253142);
+ R(91,189,100,2,0x82929c,.34);R(91,227,100,2,0x131f32,.31);
+ BOX(128,174,25,12,3,0xf5cd8b,0xe5ac60,0xb88242);
+ GL(77,247,122,2,0x69cadd);
+ // Side cabinet with a warm table lamp, tiny picture.
+ BOX(212,177,33,41,4,0x6c6267,0x313c4c,0x253243);
+ R(216,182,25,3,0xe1b681);R(219,193,18,19,0x906a4c);
+ GL(226,185,8,3,0xffce75);
+ R(86,92,145,5,0x2a3540);GL(87,91,143,2,0xffb56e);
  for(let i=0;i<3;i++){
-  const xx=102+i*49;R(xx,66,34,24,0x162939);
-  R(xx+4,70,26,15,i===1?0x4a8c9f:0x9c7661);
-  R(xx+10,78,13,3,0xdfbf91);
+  const x=101+i*42;PANEL(x,71,27,19,0x5f747e,0x293d4c,0x192b39);
+  R(x+4,76,18,9,[0x4c9aa1,0x9e806c,0x6897b0][i]);
  }
- plant(256,184,.75);
- // Bench under the panoramic window and distributed indoor plants.
- R(287,187,269,22,0x39414c);R(288,183,266,8,0x9a8069);
- for(let i=0;i<4;i++){R(296+i*64,199,57,16,0x4a596b);R(301+i*64,201,45,3,0x738293)}
- plant(302,182,.63);plant(535,183,.65);
- // Work area NE: L-shaped wood workstation and individual drawer units.
- R(562,212,320,25,0xc69b76);R(570,206,309,10,0xe6ba87);
- R(573,232,55,88,0x303b49);R(827,231,53,94,0x35404d);
- for(const xx of [579,835])for(let i=0;i<3;i++){
-  R(xx,242+i*24,41,20,0x46505c);R(xx+10,252+i*24,17,2,0xe5b278);
+ plant(249,197,.65);
+ // Panorama bench, kept narrow to leave the middle of Home walkable.
+ BOX(290,182,248,10,4,0xad896c,0x505766,0x344052);
+ for(let i=0;i<5;i++){
+  R(295+i*48,194,43,10,0x455362);
+  R(299+i*48,196,34,2,0x88909c);
  }
- // Three screens with cyan data lines, a hero chart and individual stands.
- for(const [x,y,w,h] of [[584,146,64,65],[655,133,87,78],[749,148,70,62]]){
-  R(x-5,y-5,w+10,h+10,0x142433);R(x,y,w,h,0x1b435c);
-  R(x+4,y+5,w-8,5,0x397899);
-  for(let i=0;i<5;i++)R(x+6,y+20+i*7,w-20-(i%3)*7,2,
-   i%2?0x6dd3db:0x84b1d1);
-  R(x+w/2-3,y+h+5,6,11,0x243a48);
-  R(x+w/2-12,y+h+16,24,3,0x617786);
-  G(x+2,y+2,w-4,2,0x5dc6dd);
+ plant(297,181,.5);plant(527,184,.57);
+ // 4. Compact designer workstation NE — more proportional to the player.
+ // Three small but readable monitors and wood desktop, side drawers, chair.
+ SH(583,214,167,72,.23);
+ BOX(585,214,156,22,7,0xe6bd92,0xbb8a64,0x896345);
+ BOX(587,243,28,43,5,0x60707a,0x3a4a59,0x293641);
+ BOX(715,243,28,43,5,0x657078,0x3a4858,0x263540);
+ for(const x of [590,720])for(let i=0;i<2;i++){
+  PANEL(x,254+i*17,23,13,0x576a7c,0x364858,0x273745);
+  R(x+7,260+i*17,9,2,0xe8b27b);
  }
- L(672,189,695,168,0x90e7df,3);L(695,168,711,190,0x90e7df,3);
- L(711,190,729,159,0x90e7df,3);
- for(const [x,y] of [[672,189],[695,168],[711,190],[729,159]])R(x-3,y-3,6,6,0xe1f5e6);
- R(646,228,133,14,0x303740);
- for(let i=0;i<12;i++)R(652+i*10,233,7,2,i%3?0xbdc5bc:0xe0ad6a);
- R(793,229,16,13,0xe9ddd0);R(799,228,5,7,0x567e89);
- // Dark chair and base beneath workstation.
- R(669,250,49,43,0x223342);R(675,254,36,35,0x405568);
- R(663,284,62,7,0x1f3241);R(691,291,9,13,0x2a4150);
- R(673,301,50,4,0x2c4454);
- // Shelf, blueprints, books, framed artifacts and desk corner plant.
+ monitor(597,164,34,33);
+ monitor(638,152,48,42);
+ monitor(693,163,36,34);
+ // Pixel chart on the central display.
+ L(646,185,657,173,0x8ce6d8,2);L(657,173,669,182,0x8ce6d8,2);
+ L(669,182,679,165,0x8ce6d8,2);
+ for(const [x,y] of [[646,185],[657,173],[669,182],[679,165]])R(x-1,y-1,3,3,0xf0e9d9);
+ PANEL(624,230,76,8,0x455a68,0x263746,0x182939);
+ for(let i=0;i<10;i++)R(632+i*6,234,4,1,i%3?0x97c9cb:0xe3b780);
+ R(708,231,11,7,0xe3ded0);R(713,231,4,2,0x7b9aa6);
+ // Chair shadow separates the chair from the desk.
+ SH(645,258,47,31,.27);
+ BOX(650,254,40,25,5,0x526779,0x344b60,0x213445);
+ BOX(645,281,49,8,4,0x2c4456,0x233848,0x192c3d);
+ R(665,293,6,14,0x2b4050);
+ R(648,308,46,3,0x2f4150);
+ // Books & decorative items at reduced scale.
+ R(749,92,59,5,0x334353);
+ for(let i=0;i<2;i++){
+  R(749,111+i*21,59,4,0x3f4852);
+  for(let j=0;j<7;j++)R(754+j*8,96+i*21,5,15,
+   [0x70a1a3,0xb99869,0x718faa,0x66a58b][j%4]);
+ }
+ plant(751,203,.38);
+ // 5. Compact interactive blueprint board to the right of workstation.
+ SH(801,102,54,57,.12);
+ BOX(804,102,48,53,4,0xf6e6c4,0xdbcaac,0xb29b78);
+ R(810,112,36,38,0xc3d9d0);
+ for(let i=0;i<3;i++){R(819+i*8,114,1,33,0xf2ecda);R(811,121+i*10,34,1,0xf1e9d5)}
+ R(821,124,13,9,0x75b1c0);R(825,126,7,5,0x32768e);
+ R(822,105,12,3,0xb48f6a);
+ // 6. Kitchen SW: separate furniture components instead of a single giant slab.
+ SH(61,328,252,82,.17);
+ BOX(62,330,56,70,6,0xb8bec2,0x818f9b,0x576877); // fridge
+ R(68,366,42,2,0x5c7283);R(108,343,3,12,0xd5d9d5);
+ GL(108,374,2,20,0x7bd6ed);
+ BOX(130,340,165,14,6,0xe9bb8e,0xc48f63,0x936b4f); // counter
+ BOX(130,361,165,43,4,0x627182,0x3d4c5b,0x293b49); // doors
  for(let i=0;i<3;i++){
-  R(749,91+i*19,72,5,0x303c49);
-  for(let j=0;j<8;j++)R(757+j*8,77+i*19,5,14,
-    [0x70a5a7,0xc59d6e,0x758cb0,0x6fa389][j%4]);
+  PANEL(133+i*53,365,50,34,0x526374,0x3d4e5e,0x2c3b4a);
+  R(150+i*53,369,15,2,0xe1b786);
  }
- R(826,90,73,88,0x8e6a53);R(832,96,60,76,0xe5d6b4);
- R(837,102,51,65,0xc5d6d0);
- for(let i=0;i<3;i++){R(848+i*15,104,2,60,0xf1e6cf);R(839,114+i*19,47,2,0xf1e6cf)}
- R(858,126,17,14,0x7caebd);R(861,128,11,9,0x397e91);
- G(890,80,4,5,0xffb464);plant(811,208,.33);
- // Compact kitchen SW: fridge, cupboards, sink, stove, drawers and neon lighting.
- R(56,311,334,115,0x253343);
- R(61,318,73,109,0x4e5b6a);R(66,324,60,100,0x91a0ab);
- R(66,363,60,4,0x5f7485);R(117,346,4,15,0xb6ccd2);G(115,385,3,22,0x64c8e4);
- R(136,311,232,26,0x394754);R(138,336,229,27,0xddb187);
- R(140,364,226,61,0x334251);
- R(136,335,232,7,0x8d654e);
- for(let i=0;i<4;i++){R(143+i*55,366,52,57,0x425564);R(164+i*55,371,15,2,0xe4b37e)}
- G(139,360,226,3,0xffb65e);
- R(159,342,49,16,0xa5b6bb);R(168,346,32,7,0x344e5e);
- R(180,330,5,13,0xd4c9b3);R(176,328,13,4,0xe0d7c2);
- R(232,340,65,17,0x222c39);
- for(const xx of [252,279]){leaf(xx,349,19,12,0x536a74);R(xx-5,345,9,2,0x1f2e3a)}
- R(315,340,34,17,0x3e5660);R(319,344,26,7,0x1d3340);
- for(let i=0;i<5;i++)R(145+i*27,314,18,6,0x80a8a0);
- R(376,307,15,134,0x24384a);G(382,343,3,54,0xffae67);
- plant(372,313,.62);
- // Dining table / stools at lower left, leaving entry path in the center.
- R(118,429,231,45,0x293747);R(126,430,219,17,0xd9a878);
- R(131,434,209,4,0xf4c38d);R(139,447,201,22,0x93674c);
- for(const xx of [156,278]){
-  R(xx,474,43,10,0x273f52);R(xx+8,468,28,7,0x456478);
-  R(xx+12,483,4,7,0x304858);R(xx+27,483,4,7,0x304858);
- }
- plant(162,426,.4);R(299,425,15,13,0xd1dcd9);R(302,424,11,3,0x7894a0);
- // Sectional lounge SE with textured indigo rug, cushions and coffee table.
- R(686,327,210,131,0x415061);R(697,335,189,115,0x697485);
- R(706,342,170,95,0x394656);
- R(697,315,178,54,0x91a0ad);R(703,322,164,35,0xbec4ca);
- R(705,353,165,26,0x9fabba);
- for(const xx of [714,766,816])R(xx,354,45,20,0xbbc4cb);
- R(715,348,20,18,0xe4a865);R(832,347,21,19,0xd99f64);
- R(867,347,25,74,0x8195a9);R(868,389,25,33,0x394e65);
- R(715,405,152,36,0x674f43);R(722,401,138,31,0xc69060);
- R(726,405,130,5,0xe0b17e);
- R(747,412,43,14,0xdde3d7);R(751,414,35,9,0x83b6c9);
- R(807,412,31,16,0x304554);
- for(let i=0;i<3;i++)R(814,415+i*4,19-i*3,2,0x71cddb);
- plant(740,405,.36);R(791,418,12,9,0xf2e8d6);
- // Plants, tall amber lamp and cyan television on the far-right wall.
- plant(895,323,.75);plant(873,448,.63);
- R(899,339,13,106,0x263b4c);R(890,349,11,71,0x455c70);
- G(902,356,3,54,0x65dce9);
- R(877,301,5,80,0x5a5050);G(872,298,15,4,0xffb769);
- // Neon framed entrance at bottom center.
- R(417,471,127,39,0x1a2e41);R(436,475,89,35,0x31475a);
- R(443,482,75,23,0x536878);R(449,488,62,11,0x3d5368);
- G(450,481,61,3,0x6ad8e8);G(419,484,5,20,0xffa965);G(540,484,4,20,0xffa965);
- // The computer is the only mandatory Home discovery; the other two are optional.
+ BOX(146,340,33,9,3,0xcdd7d6,0xabb9bd,0x7a9398); // sink
+ R(150,344,25,5,0x55737e);R(159,332,3,12,0xe3d5b8);
+ R(155,330,11,3,0xe3d5b8);
+ BOX(191,340,46,9,3,0x4f5d64,0x283541,0x17232e); // cooktop
+ for(const x of [203,222])R(x,345,8,3,0x889ba3);
+ R(272,338,17,16,0x394c57);R(274,338,13,4,0x4e7b8b);
+ for(let i=0;i<4;i++)R(137+i*23,324,16,6,0x597983);
+ GL(133,357,160,2,0xffb46f);
+ BOX(306,322,10,80,4,0x647586,0x455767,0x303d4d); // divider
+ GL(313,350,2,34,0xffaa64);
+ plant(322,326,.48);
+ // 7. Smaller dining table with two chairs, visibly detached from the kitchen.
+ SH(136,430,118,28,.21);
+ BOX(136,430,112,23,5,0xe3b385,0xbf8a5c,0x875d40);
+ BOX(150,461,24,13,4,0x648397,0x3b5264,0x25394c);
+ BOX(205,461,24,13,4,0x638297,0x3b5062,0x243849);
+ R(154,478,3,8,0x374c5d);R(218,478,3,8,0x384b59);
+ plant(159,427,.32);
+ R(224,425,8,10,0xe7e1d5);R(225,424,7,2,0x8198a6);
+ // 8. Scaled living area SE. Lighter sofa top, darker front and realistic floor shadow.
+ // Textured carpet is slightly larger than the couch, but not the whole quarter.
+ R(681,332,171,103,0x404b5a);
+ R(688,339,156,89,0x657083);
+ R(694,346,144,77,0x485466);
+ for(let x=697;x<836;x+=18)R(x,348,2,72,0x8290a1,.09);
+ SH(702,349,134,61,.20);
+ BOX(706,350,115,22,6,0xe0dadd,0x9cabb9,0x768694);
+ BOX(706,374,115,18,5,0xc7c9d0,0x8999a9,0x667789);
+ BOX(810,349,23,52,6,0xb8c4cb,0x879bab,0x63788a);
+ BOX(717,353,22,13,3,0xf2bc7e,0xe1a167,0xaf7848);
+ BOX(784,353,22,13,3,0xe7bd87,0xd69e60,0xa97c4b);
+ // Coffee table in front of couch: shaded legs and small portfolio notebook.
+ SH(724,404,87,21,.24);
+ BOX(726,404,84,17,4,0xd8a170,0xa96f45,0x794b35);
+ book(743,408,0x8ec5c8);R(789,408,9,7,0xe1dacc);
+ // Smaller TV and lamps.
+ PANEL(871,335,22,49,0x719baa,0x243f53,0x172f45);
+ R(876,343,12,34,0x51a5be);R(879,351,7,11,0x7ec2cf);
+ GL(892,346,2,30,0x59d8e9);
+ plant(849,314,.50);plant(854,426,.45);
+ R(862,298,4,42,0x6a5f52);GL(857,294,14,3,0xffb96b);
+ // 9. Compact south door with walkable space on either side.
+ R(418,471,122,36,0x1a2e40);R(435,476,90,32,0x2f4658);
+ R(442,482,77,23,0x4c6272);R(449,488,63,9,0x344f63);
+ GL(453,479,56,3,0x67d9e6);
+ GL(419,481,3,19,0xf9ad61);GL(538,481,3,19,0xf9ad61);
+ // 10. Interaction radii are based on the new furniture positions.
+ // Home computer completes its quest; book and blueprint are optional reading.
  scene.zones=[
-  {x:480,y:451,r:59,label:'Return to Baio District',to:'district'},
-  {x:689,y:287,r:103,label:'Read About Me',object:'home'},
-  {x:783,y:459,r:83,label:'Read Design Notes',object:'home-notebook'},
-  {x:840,y:269,r:74,label:'Inspect District Blueprint',object:'home-blueprint'}
+  {x:480,y:449,r:56,label:'Return to Baio District',to:'district'},
+  {x:664,y:286,r:76,label:'Read About Me',object:'home'},
+  {x:771,y:421,r:62,label:'Read Design Notes',object:'home-notebook'},
+  {x:827,y:179,r:59,label:'Inspect District Blueprint',object:'home-blueprint'}
  ];
- // Furniture silhouettes prevent walking through the major objects.
+ // Furniture footprints match visible solid areas (carpet, windows, shadows are walkable).
  scene.homeFurniture=[
-  {x:61,y:122,w:177,h:169},{x:55,y:309,w:335,h:115},
-  {x:119,y:431,w:230,h:44},{x:564,y:137,w:319,h:117},
-  {x:697,y:316,w:180,h:64},{x:714,y:405,w:153,h:37},
-  {x:891,y:335,w:26,h:114}
+  {x:79,y:145,w:125,h:102},  // bed
+  {x:62,y:330,w:56,h:76},   // refrigerator
+  {x:130,y:340,w:165,h:68},// kitchen cabinet block
+  {x:306,y:322,w:10,h:84}, // divider
+  {x:136,y:430,w:112,h:29},// dining table
+  {x:585,y:214,w:156,h:71},// workstation
+  {x:650,y:254,w:40,h:52}, // desk chair
+  {x:706,y:350,w:127,h:57},// sofa and chaise
+  {x:726,y:404,w:84,h:23}, // coffee table
+  {x:871,y:335,w:22,h:49}  // TV
  ];
- const label=(x,y,t,size,c,bg)=>scene.add.text(x,y,t,{
-  fontFamily:'monospace',fontSize:size+'px',color:c,
-  ...(bg?{backgroundColor:bg,padding:{x:6,y:3}}:{})
- }).setOrigin(.5,0);
- label(480,455,'EXIT TO DISTRICT',11,'#dce8de','#1e3648');
- label(690,313,'ABOUT ME COMPUTER',12,'#f2ddb0','#263c4a');
- label(841,184,'BLUEPRINT',10,'#efd7af');
+ const caption=(x,y,t,size,c,bg)=>{
+  scene.add.text(x,y,t,{
+   fontFamily:'monospace',fontSize:size+'px',color:c,
+   ...(bg?{backgroundColor:bg,padding:{x:5,y:3}}:{})
+  }).setOrigin(.5,0);
+ };
+ caption(480,450,'EXIT TO DISTRICT',11,'#e3efe4','#1e3545');
+ caption(665,314,'ABOUT ME COMPUTER',11,'#eddbba','#293c49');
+ caption(829,187,'BLUEPRINT',10,'#f4ddb8');
 }
