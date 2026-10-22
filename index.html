@@ -5,15 +5,16 @@
 <meta name="theme-color" content="#17252f">
 <title>Laksamana Baio | Interactive Portfolio Prototype</title>
 <style>
-*{box-sizing:border-box}
+*:not(svg){box-sizing:border-box}
+:root{--hud-margin:26px;--hud-margin-compact:16px}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#091923;color:#f5e9d7;font-family:system-ui,-apple-system,sans-serif}
 main{position:relative;width:100vw;height:100dvh;overflow:hidden;background:#091923}
 #game{position:absolute;inset:0;width:100%;height:100%;overflow:hidden;background:#142733}
 #game canvas{display:block;image-rendering:pixelated}
-header{position:absolute;top:10px;left:10px;z-index:5;pointer-events:none;text-shadow:0 2px 5px #091923}
+header{position:absolute;top:var(--hud-margin);left:var(--hud-margin);z-index:5;pointer-events:none;text-shadow:0 2px 5px #091923}
 h1{font-size:clamp(1rem,2vw,1.5rem);margin:0 0 3px;letter-spacing:.08em}
 p{margin:0;color:#c2d5d9;font-size:clamp(.65rem,1.1vw,.85rem)}
-footer{position:absolute;bottom:12px;right:18px;z-index:5;font-size:12px;color:#c7d5d8;text-shadow:0 2px 4px #091923;pointer-events:none}
+footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-corner overlap. */
 .touch{position:absolute;bottom:24px;left:20px;z-index:10;display:grid;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(2,48px);gap:5px}
 .touch button{width:48px;height:48px;background:#243d4bcc;color:#fff;border:1px solid #86b6c0;border-radius:8px;font-size:20px;touch-action:none}
 .touch button[data-dir="up"]{grid-column:2;grid-row:1}
@@ -21,14 +22,14 @@ footer{position:absolute;bottom:12px;right:18px;z-index:5;font-size:12px;color:#
 .touch button[data-dir="down"]{grid-column:2;grid-row:2}
 .touch button[data-dir="right"]{grid-column:3;grid-row:2}
 @media(pointer:fine){.touch{display:none}}
-@media(max-width:700px){header{top:10px;left:10px}footer{bottom:7px;right:8px;font-size:10px;max-width:45%;text-align:right}.touch{bottom:12px;left:10px}}
+@media(max-width:700px){:root{--hud-margin:var(--hud-margin-compact)}.touch{bottom:16px;left:16px}}
 
 /* Opening experience */
 #opening{position:absolute;inset:0;z-index:20;overflow:hidden;background:radial-gradient(ellipse at 50% 75%,#284c57 0%,#132d3c 55%,#091923 100%);color:#f4e7d0}
 #opening[hidden]{display:none}
-#opening .brand{position:absolute;left:10px;top:10px;font-size:clamp(19px,2.5vw,36px);font-weight:800;letter-spacing:.09em;max-width:52%}
+#opening .brand{position:absolute;left:var(--hud-margin);top:var(--hud-margin);font-size:clamp(19px,2.5vw,36px);font-weight:800;letter-spacing:.09em;max-width:52%}
 #opening .brand small{display:block;color:#83c5c5;font-size:12px;letter-spacing:.28em;margin-bottom:10px}
-#opening .profile{position:absolute;right:clamp(20px,4vw,72px);top:clamp(28px,5vh,60px);text-align:right;color:#cce1df;font-size:clamp(11px,1.2vw,16px);line-height:1.7}
+#opening .profile{position:absolute;right:var(--hud-margin);top:var(--hud-margin);text-align:right;color:#cce1df;font-size:clamp(11px,1.2vw,16px);line-height:1.7}
 #opening .profile strong{display:block;color:#f3d4a3;font-size:clamp(16px,1.8vw,24px)}
 #opening .scene{position:absolute;left:10%;right:10%;top:29%;bottom:21%;border:3px solid #4c7983;box-shadow:0 0 0 8px #0b2533,0 15px 65px #050e18;background:linear-gradient(#213c4a 0 37%,#3e5260 37% 41%,#8e765f 41%);overflow:hidden;image-rendering:pixelated}
 #opening .scene:before{content:"";position:absolute;left:14%;top:10%;width:27%;height:40%;background:linear-gradient(90deg,#1b5266 49%,#416b78 50%);border:12px solid #172f3c;box-shadow:inset 0 0 0 4px #78aeb7}
@@ -46,7 +47,7 @@ footer{position:absolute;bottom:12px;right:18px;z-index:5;font-size:12px;color:#
 #loading h2{letter-spacing:.2em;font:700 clamp(19px,3vw,34px) monospace}
 #loading .track{width:min(70vw,420px);height:18px;border:2px solid #8ec8c6;background:#142f3d;margin:20px auto}
 #loading .fill{height:100%;width:0;background:#83c5c5;transition:width 1.4s linear}
-@media(max-width:650px){#opening .profile{top:100px;left:20px;right:auto;text-align:left}#opening .brand{max-width:95%}#opening .scene{top:29%;left:4%;right:4%;bottom:26%}#opening .cta{bottom:40px}}
+@media(max-width:650px){#opening .profile{top:100px;left:var(--hud-margin);right:auto;text-align:left}#opening .brand{max-width:95%}#opening .scene{top:29%;left:4%;right:4%;bottom:26%}#opening .cta{bottom:40px}}
 </style>
 </head>
 <body>
@@ -69,7 +70,7 @@ if (!window.Phaser) {
  document.getElementById('game').textContent='Unable to load Phaser. Please check your internet connection.';
 } else {
 
- const W=960,H=540,pressed=new Set();
+ const W=960,H=540,HUD_EDGE=26,pressed=new Set();
  for(const button of document.querySelectorAll('[data-dir]')){
   const dir=button.dataset.dir;
   button.addEventListener('pointerdown',e=>{e.preventDefault();pressed.add(dir);button.setPointerCapture(e.pointerId)});
@@ -342,9 +343,9 @@ if (!window.Phaser) {
     }
     this.visitorClock=0;
 
-    // Outer minimap frame is 10 game pixels from left and bottom of the viewport.
+    // Golden spacing: 16 * 1.618 ~ 26 internal pixels, shared across HUD corners.
     // The frame extends 5 px beyond the map on each side and 23 px above for its heading.
-    this.minimapLayout={x:15,y:H-10-124-5,w:188,h:124};
+    this.minimapLayout={x:HUD_EDGE+5,y:H-HUD_EDGE-124-5,w:188,h:124};
     this.minimap=this.add.graphics().setScrollFactor(0).setDepth(100);
     this.add.text(this.minimapLayout.x+6,this.minimapLayout.y-18,'DISTRICT MAP',{fontFamily:'monospace',fontSize:'12px',color:'#c4e3df'}).setScrollFactor(0).setDepth(101);
     this.cameras.main.setBounds(0,0,this.worldW,this.worldH);
@@ -413,24 +414,24 @@ if (!window.Phaser) {
    this.player=this.add.container(pos.x,pos.y,[cg]);
    if(this.place==='district')this.cameras.main.startFollow(this.player,true,0.12,0.12);
    this.keys=this.input.keyboard.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,E,SPACE');
-   this.prompt=this.add.text(W-10,H-10,'',{fontFamily:'monospace',fontSize:'17px',color:'#fff2d4',backgroundColor:'#1c3442',padding:{x:12,y:6}}).setOrigin(1,1).setScrollFactor(0).setDepth(102);
+   this.prompt=this.add.text(W-HUD_EDGE,H-HUD_EDGE,'',{fontFamily:'monospace',fontSize:'17px',color:'#fff2d4',backgroundColor:'#1c3442',padding:{x:12,y:6}}).setOrigin(1,1).setScrollFactor(0).setDepth(102);
    this.near=null;
    this.dialogNpc=null;
    this.dialogPage=0;
    if(this.place==='district'){
     // Bottom-right dialogue card deliberately leaves the minimap unobstructed.
     const frame=this.add.graphics().setScrollFactor(0).setDepth(210);
-    frame.fillStyle(0x0a2330,.96);frame.fillRoundedRect(222,367,720,138,9);
-    frame.lineStyle(3,0x6dc9c8);frame.strokeRoundedRect(222,367,720,138,9);
-    frame.fillStyle(0x244b57);frame.fillRect(239,380,83,108);
-    frame.lineStyle(2,0xa6dcd9);frame.strokeRect(239,380,83,108);
+    frame.fillStyle(0x0a2330,.96);frame.fillRoundedRect(242,367,700,138,9);
+    frame.lineStyle(3,0x6dc9c8);frame.strokeRoundedRect(242,367,700,138,9);
+    frame.fillStyle(0x244b57);frame.fillRect(259,380,83,108);
+    frame.lineStyle(2,0xa6dcd9);frame.strokeRect(259,380,83,108);
     frame.setVisible(false);
     this.dialogFrame=frame;
     this.dialogAvatar=this.add.graphics().setScrollFactor(0).setDepth(211).setVisible(false);
-    this.dialogName=this.add.text(338,382,'',{fontFamily:'monospace',fontSize:'20px',color:'#f0cf8d',fontStyle:'bold'}).setScrollFactor(0).setDepth(212).setVisible(false);
-    this.dialogText=this.add.text(338,414,'',{
+    this.dialogName=this.add.text(358,382,'',{fontFamily:'monospace',fontSize:'20px',color:'#f0cf8d',fontStyle:'bold'}).setScrollFactor(0).setDepth(212).setVisible(false);
+    this.dialogText=this.add.text(358,414,'',{
      fontFamily:'monospace',fontSize:'17px',color:'#eef6e9',lineSpacing:6,
-     wordWrap:{width:579,useAdvancedWrap:true}
+     wordWrap:{width:552,useAdvancedWrap:true}
     }).setScrollFactor(0).setDepth(212).setVisible(false);
     this.dialogNext=this.add.text(916,488,'E / SPACE / TAP  ▸',{fontFamily:'monospace',fontSize:'12px',color:'#a8d9d4'}).setOrigin(1,.5).setScrollFactor(0).setDepth(212).setVisible(false);
     this.npcHint=this.add.text(0,-44,'',{fontFamily:'monospace',fontSize:'13px',color:'#fff8db',backgroundColor:'#173947',padding:{x:6,y:3}}).setOrigin(.5).setDepth(120).setVisible(false);
@@ -446,7 +447,7 @@ if (!window.Phaser) {
    this.dialogText.setText(npc.pages[this.dialogPage]);
    this.dialogNext.setText(this.dialogPage<npc.pages.length-1?'E / SPACE / TAP  NEXT ▸':'E / SPACE / TAP  CLOSE ✕');
    const g=this.dialogAvatar;g.clear();
-   const x=280,y=424;
+   const x=300,y=424;
    const draw=(dx,dy,w,h,c)=>{g.fillStyle(c);g.fillRect(x+dx,y+dy,w,h)};
    const elderly=npc.kind==='grandpa'||npc.kind==='grandma';
    const woman=npc.kind==='woman'||npc.kind==='grandma';
