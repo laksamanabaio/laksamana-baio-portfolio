@@ -5,8 +5,23 @@
 <meta name="theme-color" content="#17252f">
 <title>Laksamana Baio | Interactive Portfolio Prototype</title>
 <style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;background:#111c25;color:#f5e9d7;font-family:system-ui,-apple-system,sans-serif;display:grid;place-items:center;padding:24px}
-main{width:min(100%,1000px)}header{margin-bottom:18px}h1{font-size:clamp(1.4rem,3vw,2.1rem);margin:0 0 6px}p{margin:0;color:#bbcad0}#game{width:100%;aspect-ratio:16/9;border:3px solid #4b6975;border-radius:8px;overflow:hidden;background:#263b46}#game canvas{display:block;width:100%;height:100%;image-rendering:pixelated}footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;margin-top:14px;font-size:.9rem;color:#bbcad0}.touch{display:flex;gap:6px;justify-content:center;margin-top:14px}.touch button{width:56px;height:48px;background:#344d5a;color:#fff;border:1px solid #6c8b98;border-radius:8px;font-size:20px;touch-action:none}.touch button:active{background:#638b99}@media (pointer:fine){.touch{display:none}}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#091923;color:#f5e9d7;font-family:system-ui,-apple-system,sans-serif}
+main{position:relative;width:100vw;height:100dvh;overflow:hidden;background:#091923}
+#game{position:absolute;inset:0;width:100%;height:100%;overflow:hidden;background:#142733}
+#game canvas{display:block;image-rendering:pixelated}
+header{position:absolute;top:14px;left:18px;z-index:5;pointer-events:none;text-shadow:0 2px 5px #091923}
+h1{font-size:clamp(1rem,2vw,1.5rem);margin:0 0 3px;letter-spacing:.08em}
+p{margin:0;color:#c2d5d9;font-size:clamp(.65rem,1.1vw,.85rem)}
+footer{position:absolute;bottom:12px;right:18px;z-index:5;font-size:12px;color:#c7d5d8;text-shadow:0 2px 4px #091923;pointer-events:none}
+.touch{position:absolute;bottom:24px;left:20px;z-index:10;display:grid;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(2,48px);gap:5px}
+.touch button{width:48px;height:48px;background:#243d4bcc;color:#fff;border:1px solid #86b6c0;border-radius:8px;font-size:20px;touch-action:none}
+.touch button[data-dir="up"]{grid-column:2;grid-row:1}
+.touch button[data-dir="left"]{grid-column:1;grid-row:2}
+.touch button[data-dir="down"]{grid-column:2;grid-row:2}
+.touch button[data-dir="right"]{grid-column:3;grid-row:2}
+@media(pointer:fine){.touch{display:none}}
+@media(max-width:700px){header{top:8px;left:10px}footer{bottom:7px;right:8px;font-size:10px;max-width:45%;text-align:right}.touch{bottom:12px;left:10px}}
 </style>
 </head>
 <body>
@@ -14,7 +29,7 @@ main{width:min(100%,1000px)}header{margin-bottom:18px}h1{font-size:clamp(1.4rem,
 <header><h1>Laksamana Baio</h1><p>Interactive portfolio · Walkable District 2077</p></header>
 <div id="game" role="application" aria-label="2D exploration game. Move with WASD or arrow keys."></div>
 <div class="touch" aria-label="Touch movement controls"><button data-dir="left" aria-label="Left">←</button><button data-dir="up" aria-label="Up">↑</button><button data-dir="down" aria-label="Down">↓</button><button data-dir="right" aria-label="Right">→</button></div>
-<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 06 — 2077 building facade study</span></footer>
+<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Fullscreen Landing · Prototype 07</span></footer>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
 <script>
@@ -194,7 +209,7 @@ if (!window.Phaser) {
    }
   }
  }
- new Phaser.Game({type:Phaser.AUTO,parent:'game',width:W,height:H,backgroundColor:'#142733',pixelArt:true,render:{pixelArt:true,antialias:false},scene:[World],scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH}});
+ new Phaser.Game({type:Phaser.AUTO,parent:'game',width:W,height:H,backgroundColor:'#142733',pixelArt:true,render:{pixelArt:true,antialias:false},scene:[World],scale:{mode:Phaser.Scale.ENVELOP,autoCenter:Phaser.Scale.CENTER_BOTH}});
 }
 
 </script>
