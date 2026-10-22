@@ -30,18 +30,44 @@ if (!window.Phaser) {
  class Room extends Phaser.Scene{
   constructor(){super('Room')}
   create(){
+   // Prototype 02: fixed architectural layer, no furniture or interactive objects.
    const g=this.add.graphics();
-   g.fillStyle(0x263b46);g.fillRect(0,0,W,H);
-   g.fillStyle(0x748b86);g.fillRect(36,34,888,472);
-   g.fillStyle(0xc3ac89);g.fillRect(56,98,848,388);
-   g.lineStyle(1,0xb29a79,.34);
-   for(let x=56;x<=904;x+=32)g.lineBetween(x,98,x,486);
-   for(let y=98;y<=486;y+=32)g.lineBetween(56,y,904,y);
-   g.fillStyle(0x415f70);g.fillRect(56,56,848,42);
-   g.fillStyle(0x90bdc4);g.fillRect(370,56,220,27);
-   g.fillStyle(0x2e4857);g.fillRect(377,61,206,17);
-   g.lineStyle(6,0x354b55);g.strokeRect(56,98,848,388);
-   this.add.text(74,115,'HOME / STUDIO — PROTOTYPE',{fontFamily:'monospace',fontSize:'17px',color:'#544f48'});
+   const rect=(x,y,w,h,c)=>{g.fillStyle(c);g.fillRect(x,y,w,h)};
+   rect(0,0,W,H,0x172b34);
+   // Soft wooden floor: aligned 32px boards, deliberate pixel clusters.
+   rect(48,106,864,386,0xb99b77);
+   for(let y=106,row=0;y<492;y+=32,row++){
+     rect(48,y,864,2,0x967b61);
+     for(let x=48+(row%2)*32;x<912;x+=64){
+       rect(x,y+2,2,30,0xa78a6a);
+       rect(x+9,y+10,18,2,0xc5aa85);
+     }
+   }
+   // Back wall and architectural trim.
+   rect(48,32,864,76,0x637d81);
+   rect(48,32,864,8,0x344f5c);
+   rect(48,92,864,16,0x405c64);
+   rect(48,108,864,6,0x8b725c);
+   rect(32,32,16,476,0x324b55);
+   rect(912,32,16,476,0x324b55);
+   rect(32,492,896,16,0x324b55);
+   rect(48,492,864,7,0x92785e);
+   // Large permanent window, built from hard-edged pixel rectangles.
+   rect(354,44,252,48,0x2a4554);
+   rect(362,49,236,37,0x7ea9b2);
+   rect(362,68,236,18,0x567e8d);
+   rect(374,54,28,9,0xb7c9b9);
+   rect(422,57,20,6,0xb7c9b9);
+   rect(477,49,6,37,0x2a4554);
+   rect(362,69,236,4,0x2a4554);
+   rect(350,88,260,6,0x324b55);
+   // Subtle, fixed architectural wall accents.
+   for(const x of [86,834]){
+     rect(x,51,40,6,0x415e68);
+     rect(x+4,53,20,2,0x8bb5b4);
+   }
+   rect(48,114,864,5,0x765e4c);
+   this.add.text(72,126,'STUDIO / 01',{fontFamily:'monospace',fontSize:'16px',color:'#675d4e'});
    const character=this.add.graphics();
    character.fillStyle(0x34434c);character.fillRect(-13,11,26,7);
    character.fillStyle(0x253c4b);character.fillRect(-13,-12,26,27);
