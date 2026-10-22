@@ -1,5 +1,5 @@
 /*
- * BAIO DISTRICT 2077 / HOME INTERIOR 12.0
+ * BAIO DISTRICT 2077 / HOME INTERIOR 12.1
  * Real transparent pixel-art furniture extracted from approved design studies.
  * Hand-drawn architecture and divider walls remain solid, navigable and readable.
  */
@@ -50,20 +50,23 @@ function renderHomeWithAssets(scene){
   rect(x,490,42,3,x%2?0x63cadc:0xf6a85f,.88);
  }
  lamp(42,86);lamp(917,179);lamp(414,485,true);lamp(540,485,true);
- // 2. Scene-composed sprites — individual assets can be refined later.
- // Window is part of architecture; all other assets are tangible furniture.
- asset('skyline',255,44,326,174,1);
- asset('bed',62,138,178,139,2);
- asset('plant-large',234,184,43,71,3);
- asset('plant-small',583,211,30,72,2);
- asset('workstation',610,125,244,183,2);
- asset('kitchen',53,305,285,165,2);
- asset('dining',143,403,192,106,3);
- asset('sofa',680,324,212,160,2);
- asset('coffee',724,403,132,98,4);
- asset('plant-vine',886,314,25,79,2);
- asset('plant-small',851,283,23,56,2);
- asset('plant-large',565,272,38,61,1);
+ // 2. Real pixel-art furnishings, aligned to walls in the approved reference.
+ // Flush-fit panorama window into the north wall; its lower console stays beneath the glass.
+ rect(264,40,314,137,0x12283b);
+ rect(267,43,308,131,0x3e5d70);
+ asset('skyline',255,20,326,174,1);
+ // Bed in the northwest corner, headboard right against the upper wall.
+ asset('bed',22,79,178,139,2);
+ // Triple-display desk sits along north wall, just left of the Blueprint.
+ asset('workstation',603,60,245,183,2);
+ // Fridge and kitchen counter are pressed close to the kitchen's upper partition.
+ asset('kitchen',39,267,276,158,2);
+ // NEW: straight-on dining tabletop and two chairs, natural image proportions.
+ asset('dining-v2',154,391,153,93,3);
+ // No free floor plant pots; cropped sofa sprite also has no floor pot.
+ asset('sofa-v2',704,324,180,160,2);
+ // NEW: front-aligned cyberpunk coffee table, not the skewed old asset.
+ asset('coffee-v2',742,409,134,68,4);
  // 3. Real partition walls around kitchen and dining, with a 74px walk-in gap.
  // Their upper faces and shadowed fronts match the furnished apartment aesthetic.
  const w=scene.add.graphics().setDepth(7);
@@ -103,29 +106,29 @@ function renderHomeWithAssets(scene){
  bp.fillStyle(0x84dfeb);bp.fillRect(871,109,23,2);
  // Soft decorative lighting beneath the long window frame.
  const glow=scene.add.graphics().setDepth(1);
- glow.fillStyle(0x73d7ed,.13);glow.fillRect(297,205,241,8);
- glow.fillStyle(0xffb46b,.12);glow.fillRect(623,291,197,6);
+ glow.fillStyle(0x73d7ed,.13);glow.fillRect(297,175,241,6);
+ glow.fillStyle(0xffb46b,.12);glow.fillRect(623,223,197,6);
  // Primary quest stays the workstation, two optional stories stay discoverable.
  scene.zones=[
   {x:480,y:449,r:59,label:'Return to Baio District',to:'district'},
-  {x:739,y:285,r:88,label:'Read About Me',object:'home'},
-  {x:761,y:458,r:76,label:'Read Design Notes',object:'home-notebook'},
-  {x:879,y:214,r:75,label:'Inspect District Blueprint',object:'home-blueprint'}
+  {x:734,y:234,r:82,label:'Read About Me',object:'home'},
+  {x:760,y:457,r:75,label:'Read Design Notes',object:'home-notebook'},
+  {x:881,y:196,r:71,label:'Inspect District Blueprint',object:'home-blueprint'}
  ];
  // These are *solid silhouettes*, not image rectangles: leave walkways clear.
  // Top and east room dividers share collision bounds with the visible walls.
  scene.homeFurniture=[
-  {x:33,y:286,w:329,h:20},
-  {x:349,y:293,w:21,h:64},
-  {x:349,y:431,w:21,h:57},
-  {x:86,y:154,w:122,h:100},  // bed footprint
-  {x:70,y:327,w:255,h:76},  // kitchen cabinetry
-  {x:157,y:431,w:151,h:46}, // dining tabletop & chairs
-  {x:632,y:156,w:219,h:100},// workstation behind chair
-  {x:713,y:254,w:60,h:42}, // workstation chair
-  {x:708,y:350,w:167,h:71},// sofa
-  {x:732,y:419,w:127,h:54},// holographic coffee table
-  {x:895,y:287,w:22,h:126}// wall TV
+  {x:33,y:286,w:329,h:20}, // upper kitchen wall
+  {x:349,y:293,w:21,h:64}, // east wall, above kitchen doorway
+  {x:349,y:431,w:21,h:57}, // east wall, below kitchen doorway
+  {x:47,y:101,w:145,h:110},// bed in northwest
+  {x:52,y:316,w:251,h:64}, // kitchen counter and fridge
+  {x:154,y:424,w:153,h:54},// dining set, with passage behind it
+  {x:617,y:110,w:213,h:77},// north-wall computer workstation
+  {x:695,y:186,w:64,h:33}, // desk chair
+  {x:721,y:353,w:151,h:66},// sofa
+  {x:744,y:423,w:128,h:51},// straight coffee table
+  {x:895,y:287,w:22,h:126}// wall television
  ];
  const text=(x,y,value,size,color,background)=>{
   return scene.add.text(x,y,value,{
@@ -134,6 +137,6 @@ function renderHomeWithAssets(scene){
   }).setOrigin(.5,0).setDepth(9);
  };
  text(480,446,'EXIT TO DISTRICT',11,'#e3f5f0','#152f42');
- text(740,304,'ABOUT ME COMPUTER',11,'#e9f4e8','#243b4a');
+ text(734,237,'ABOUT ME COMPUTER',11,'#e9f4e8','#243b4a');
  text(880,174,'BLUEPRINT',10,'#ffe1a4','#23364b');
 }
