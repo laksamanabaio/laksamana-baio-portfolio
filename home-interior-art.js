@@ -1,5 +1,5 @@
 /*
- * BAIO DISTRICT 2077 — HOME 13.3 / SUNRISE LIGHTING AND INTERACTION DETAILS
+ * BAIO DISTRICT 2077 — HOME 13.4 / PARALLELOGRAM SUNLIGHT AND EXIT MAT
  * Uses the seven approved isolated transparent PNGs, cropped and optimized
  * for the 960x540 game stage. The furniture, walls, rug and window are native
  * pixel art; Phaser Graphics is only used for the architectural shell, floor,
@@ -47,20 +47,23 @@ function renderHomeWithAssets(scene){
   }
   if(row%3===0)r(45,y+9,871,2,0xb77b50,.055);
  }
- // 2. Morning light originates across the actual 342px-wide window
- // at x=224..566. Parallel slanted beams fall away from its sill onto
- // the floor; furniture drawn at depth >=1.6 naturally covers the beams.
- lighting.fillStyle(0xffdfaa,.095);
- lighting.fillTriangle(249,145,337,145,434,482);
- lighting.fillTriangle(337,145,425,145,548,482);
- lighting.fillTriangle(425,145,545,145,679,482);
- lighting.fillStyle(0xfff3cb,.053);
- lighting.fillTriangle(268,145,310,145,424,482);
- lighting.fillTriangle(348,145,398,145,535,482);
- lighting.fillTriangle(452,145,503,145,643,482);
- // Narrow beams of indirect light are still bounded by the window width.
- lighting.fillStyle(0xe8a56e,.038);
- lighting.fillTriangle(310,145,325,145,460,482);
+ // 2. The 342px morning window at x=224..566 casts a single broad
+ // parallelogram of sunlight across the floor, not triangular spotlights.
+ // A consistent x-offset at the sill and floor keeps both ends parallel.
+ const windowLight=(left,right,shift,tint,opacity)=>{
+  const sill=145, floor=482;
+  lighting.fillStyle(tint,opacity);
+  lighting.fillTriangle(left,sill,right,sill,right+shift,floor);
+  lighting.fillTriangle(left,sill,right+shift,floor,left+shift,floor);
+ };
+ // Full glazing footprint, with slight inset to respect the window frame.
+ windowLight(233,557,111,0xffdfaa,.095);
+ // Three subtle pane-shaped reflections share the same perspective.
+ windowLight(246,331,111,0xfff4cf,.047);
+ windowLight(347,435,111,0xffefc5,.047);
+ windowLight(451,545,111,0xfff4cf,.047);
+ // A quiet warm glint adds definition without obscuring floor details.
+ windowLight(309,324,111,0xe8aa75,.028);
  r(28,39,16,458,0x172838);
  r(918,39,14,458,0x15283a);
  r(26,482,907,26,0x16283a);
@@ -118,17 +121,22 @@ function renderHomeWithAssets(scene){
   {x:643,y:314,w:219,h:69},  // sofa frame (rug is walkable)
   {x:690,y:390,w:144,h:50}   // lounge coffee table moved southeast
  ];
- // 5. Floor-integrated EXIT neon replaces the old floating exit label.
- // These elements are purely cosmetic; the established door zone stays intact.
- const floorSign=scene.add.graphics().setDepth(1.3);
- floorSign.fillStyle(0x62d8ec,.09);floorSign.fillRoundedRect(429,442,102,35,5);
- floorSign.fillStyle(0x142d3e,.89);floorSign.fillRoundedRect(440,445,80,26,4);
- floorSign.lineStyle(2,0x71e0eb,.83);floorSign.strokeRoundedRect(440,445,80,26,4);
- floorSign.fillStyle(0x8bf3f0,.73);floorSign.fillRect(451,465,58,2);
- const exitText=scene.add.text(480,449,'EXIT',{
-  fontFamily:'monospace',fontSize:'14px',fontStyle:'bold',color:'#baf7f6',
-  stroke:'#153743',strokeThickness:2
- }).setOrigin(.5,0).setDepth(1.4);
+ // 5. Low-profile EXIT doormat, laid on the floor just inside the door.
+ // It is not neon signage, has no collision, and leaves the exit zone intact.
+ const floorSign=scene.add.graphics().setDepth(1.15);
+ floorSign.fillStyle(0x101b25,.25);floorSign.fillRoundedRect(433,450,96,26,3);
+ floorSign.fillStyle(0x34434b,.96);floorSign.fillRoundedRect(433,445,94,27,3);
+ floorSign.fillStyle(0x1a2934,.95);floorSign.fillRoundedRect(436,448,88,21,2);
+ floorSign.lineStyle(1,0x71818a,.55);floorSign.strokeRoundedRect(434,446,92,25,3);
+ // Tiny woven texture along both edges makes it read as a mat, not a UI panel.
+ for(let xx=440;xx<520;xx+=7){
+  floorSign.fillStyle(0x72818a,.32);floorSign.fillRect(xx,450,3,1);
+  floorSign.fillRect(xx,466,3,1);
+ }
+ scene.add.text(480,452,'EXIT',{
+  fontFamily:'monospace',fontSize:'12px',fontStyle:'bold',
+  color:'#d9e4e2',stroke:'#172630',strokeThickness:1
+ }).setOrigin(.5,0).setDepth(1.2);
  // Animated, non-text interaction beacons: cyan for About Me, amber for Blueprint.
  // Position is anchored to each object; the existing E / SPACE / tap gameplay
  // continues to work normally. No extra collision or clickable screen overlay.
@@ -161,6 +169,6 @@ function renderHomeWithAssets(scene){
   }
   return marker;
  };
- interactionBeacon(703,224,0x76e4ee);
+ interactionBeacon(696,185,0x76e4ee); // centered on the computer chair
  interactionBeacon(881,145,0xffc979);
 }
