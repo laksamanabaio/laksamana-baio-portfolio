@@ -314,6 +314,11 @@ if (!window.Phaser) {
      {kind:'woman',shirt:0xd9a1aa,route:'line',ax:670,ay:800,bx:970,by:800,speed:.17,phase:2.4},
      {kind:'man',shirt:0x7c9ac4,route:'line',ax:680,ay:437,bx:965,by:437,speed:.19,phase:1.7}
     ];
+    const npcStories=[["Raka","Pagi yang cerah, ya! Air mancur ini pusat Baio Garden.","Kalau mau mengenal Baio, mulailah dari HOME di sisi barat laut."],["Nadia","Aku suka jalan pagi mengelilingi plaza. Desain tamannya nyaman!","LABORATORY ada di timur laut. Di sana kamu bisa menelusuri pengalaman kerjanya."],["Pak Bima","Dulu taman ini lebih sepi. Sekarang ramai pengunjung.","Tip dari saya: ikuti jalur batu, dan lihat ikon lokasi pada minimap."],["Maya","Hai! Aku baru lewat depan HOME.","Di dalam HOME ada bagian perkenalan. Tekan E dekat pintu untuk masuk."],["Dimas","Selamat datang di dekat LABORATORY!","Kalau penasaran dengan pengalaman Baio di bidang UI/UX, tempat itu tujuanmu."],["Nenek Sari","Jalannya santai saja, Nak. Bunganya sedang cantik.","WORKSHOP berada di arah tenggara taman. Di sana ada area proyek."],["Kakek Arman","Saya suka menyusuri taman saat pagi.","CONTACT HUB ada di barat daya. Cocok untuk mencari cara menghubungi Baio."],["Lina","Tadi aku dari arah Contact Hub. Jalur selatan menyenangkan!","Lihat papan nama di depan bangunan untuk memastikan tujuanmu."],["Reno","Halo! Aku sedang mencari ide untuk proyek baru.","WORKSHOP berisi tempat untuk menjelajahi proyek-proyek Baio."],["Nenek Ratih","Jangan lupa menikmati pemandangan selama berjalan.","Kalau tersesat, lihat titik kuning di minimap: itu posisimu."],["Adit","Bagian favoritku adalah jalur taman di sisi timur.","Empat bangunan utama bisa dimasuki, sementara gedung lain menjadi latar kota."],["Tara","Udara pagi ini enak untuk berjalan kaki.","Kamu bisa menjelajah dengan WASD atau tombol panah."],["Pak Jaya","Santai saja, tidak perlu terburu-buru.","Dari LABORATORY kamu juga bisa menuju WORKSHOP lewat portal."],["Citra","Aku suka suara gemericik air di plaza.","Coba kunjungi setiap bangunan agar perjalanan portfoliomu lengkap."],["Fajar","Hai, penjelajah! Kota kecil ini penuh cerita.","Kalau melihat petunjuk interaksi, tekan E, Space, atau ketuk layar."]];
+    this.parkVisitors.forEach((npc,i)=>{
+     npc.name=npcStories[i][0];
+     npc.pages=npcStories[i].slice(1);
+    });
     for(const npc of this.parkVisitors){
      const body=this.add.graphics();
      const p=(x,y,w,h,c)=>{body.fillStyle(c);body.fillRect(x,y,w,h)};
@@ -407,12 +412,69 @@ if (!window.Phaser) {
    this.keys=this.input.keyboard.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,E,SPACE');
    this.prompt=this.add.text(480,516,'',{fontFamily:'monospace',fontSize:'17px',color:'#fff2d4',backgroundColor:'#1c3442',padding:{x:12,y:6}}).setOrigin(.5).setScrollFactor(0).setDepth(102);
    this.near=null;
+   this.dialogNpc=null;
+   this.dialogPage=0;
+   if(this.place==='district'){
+    // Bottom-right dialogue card deliberately leaves the minimap unobstructed.
+    const frame=this.add.graphics().setScrollFactor(0).setDepth(210);
+    frame.fillStyle(0x0a2330,.96);frame.fillRoundedRect(222,367,720,138,9);
+    frame.lineStyle(3,0x6dc9c8);frame.strokeRoundedRect(222,367,720,138,9);
+    frame.fillStyle(0x244b57);frame.fillRect(239,380,83,108);
+    frame.lineStyle(2,0xa6dcd9);frame.strokeRect(239,380,83,108);
+    frame.setVisible(false);
+    this.dialogFrame=frame;
+    this.dialogAvatar=this.add.graphics().setScrollFactor(0).setDepth(211).setVisible(false);
+    this.dialogName=this.add.text(338,382,'',{fontFamily:'monospace',fontSize:'20px',color:'#f0cf8d',fontStyle:'bold'}).setScrollFactor(0).setDepth(212).setVisible(false);
+    this.dialogText=this.add.text(338,414,'',{
+     fontFamily:'monospace',fontSize:'17px',color:'#eef6e9',lineSpacing:6,
+     wordWrap:{width:579,useAdvancedWrap:true}
+    }).setScrollFactor(0).setDepth(212).setVisible(false);
+    this.dialogNext=this.add.text(916,488,'E / SPACE / TAP  ▸',{fontFamily:'monospace',fontSize:'12px',color:'#a8d9d4'}).setOrigin(1,.5).setScrollFactor(0).setDepth(212).setVisible(false);
+    this.npcHint=this.add.text(0,-44,'',{fontFamily:'monospace',fontSize:'13px',color:'#fff8db',backgroundColor:'#173947',padding:{x:6,y:3}}).setOrigin(.5).setDepth(120).setVisible(false);
+   }
    this.input.keyboard.on('keydown-E',()=>this.interact());
    this.input.keyboard.on('keydown-SPACE',()=>this.interact());
-   this.input.on('pointerdown',()=>{if(this.near)this.interact()});
+   this.input.on('pointerdown',()=>{if(this.dialogNpc||this.near)this.interact()});
+  }
+  showDialogPage(){
+   const npc=this.dialogNpc;
+   if(!npc)return;
+   this.dialogName.setText(npc.name.toUpperCase());
+   this.dialogText.setText(npc.pages[this.dialogPage]);
+   this.dialogNext.setText(this.dialogPage<npc.pages.length-1?'E / SPACE / TAP  ▸':'E / SPACE / TAP  ✕');
+   const g=this.dialogAvatar;g.clear();
+   const x=280,y=424;
+   const draw=(dx,dy,w,h,c)=>{g.fillStyle(c);g.fillRect(x+dx,y+dy,w,h)};
+   const elderly=npc.kind==='grandpa'||npc.kind==='grandma';
+   const woman=npc.kind==='woman'||npc.kind==='grandma';
+   const hair=elderly?0xc1c5c6:(woman?0x513a37:0x302d35);
+   draw(-18,13,36,27,npc.shirt);draw(-16,-30,32,38,0xe3ad88);
+   draw(-20,-36,40,12,hair);
+   if(woman){draw(-20,-26,8,25,hair);draw(12,-26,8,25,hair)}
+   draw(-12,-12,8,5,0x33333a);draw(4,-12,8,5,0x33333a);
+   if(elderly){draw(-20,-40,40,6,0xe5e6df);draw(-14,-14,28,3,0x6f777b)}
+  }
+  closeDialog(){
+   this.dialogNpc=null;
+   this.dialogPage=0;
+   for(const obj of [this.dialogFrame,this.dialogAvatar,this.dialogName,this.dialogText,this.dialogNext])if(obj)obj.setVisible(false);
   }
   interact(){
-   if(!this.near||this.changing)return;
+   if(this.changing)return;
+   if(this.dialogNpc){
+    if(this.dialogPage+1<this.dialogNpc.pages.length){this.dialogPage++;this.showDialogPage()}
+    else this.closeDialog();
+    return;
+   }
+   if(!this.near)return;
+   if(this.near.npc){
+    this.dialogNpc=this.near.npc;
+    this.dialogPage=0;
+    for(const obj of [this.dialogFrame,this.dialogAvatar,this.dialogName,this.dialogText,this.dialogNext])obj.setVisible(true);
+    if(this.npcHint)this.npcHint.setVisible(false);
+    this.showDialogPage();
+    return;
+   }
    this.changing=true;
    const to=this.near.to;
    const exits={home:{x:265,y:410},lab:{x:1252,y:397},workshop:{x:1335,y:1090},hub:{x:340,y:1090}};
@@ -432,6 +494,7 @@ if (!window.Phaser) {
    if(k.D.isDown||k.RIGHT.isDown||pressed.has('right'))x++;
    if(k.W.isDown||k.UP.isDown||pressed.has('up'))y--;
    if(k.S.isDown||k.DOWN.isDown||pressed.has('down'))y++;
+   if(this.dialogNpc){x=0;y=0}
    if(x||y){
     const length=Math.hypot(x,y),speed=195*Math.min(delta,50)/1000;
     const minY=this.place==='district'?35:143,maxY=this.place==='district'?this.worldH-35:466;
@@ -452,7 +515,7 @@ if (!window.Phaser) {
    }else{this.avatarStep=0;this.avatarClock=0}
    this.drawAvatar(this.avatarDirection,this.avatarStep);
    if(this.place==='district'&&this.parkVisitors){
-    this.visitorClock+=Math.min(delta,50)/1000;
+    if(!this.dialogNpc)this.visitorClock+=Math.min(delta,50)/1000;
     for(const npc of this.parkVisitors){
      const t=this.visitorClock*npc.speed+npc.phase;
      if(npc.route==='circle'){
@@ -484,8 +547,24 @@ if (!window.Phaser) {
     const pulse=2+Math.round((Math.sin(t*3)+1)*2);
     fg.lineStyle(2,0xe0fbf7,0.55);fg.strokeCircle(820,620,55+pulse);
    }
-   this.near=this.zones.find(z=>Math.hypot(this.player.x-z.x,this.player.y-z.y)<z.r)||null;
+   const door=this.zones.find(z=>Math.hypot(this.player.x-z.x,this.player.y-z.y)<z.r)||null;
+   let npcNearby=null,nearest=60;
+   if(this.place==='district'&&this.parkVisitors){
+    for(const npc of this.parkVisitors){
+     const distance=Math.hypot(this.player.x-npc.sprite.x,this.player.y-npc.sprite.y);
+     if(distance<nearest){nearest=distance;npcNearby=npc}
+    }
+   }
+   this.near=door||(npcNearby?{npc:npcNearby,label:'Talk to '+npcNearby.name}:null);
+   this.prompt.setVisible(!this.dialogNpc);
    this.prompt.setText(this.near?'[E / TAP] '+this.near.label:'WASD / ARROWS TO MOVE');
+   if(this.npcHint){
+    this.npcHint.setVisible(!!npcNearby&&!this.dialogNpc&&!door);
+    if(npcNearby&&!this.dialogNpc&&!door){
+     this.npcHint.setText('✦ '+npcNearby.name+'  •  E');
+     this.npcHint.setPosition(npcNearby.sprite.x,npcNearby.sprite.y-28);
+    }
+   }
    if(this.place==='district'){
     const m=this.minimap,mx=18,my=388,mw=188,mh=124,sx=mw/this.worldW,sy=mh/this.worldH;
     m.clear();m.fillStyle(0x0b202c,0.93);m.fillRect(mx-5,my-23,mw+10,mh+28);
