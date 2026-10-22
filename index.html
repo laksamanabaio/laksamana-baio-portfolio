@@ -55,7 +55,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 <header><h1>Laksamana Baio</h1><p>Interactive portfolio · Walkable District 2077</p></header>
 <div id="game" role="application" aria-label="2D exploration game. Move with WASD or arrow keys."></div>
 <div class="touch" aria-label="Touch movement controls"><button data-dir="left" aria-label="Left">←</button><button data-dir="up" aria-label="Up">↑</button><button data-dir="down" aria-label="Down">↓</button><button data-dir="right" aria-label="Right">→</button></div>
-<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 11.4 — Home Layout Refinements</span></footer>
+<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 11.5 — Compact Modern HUD</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -629,34 +629,38 @@ if (!window.Phaser) {
    const completed=visitedStops.size;
    const earned=completed===JOURNEY_STOPS.length;
    const next=JOURNEY_STOPS.find(stop=>!visitedStops.has(stop.id));
-   // Compact quest chip aligned to the same 26px HUD margin as the minimap.
-   const x=W-HUD_EDGE-300,y=HUD_EDGE;
+   // Compact modern glass HUD over pixel-art world: no oversized panel and no extra game pause.
+   // 236×54 keeps the north-wall blueprint visible beneath y=100.
+   const chipW=236,chipH=54,x=W-HUD_EDGE-chipW,y=HUD_EDGE;
    const g=this.add.graphics().setScrollFactor(0).setDepth(104);
-   g.fillStyle(0x102c3a,.93);g.fillRoundedRect(x,y,300,83,9);
-   g.lineStyle(2,earned?0xe6c682:0x81c8c5);g.strokeRoundedRect(x,y,300,83,9);
-   this.add.text(x+13,y+9,earned?'✦ BAIO DISTRICT EXPLORER':'EXPLORE BAIO DISTRICT',{
-    fontFamily:'monospace',fontSize:'14px',fontStyle:'bold',color:earned?'#f0d28e':'#e3f0eb'
+   g.fillStyle(0x071824,.22);g.fillRoundedRect(x+3,y+4,chipW,chipH,12);
+   g.fillStyle(0x122d39,.88);g.fillRoundedRect(x,y,chipW,chipH,10);
+   g.lineStyle(1,earned?0xdfc57a:0x679a9e,.68);
+   g.strokeRoundedRect(x+.5,y+.5,chipW-1,chipH-1,10);
+   this.add.text(x+13,y+10,earned?'✦ DISTRICT EXPLORER':'DISTRICT EXPLORER',{
+    fontFamily:'monospace',fontSize:'12px',fontStyle:'bold',color:earned?'#f5da9b':'#d5e8e6'
    }).setScrollFactor(0).setDepth(105);
-   this.add.text(x+13,y+35,earned?'ALL LOCATIONS DISCOVERED':'NEXT: '+next.action,{
-    fontFamily:'monospace',fontSize:'12px',color:'#a8d9d4'
-   }).setScrollFactor(0).setDepth(105);
-   this.add.text(x+287,y+35,completed+'/4',{
-    fontFamily:'monospace',fontSize:'12px',fontStyle:'bold',color:'#f5dfac'
+   this.add.text(x+chipW-13,y+10,completed+'/4',{
+    fontFamily:'monospace',fontSize:'12px',fontStyle:'bold',color:'#f5dca0'
    }).setOrigin(1,0).setScrollFactor(0).setDepth(105);
-   for(let i=0;i<4;i++){
-    const active=visitedStops.has(JOURNEY_STOPS[i].id),bx=x+13+i*70;
-    g.fillStyle(active?0x84c9b6:0x2b4954);g.fillRoundedRect(bx,y+58,61,9,3);
-    if(active){g.lineStyle(1,0xc9e8db);g.strokeRoundedRect(bx,y+58,61,9,3)}
+   // Four understated steps replace the former 300-pixel-wide progress dashboard.
+   for(let i=0;i<JOURNEY_STOPS.length;i++){
+    const done=visitedStops.has(JOURNEY_STOPS[i].id);
+    const bx=x+13+i*35;
+    g.fillStyle(done?(earned?0xe6c985:0x88cabc):0x355663);
+    g.fillRoundedRect(bx,y+37,29,6,3);
    }
-   this.add.text(x+286,y+69,'Q / CLICK',{fontFamily:'monospace',fontSize:'10px',color:'#adced0'}).setOrigin(1,0).setScrollFactor(0).setDepth(105);
-   this.journeyBounds={x,y,w:300,h:83};
+   this.add.text(x+chipW-13,y+33,'Q · OPEN',{
+    fontFamily:'monospace',fontSize:'10px',color:'#a6c8cb'
+   }).setOrigin(1,0).setScrollFactor(0).setDepth(105);
+   this.journeyBounds={x,y,w:chipW,h:chipH};
    // Optional quest journal is never an obstacle to exploring: press Q or click.
    const objects=[];
    const add=(o)=>{objects.push(o);return o};
    const frame=add(this.add.graphics().setScrollFactor(0).setDepth(301));
-   frame.fillStyle(0x071722,.75);frame.fillRect(0,0,W,H);
-   frame.fillStyle(0x102b39,.98);frame.fillRoundedRect(218,86,524,374,12);
-   frame.lineStyle(3,0x85ccc6);frame.strokeRoundedRect(218,86,524,374,12);
+   frame.fillStyle(0x071722,.65);frame.fillRect(0,0,W,H);
+   frame.fillStyle(0x102b39,.96);frame.fillRoundedRect(218,86,524,374,14);
+   frame.lineStyle(1.5,0x85ccc6,.78);frame.strokeRoundedRect(218,86,524,374,14);
    frame.fillStyle(0x214753);frame.fillRoundedRect(240,151,480,7,3);
    frame.fillStyle(earned?0xe8c985:0x8accc4);frame.fillRoundedRect(240,151,480*(completed/4),7,3);
    add(this.add.text(244,106,'DISTRICT EXPLORATION JOURNAL',{
@@ -668,7 +672,7 @@ if (!window.Phaser) {
    for(let i=0;i<JOURNEY_STOPS.length;i++){
     const stop=JOURNEY_STOPS[i],done=visitedStops.has(stop.id),yy=178+i*54;
     frame.fillStyle(done?0x214e4b:0x1a3a47);frame.fillRoundedRect(242,yy,477,47,6);
-    frame.lineStyle(1,done?0x76bea9:0x466b75);frame.strokeRoundedRect(242,yy,477,47,6);
+    frame.lineStyle(1,done?0x76bea9:0x466b75,.62);frame.strokeRoundedRect(242,yy,477,47,6);
     add(this.add.text(254,yy+10,done?'✓':'○',{
      fontFamily:'monospace',fontSize:'22px',color:done?'#91d9ae':'#99b9c0'
     }).setScrollFactor(0).setDepth(302));
