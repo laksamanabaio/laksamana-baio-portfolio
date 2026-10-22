@@ -1,5 +1,5 @@
 /*
- * BAIO DISTRICT 2077 / HOME INTERIOR 12.2
+ * BAIO DISTRICT 2077 / HOME INTERIOR 12.3
  * Real transparent pixel-art furniture extracted from approved design studies.
  * Hand-drawn architecture and divider walls remain solid, navigable and readable.
  */
@@ -51,22 +51,23 @@ function renderHomeWithAssets(scene){
  }
  lamp(42,86);lamp(917,179);lamp(414,485,true);lamp(540,485,true);
  // 2. Real pixel-art furnishings, aligned to walls in the approved reference.
- // Flush-fit panorama window into the north wall; its lower console stays beneath the glass.
- rect(264,40,314,137,0x12283b);
- rect(267,43,308,131,0x3e5d70);
- asset('skyline',255,20,326,174,1);
+ // Use the window sprite's own frame on the wall; remove both extra rectangular
+ // backplates which previously made it look like a framed box floating forward.
+ // Its visible skyline starts at the north-wall line, with a narrow console below.
+ asset('skyline',255,12,326,174,1);
  // Bed in the northwest corner, headboard right against the upper wall.
- asset('bed',14,68,192,150,2);
+ asset('bed',14,77,192,150,2);
  // Triple-display desk sits along north wall, just left of the Blueprint.
  asset('workstation',603,60,245,183,2);
  // Fridge and kitchen counter are pressed close to the kitchen's upper partition.
  asset('kitchen',39,251,276,158,3);
  // NEW: straight-on dining tabletop and two chairs, natural image proportions.
  asset('dining-v2',154,391,153,93,3);
- // No free floor plant pots; cropped sofa sprite also has no floor pot.
- asset('sofa-v3',691,303,205,159,3);
+ // Reconstructed v4 sprite: complete left arm, no pot, symmetric cyan-trimmed rug.
+ // Keep near-native proportions (220x158 -> 216x155), preventing crop distortion.
+ asset('sofa-v4',694,305,216,155,3);
  // NEW: front-aligned cyberpunk coffee table, not the skewed old asset.
- asset('coffee-v2',728,409,134,68,4);
+ asset('coffee-v2',735,409,134,68,4);
  // 3. Real partition walls around kitchen and dining, with a 74px walk-in gap.
  // Their upper faces and shadowed fronts match the furnished apartment aesthetic.
  // The walls are architectural background, never foreground above kitchen furniture.
@@ -155,13 +156,13 @@ function renderHomeWithAssets(scene){
   {x:33,y:270,w:329,h:20}, // raised upper kitchen wall
   {x:349,y:277,w:21,h:64}, // upper doorway partition
   {x:349,y:415,w:21,h:57}, // lower doorway partition
-  {x:40,y:89,w:159,h:126},// enlarged northwest bed
+  {x:40,y:98,w:159,h:126},// bed shifted down 9px
   {x:52,y:300,w:251,h:64}, // kitchen cabinet block moved 16px north
   {x:154,y:424,w:153,h:54},// dining table/chairs UNCHANGED
   {x:617,y:110,w:213,h:77},// workstation
   {x:695,y:186,w:64,h:33}, // desk chair
-  {x:715,y:332,w:166,h:69},// larger sofa, shifted north
-  {x:728,y:418,w:134,h:55},// coffee table centered with sofa
+  {x:738,y:337,w:137,h:69},// v4 sofa solid footprint; surrounding rug is walkable
+  {x:735,y:418,w:134,h:55},// coffee table centered with symmetrical rug
   {x:895,y:287,w:22,h:126}// wall television
  ];
  const text=(x,y,value,size,color,background)=>{
