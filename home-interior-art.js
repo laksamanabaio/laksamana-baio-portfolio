@@ -1,5 +1,5 @@
 /*
- * BAIO DISTRICT 2077 — HOME 13.1 / FURNITURE POSITIONING
+ * BAIO DISTRICT 2077 — HOME 13.2 / NORTH WALL ALIGNMENT
  * Uses the seven approved isolated transparent PNGs, cropped and optimized
  * for the 960x540 game stage. The furniture, walls, rug and window are native
  * pixel art; Phaser Graphics is only used for the architectural shell, floor,
@@ -69,13 +69,13 @@ function renderHomeWithAssets(scene){
  // 2. Reference-driven wall-attached furniture positions, kept inside the room.
  // The bedroom rug ends against the kitchen wall; the kitchen sprite is in
  // front of it, so the partition neatly hides any overlap at their seam.
- mount('window',258,12,342,94,1.6);       // morning panorama attached to north wall
- mount('bed',76,81,213,157,1.8);          // +34px down, behind the kitchen divider
- mount('workstation',606,78,248,112,2.0); // +28px down, screens within north wall
- mount('blueprint',819,84,74,48,2.8);    // keep readable below compact quest HUD
- mount('kitchen',39,236,352,192,2.6);    // -14px left/+25px down: wall meets west shell
- mount('dining',95,380,158,98,3.0);      // -75px left/+28px down, lower-left corner
- mount('lounge',602,295,286,173,2.6);   // +38px right/+24px down, lower-right corner
+ mount('window',224,12,342,94,1.6);       // left with the bed, flush to north wall
+ mount('bed',44,96,213,157,1.8);          // lower, at left wall; bottom tucked behind kitchen wall
+ mount('workstation',580,92,248,112,2.0); // left and down, inside the north wall
+ mount('blueprint',842,84,74,48,2.8);    // flush against right wall but within room
+ mount('kitchen',39,236,352,192,2.6);    // wall overlays bed bottom seam via higher depth
+ mount('dining',95,380,158,98,3.0);      // original dining position remains
+ mount('lounge',602,295,286,173,2.6);   // original sofa / coffee table remains
  // 3. The exit is visually connected to the same architecture.
  const door=scene.add.graphics().setDepth(1.2);
  door.fillStyle(0x13273b);door.fillRect(419,478,122,31);
@@ -88,20 +88,20 @@ function renderHomeWithAssets(scene){
  // 4. Keep the current Home objective and optional discoveries.
  scene.zones=[
   {x:480,y:447,r:59,label:'Return to Baio District',to:'district'},
-  {x:729,y:231,r:86,label:'Read About Me',object:'home'},
+  {x:703,y:245,r:86,label:'Read About Me',object:'home'},
   {x:760,y:433,r:79,label:'Read Design Notes',object:'home-notebook'},
-  {x:859,y:159,r:73,label:'Inspect District Blueprint',object:'home-blueprint'}
+  {x:882,y:159,r:73,label:'Inspect District Blueprint',object:'home-blueprint'}
  ];
  // Only solid furniture/wall silhouettes collide. Rugs, neon, and the floor are walkable.
  // The bottom of the kitchen partition has an open path for entering the dining nook.
  scene.homeFurniture=[
-  {x:130,y:100,w:116,h:110}, // bed mattress moved 34px south; rug remains walkable
+  {x:44,y:96,w:213,h:157},  // entire bed + rug solid per request: no walking through
   {x:43,y:238,w:344,h:12},   // kitchen wall touches west shell; higher render layer
   {x:367,y:244,w:21,h:171},  // east kitchen divider, southern passage remains open
   {x:78,y:293,w:272,h:70},   // kitchen counters and refrigerator
   {x:99,y:398,w:152,h:75},   // dining footprint moved to southwest corner
-  {x:629,y:123,w:217,h:57},  // workstation moved 28px below north border
-  {x:691,y:168,w:61,h:39},   // workstation chair
+  {x:603,y:137,w:217,h:57},  // workstation moved left 26, down 14
+  {x:665,y:182,w:61,h:39},   // chair follows workstation
   {x:643,y:314,w:219,h:69},  // sofa frame (rug is walkable)
   {x:690,y:390,w:144,h:50}   // lounge coffee table moved southeast
  ];
@@ -110,6 +110,6 @@ function renderHomeWithAssets(scene){
   backgroundColor:bg,padding:{x:6,y:3}
  }).setOrigin(.5,0).setDepth(9);
  tag(480,451,'EXIT TO DISTRICT',11,'#dcefed','#213748');
- tag(728,226,'ABOUT ME COMPUTER',11,'#e6f1e8','#243b4b');
- tag(858,151,'BLUEPRINT',10,'#e5d5b4','#20364a');
+ tag(703,240,'ABOUT ME COMPUTER',11,'#e6f1e8','#243b4b');
+ tag(882,151,'BLUEPRINT',10,'#e5d5b4','#20364a');
 }
