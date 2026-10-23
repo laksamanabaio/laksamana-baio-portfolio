@@ -54,7 +54,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 #loading.active{display:grid}
 #loading h2{letter-spacing:.2em;font:700 clamp(19px,3vw,34px) monospace}
 #loading .track{width:min(70vw,420px);height:18px;border:2px solid #8ec8c6;background:#142f3d;margin:20px auto}
-#loading .fill{height:100%;width:0;background:#83c5c5;transition:width 1.4s linear}
+#loading .fill{height:100%;width:0;background:#83c5c5;transition:width .12s linear}
 @media(max-width:650px){#opening .profile{top:100px;left:var(--hud-margin);right:auto;text-align:left}#opening .brand{max-width:95%}#opening .scene{top:29%;left:4%;right:4%;bottom:26%}#opening .cta{bottom:40px}}
 </style>
 </head>
@@ -85,6 +85,24 @@ if (!window.Phaser) {
   // Every in-world character uses the same 136x184 frame dimensions and display scale.
   const WORLD_CHARACTER_SCALE=.60;
   const NPC_HINT_Y=-Math.ceil(175*WORLD_CHARACTER_SCALE)-30;
+  // Preload all sprites and room art while visitors see the opening.
+  const portfolioLoadState={progress:0,ready:false,started:false,errors:[]};
+  const updateAssetProgress=progress=>{
+   portfolioLoadState.progress=Math.max(0,Math.min(1,progress));
+   document.getElementById('loadFill').style.width=Math.round(portfolioLoadState.progress*100)+'%';
+   if(!portfolioLoadState.ready&&!portfolioLoadState.errors.length){
+    document.getElementById('loadText').textContent=
+     portfolioLoadState.progress<1
+      ?'Loading world assets... '+Math.round(portfolioLoadState.progress*100)+'%'
+      :'Preparing the interactive world...';
+   }
+  };
+  const revealLoadedWorld=()=>{
+   if(!portfolioLoadState.ready||!portfolioLoadState.started)return;
+   requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    if(portfolioLoadState.ready)document.getElementById('loading').classList.remove('active');
+   }));
+  };
  for(const button of document.querySelectorAll('[data-dir]')){
   const dir=button.dataset.dir;
   button.addEventListener('pointerdown',e=>{e.preventDefault();pressed.add(dir);button.setPointerCapture(e.pointerId)});
@@ -192,6 +210,14 @@ if (!window.Phaser) {
  class World extends Phaser.Scene{
   constructor(){super('World')}
   preload(){
+   if(!this.portfolioLoaderBound){
+    this.portfolioLoaderBound=true;
+    this.load.on('progress',updateAssetProgress);
+    this.load.on('loaderror',file=>{
+     portfolioLoadState.errors.push(file.key);
+     document.getElementById('loadText').textContent='Some assets failed to load. Refresh to retry.';
+    });
+   }
    // 32 transparent frames extracted directly from the latest approved artwork:
    // down / up / left / right, with four idle poses and four walking poses each.
    // Every frame has a consistent sole-to-floor baseline and clean alpha.
@@ -705,6 +731,14 @@ if (!window.Phaser) {
     }
     if(this.dialogNpc||this.near)this.interact();
    });
+   // The full preload queue has completed and the first Home scene exists.
+   // Room transitions reuse these cached textures without network waits.
+   if(!portfolioLoadState.ready&&!portfolioLoadState.errors.length){
+    portfolioLoadState.ready=true;
+    updateAssetProgress(1);
+    document.getElementById('loadText').textContent='World ready.';
+    revealLoadedWorld();
+   }
   }
   createJourneyHUD(freshVisit){
    // Replace the HUD and journal in-place after a new object discovery.
@@ -1087,18 +1121,21 @@ if (!window.Phaser) {
   }else requestGameFullscreen();
  });
  document.getElementById('startGame').addEventListener('click',()=>{
-  // Browser security forbids automatic fullscreen on page load. The START
-  // click is a valid gesture; Esc returns to the normal browser view.
+  if(portfolioLoadState.started)return;
+  portfolioLoadState.started=true;
   requestGameFullscreen();
-  // The journey starts at Home, but entering it does not finish the quest.
   opening.hidden=true;
-  loading.classList.add('active');
-  requestAnimationFrame(()=>{document.getElementById('loadFill').style.width='100%'});
-  window.setTimeout(()=>{
+  if(portfolioLoadState.errors.length){
+   loading.classList.add('active');
+   document.getElementById('loadText').textContent='Some assets failed to load. Refresh to retry.';
+  }else if(portfolioLoadState.ready){
+   // No unnecessary waiting if everything loaded during the opening.
    loading.classList.remove('active');
-   document.getElementById('loadText').textContent='Welcome home.';
-   game.scene.getScene('World').scene.restart({place:'home',spawn:{x:480,y:340}});
-  },1650);
+  }else{
+   // Show actual Phaser loader progress instead of a fabricated timer.
+   loading.classList.add('active');
+   updateAssetProgress(portfolioLoadState.progress);
+  }
  });
 }
  
