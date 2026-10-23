@@ -64,7 +64,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 <div id="game" role="application" aria-label="2D exploration game. Move with WASD or arrow keys."></div>
 <button id="fullscreenToggle" type="button" aria-label="Masuk layar penuh" aria-pressed="false" title="Layar penuh (Esc untuk keluar)">⛶ <span>FULLSCREEN</span></button>
 <div class="touch" aria-label="Touch movement controls"><button data-dir="left" aria-label="Left">←</button><button data-dir="up" aria-label="Up">↑</button><button data-dir="down" aria-label="Down">↓</button><button data-dir="right" aria-label="Right">→</button></div>
-<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 13.7 — Fullscreen & Responsive Fit</span></footer>
+<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 13.8 — Reference Character & Thought Bubbles</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -189,10 +189,11 @@ if (!window.Phaser) {
  class World extends Phaser.Scene{
   constructor(){super('World')}
   preload(){
-   // Frames: rows down / up / left / right; each row = idle, walk A, walk B.
-   // The cropped transparent sprites use the approved Baio character design.
-   this.load.spritesheet('baio-player','./assets/baio-player-sprite.png?v=11.7',{
-    frameWidth:40,frameHeight:56,margin:0,spacing:0
+   // User-approved reference: 4 direction rows x (4 idle + 4 walking)
+   // plus three emote poses (INTERACT, TALK, HAPPY) in row five.
+   // Characters are alpha-matted from the attached original illustration.
+   this.load.spritesheet('baio-player-v2','./assets/baio-player-reference-v2.png?v=13.8',{
+    frameWidth:96,frameHeight:132,margin:0,spacing:0
    });
    // Seven genuine PNG sprites from the approved Sunrise Loft reference, all sized for 960x540.
    for(const id of ['bed','kitchen','dining','lounge','workstation','blueprint','window']){
@@ -563,24 +564,48 @@ if (!window.Phaser) {
     // Quest is completed only when this object is activated.
     this.zones.push({x:sx,y:290,r:103,label:station.verb,object:this.place});
    }
-   // The actual 16-bit sprite sheet replaces the old procedural Graphics avatar.
-   // Animation source: 12 transparent frames, 40 × 56 each.
-   this.avatarDirection='down';this.avatarStep=0;this.avatarClock=0;
+   // The character now uses the actual illustrated sprite reference.
+   // Rows 0..3 are DOWN / UP / LEFT / RIGHT; columns 0..3 are IDLE,
+   // columns 4..7 WALK. Row 4 contains INTERACT / TALK / HAPPY.
+   this.avatarDirection='down';this.avatarStep=0;this.avatarClock=0;this.avatarIdleClock=0;
    const avatarShadow=this.add.graphics();
    avatarShadow.fillStyle(0x12202c,0.25);
-   avatarShadow.fillEllipse(0,24,34,10);
-   this.avatarSprite=this.add.sprite(0,0,'baio-player',0)
-    .setOrigin(0.5,0.53)
-    .setScale(1.32);
-   this.drawAvatar=(direction='down',step=0)=>{
+   avatarShadow.fillEllipse(0,24,35,10);
+   this.avatarSprite=this.add.sprite(0,0,'baio-player-v2',0)
+    .setOrigin(0.5,0.69)
+    .setScale(0.76);
+   this.drawAvatar=(direction='down',step=0,walking=false,emote=null)=>{
     const rows={down:0,up:1,left:2,right:3};
     const row=rows[direction]??0;
-    this.avatarSprite.setFrame(row*3+Math.max(0,Math.min(2,step)));
+    // Preserve the direction when facing left, right or away. Only use
+    // front-facing talk/interact poses when standing still and facing down.
+    let frame=row*8+(walking?4:0)+Math.max(0,Math.min(3,step));
+    if(!walking&&row===0&&emote==='TALK')frame=33;
+    else if(!walking&&row===0&&emote==='INTERACT')frame=32;
+    this.avatarSprite.setFrame(frame);
    };
    this.drawAvatar('down',0);
    const pos=this.spawn||(this.place==='district'?{x:265,y:410}:{x:480,y:340});
    this.player=this.add.container(pos.x,pos.y,[avatarShadow,this.avatarSprite]);
    if(this.place==='home')this.player.setDepth(5);
+   // Pixel-art thought balloon follows the player, not the HUD or nearby NPC.
+   // Only appears when E / SPACE can activate an NPC or an object.
+   const bubbleArt=this.add.graphics();
+   bubbleArt.fillStyle(0x071724,.92);
+   bubbleArt.fillRoundedRect(-44,-18,88,28,6);
+   bubbleArt.lineStyle(2,0xa8e6df,.96);
+   bubbleArt.strokeRoundedRect(-44,-18,88,28,6);
+   bubbleArt.fillStyle(0xf4f2df,.96);
+   bubbleArt.fillRect(-4,12,8,5);
+   bubbleArt.fillRect(1,19,4,4);
+   this.thoughtText=this.add.text(0,-4,'',{
+    fontFamily:'monospace',fontSize:'13px',fontStyle:'bold',
+    color:'#fff1c7',stroke:'#0c1c29',strokeThickness:1
+   }).setOrigin(.5);
+   this.thoughtBubble=this.add.container(0,-91,[bubbleArt,this.thoughtText]);
+   this.player.add(this.thoughtBubble);
+   this.thoughtBubble.setVisible(false);
+   this.thoughtType='';
    const freshVisit=false;
    if(this.place==='district')this.cameras.main.startFollow(this.player,true,0.12,0.12);
    this.keys=this.input.keyboard.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,E,SPACE');
@@ -859,9 +884,12 @@ if (!window.Phaser) {
    if(x||y){
     this.avatarDirection=Math.abs(x)>Math.abs(y)?(x<0?'left':'right'):(y<0?'up':'down');
     this.avatarClock+=delta;
-    if(this.avatarClock>145){this.avatarClock=0;this.avatarStep=(this.avatarStep+1)%3}
-   }else{this.avatarStep=0;this.avatarClock=0}
-   this.drawAvatar(this.avatarDirection,this.avatarStep);
+    if(this.avatarClock>145){this.avatarClock=0;this.avatarStep=(this.avatarStep+1)%4}
+    this.avatarIdleClock=0;
+   }else{
+    this.avatarStep=0;this.avatarClock=0;
+    this.avatarIdleClock=(this.avatarIdleClock+Math.min(delta,50))%2000;
+   }
    if(this.place==='district'&&this.parkVisitors){
     if(!this.dialogNpc&&!this.journalOpen)this.visitorClock+=Math.min(delta,50)/1000;
     for(const npc of this.parkVisitors){
@@ -904,6 +932,21 @@ if (!window.Phaser) {
     }
    }
    this.near=door||(npcNearby?{npc:npcNearby,label:'Speak with '+npcNearby.name}:null);
+   // Speech / thought indicator appears while the player can really interact.
+   const thought=this.near?(this.near.npc?'TALK':'INTERACT'):'';
+   const canShowThought=!!thought&&!this.dialogNpc&&!this.journalOpen&&!this.readerObject;
+   this.thoughtBubble.setVisible(canShowThought);
+   if(canShowThought){
+    if(this.thoughtType!==thought){
+     this.thoughtType=thought;
+     this.thoughtText.setText(thought);
+    }
+    this.thoughtBubble.y=-91+Math.sin(this.time.now/260)*2;
+   }else this.thoughtType='';
+   const still=!x&&!y;
+   const idleFrame=Math.floor(this.avatarIdleClock/500)%4;
+   this.drawAvatar(this.avatarDirection,still?idleFrame:this.avatarStep,!still,
+    canShowThought?thought:null);
    this.prompt.setVisible(!this.dialogNpc&&!this.journalOpen&&!this.readerObject);
    this.prompt.setText(this.near?'[E / SPACE] '+this.near.label:'WASD / ARROWS TO MOVE');
    if(this.npcHint){
