@@ -64,7 +64,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 <div id="game" role="application" aria-label="2D exploration game. Move with WASD or arrow keys."></div>
 <button id="fullscreenToggle" type="button" aria-label="Masuk layar penuh" aria-pressed="false" title="Layar penuh (Esc untuk keluar)">⛶ <span>FULLSCREEN</span></button>
 <div class="touch" aria-label="Touch movement controls"><button data-dir="left" aria-label="Left">←</button><button data-dir="up" aria-label="Up">↑</button><button data-dir="down" aria-label="Down">↓</button><button data-dir="right" aria-label="Right">→</button></div>
-<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 15.4 — Consistent Character Scale</span></footer>
+<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 15.5 — Garden Expansion & Smart Loading</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -340,23 +340,23 @@ if (!window.Phaser) {
     // Baio Garden Plaza: a genuinely round pedestrian loop with a tiered fountain.
     const fx=820,fy=620;
     // The circular stone plaza joins the four garden promenades seamlessly.
-    g.fillStyle(0x648e70);g.fillCircle(fx+5,fy+8,184);
-    g.fillStyle(0xe7dcca);g.fillCircle(fx,fy,179);
-    g.lineStyle(8,0xf6ebd7);g.strokeCircle(fx,fy,175);
-    g.lineStyle(3,0xb7aa9c);g.strokeCircle(fx,fy,160);
+    g.fillStyle(0x648e70);g.fillCircle(fx+5,fy+8,211);
+    g.fillStyle(0xe7dcca);g.fillCircle(fx,fy,205);
+    g.lineStyle(8,0xf6ebd7);g.strokeCircle(fx,fy,201);
+    g.lineStyle(3,0xb7aa9c);g.strokeCircle(fx,fy,185);
     // Concentric circular paving rings and radial tile joints.
-    for(const rr of [102,120,141,157]){
+    for(const rr of [136,157,178,194]){
      g.lineStyle(2,rr%2?0xc6b7a5:0xd2c5b2,0.8);g.strokeCircle(fx,fy,rr);
     }
     for(let i=0;i<24;i++){
      const ang=i*Math.PI/12;
-     const x1=fx+103*Math.cos(ang),y1=fy+103*Math.sin(ang);
-     const x2=fx+158*Math.cos(ang),y2=fy+158*Math.sin(ang);
+     const x1=fx+137*Math.cos(ang),y1=fy+137*Math.sin(ang);
+     const x2=fx+193*Math.cos(ang),y2=fy+193*Math.sin(ang);
      g.lineStyle(2,0xc9baa7,0.7);g.lineBetween(x1,y1,x2,y2);
     }
     // Curved planted ring: small shrubs, flowers, and four garden gateways.
     for(let i=0;i<32;i++){
-     const ang=i*Math.PI/16,xx=fx+168*Math.cos(ang),yy=fy+168*Math.sin(ang);
+     const ang=i*Math.PI/16,xx=fx+194*Math.cos(ang),yy=fy+194*Math.sin(ang);
      if(Math.abs(Math.sin(ang))<0.22||Math.abs(Math.cos(ang))<0.22)continue;
      g.fillStyle(0x3d9065);g.fillCircle(xx,yy,10);
      g.fillStyle(0x74ba7d);g.fillCircle(xx-3,yy-4,6);
@@ -364,33 +364,35 @@ if (!window.Phaser) {
      if(i%5===0){g.fillStyle(0xf2db87);g.fillCircle(xx-5,yy+3,3)}
     }
     // Stone fountain foundation, three levels of blue water and raised pedestal.
-    g.fillStyle(0x8e918d);g.fillCircle(fx+5,fy+7,94);
-    g.fillStyle(0xf5eee1);g.fillCircle(fx,fy,92);
-    g.fillStyle(0x8b9eab);g.fillCircle(fx,fy,85);
-    g.fillStyle(0x4d9fc4);g.fillCircle(fx,fy,79);
-    g.fillStyle(0x7bcce5);g.fillCircle(fx-4,fy-5,70);
-    g.lineStyle(4,0xcaf2f5);g.strokeCircle(fx,fy,72);
-    for(let i=0;i<16;i++){
-     const ang=i*Math.PI/8;
-     const xx=fx+59*Math.cos(ang),yy=fy+59*Math.sin(ang);
-     g.fillStyle(i%2?0xd4f7f5:0x4eaccd);g.fillCircle(xx,yy,4);
+    g.fillStyle(0x8e918d);g.fillCircle(fx+5,fy+7,124);
+    g.fillStyle(0xf5eee1);g.fillCircle(fx,fy,120);
+    g.fillStyle(0x8b9eab);g.fillCircle(fx,fy,113);
+    g.fillStyle(0x4d9fc4);g.fillCircle(fx,fy,107);
+    g.fillStyle(0x7bcce5);g.fillCircle(fx-4,fy-5,96);
+    g.lineStyle(4,0xcaf2f5);g.strokeCircle(fx,fy,99);
+    for(let i=0;i<20;i++){
+     const ang=i*Math.PI/10;
+     const xx=fx+84*Math.cos(ang),yy=fy+84*Math.sin(ang);
+     g.fillStyle(i%2?0xd4f7f5:0x4eaccd);g.fillCircle(xx,yy,5);
     }
-    g.fillStyle(0xc5c9c5);g.fillCircle(fx+2,fy+4,45);
-    g.fillStyle(0xf3eadc);g.fillCircle(fx,fy,44);
-    g.fillStyle(0x3b98c4);g.fillCircle(fx,fy,37);
-    g.fillStyle(0x8bd9ef);g.fillCircle(fx-3,fy-3,31);
-    g.fillStyle(0xe8e4d8);g.fillRect(fx-11,fy-33,22,27);
-    g.fillStyle(0xa1ddeb);g.fillRect(fx-7,fy-48,14,26);
-    g.fillStyle(0xe4fbfa);g.fillRect(fx-3,fy-65,6,30);
-    g.fillStyle(0xbaf4fb);g.fillCircle(fx,fy-66,8);
+    g.fillStyle(0xc5c9c5);g.fillCircle(fx+2,fy+4,60);
+    g.fillStyle(0xf3eadc);g.fillCircle(fx,fy,58);
+    g.fillStyle(0x3b98c4);g.fillCircle(fx,fy,50);
+    g.fillStyle(0x8bd9ef);g.fillCircle(fx-3,fy-3,43);
+    g.fillStyle(0xe8e4d8);g.fillRect(fx-19,fy-63,38,35);
+    g.fillStyle(0xb8b9ae);g.fillRect(fx-23,fy-45,46,18);
+    g.fillStyle(0xc1d8d7);g.fillRect(fx-13,fy-87,26,28);
+    g.fillStyle(0xa1ddeb);g.fillRect(fx-7,fy-103,14,23);
+    g.fillStyle(0xe4fbfa);g.fillRect(fx-3,fy-127,6,26);
+    g.fillStyle(0xbaf4fb);g.fillCircle(fx,fy-124,11);
     // Benches placed around the loop, outside the fountain collision footprint.
-    for(const [bx,by] of [[fx-140,fy-86],[fx+91,fy-86],[fx-140,fy+79],[fx+91,fy+79]]){
+    for(const [bx,by] of [[fx-178,fy-84],[fx+129,fy-84],[fx-178,fy+80],[fx+129,fy+80]]){
      rect(bx+3,by+6,47,13,0x777269);rect(bx,by,47,10,0xa87349);
      rect(bx+4,by+3,39,3,0xe5ba82);rect(bx+5,by+18,5,8,0x4c5960);
      rect(bx+38,by+18,5,8,0x4c5960);
     }
     // Garden lanterns and planter boxes frame the approaches.
-    for(const [lx,ly] of [[fx-193,fy-105],[fx+193,fy-105],[fx-193,fy+105],[fx+193,fy+105]]){
+    for(const [lx,ly] of [[fx-222,fy-112],[fx+222,fy-112],[fx-222,fy+112],[fx+222,fy+112]]){
      rect(lx-4,ly,8,27,0x52666a);rect(lx-8,ly-13,16,16,0x4c646c);
      rect(lx-5,ly-10,10,10,0xffe5a3);rect(lx-9,ly-16,18,4,0x364d56);
     }
@@ -490,14 +492,13 @@ if (!window.Phaser) {
     for(const [x,y] of [[750,250],[850,1030],[1570,580],[120,630],[1660,1060]]){
      rect(x,y,74,54,0x294b57);rect(x+8,y+8,58,28,0x397080);rect(x+14,y+13,46,4,0x87c3bc);
     }
-    this.add.text(820,792,'BAIO GARDEN  //  CENTRAL PLAZA',{fontFamily:'monospace',fontSize:'18px',color:'#55785f'}).setOrigin(.5);
     // Friendly park visitors follow short, predictable walking loops.
     // Diverse strolling visitors: plaza loops and short routes near all four landmarks.
     // Routes stay in public garden space and away from building collision footprints.
     this.parkVisitors=[
-     {kind:'man',shirt:0xc87767,route:'circle',cx:820,cy:620,r:125,phase:0,speed:.28},
-     {kind:'woman',shirt:0x6c8bc1,route:'circle',cx:820,cy:620,r:143,phase:2.2,speed:-.22},
-     {kind:'grandpa',shirt:0xd3ad62,route:'circle',cx:820,cy:620,r:116,phase:4.1,speed:.16},
+     {kind:'man',shirt:0xc87767,route:'circle',cx:820,cy:620,r:158,phase:0,speed:.28},
+     {kind:'woman',shirt:0x6c8bc1,route:'circle',cx:820,cy:620,r:176,phase:2.2,speed:-.22},
+     {kind:'grandpa',shirt:0xd3ad62,route:'circle',cx:820,cy:620,r:184,phase:4.1,speed:.16},
      {kind:'woman',shirt:0xd47eaa,route:'line',ax:210,ay:418,bx:395,by:418,speed:.21,phase:.2},
      {kind:'man',shirt:0x528db1,route:'line',ax:1350,ay:420,bx:1720,by:420,speed:.16,phase:1.8},
      {kind:'grandma',shirt:0x957cb4,route:'line',ax:200,ay:785,bx:390,by:785,speed:.14,phase:2.2},
@@ -952,7 +953,7 @@ if (!window.Phaser) {
     const nextY=Phaser.Math.Clamp(this.player.y+y/length*speed,minY,maxY);
     if(this.place==='district'){
      // Collision footprint: character feet cannot enter building walls/roofs.
-     const blocked=(px,py)=>Math.hypot(px-820,py-620)<93||[...this.buildings,...this.sceneryBuildings].some(b=>
+     const blocked=(px,py)=>Math.hypot(px-820,py-620)<125||[...this.buildings,...this.sceneryBuildings].some(b=>
       px>b.x-14&&px<b.x+b.w+14&&py>b.y-18&&py<b.y+b.h+9);
      if(!blocked(nextX,this.player.y))this.player.x=nextX;
      if(!blocked(this.player.x,nextY))this.player.y=nextY;
@@ -1006,13 +1007,13 @@ if (!window.Phaser) {
     // Glinting animated droplets over the center jet.
     for(let i=0;i<12;i++){
      const phase=t*1.9+i*0.62;
-     const rx=820+Math.sin(phase+i)* (12+i%4*6);
-     const ry=558+((phase*28+i*13)%54);
+     const rx=820+Math.sin(phase+i)*(18+i%4*8);
+     const ry=496+((phase*28+i*13)%91);
      fg.fillStyle(i%3===0?0xffffff:0xb2edf5,0.8);
      fg.fillRect(Math.round(rx),Math.round(ry),i%3===0?4:3,i%3===0?4:6);
     }
     const pulse=2+Math.round((Math.sin(t*3)+1)*2);
-    fg.lineStyle(2,0xe0fbf7,0.55);fg.strokeCircle(820,620,55+pulse);
+    fg.lineStyle(2,0xe0fbf7,0.55);fg.strokeCircle(820,620,87+pulse);
    }
    const door=this.zones.find(z=>Math.hypot(this.player.x-z.x,this.player.y-z.y)<z.r)||null;
    let npcNearby=null,nearest=60;
