@@ -64,7 +64,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 <div id="game" role="application" aria-label="2D exploration game. Move with WASD or arrow keys."></div>
 <button id="fullscreenToggle" type="button" aria-label="Masuk layar penuh" aria-pressed="false" title="Layar penuh (Esc untuk keluar)">⛶ <span>FULLSCREEN</span></button>
 <div class="touch" aria-label="Touch movement controls"><button data-dir="left" aria-label="Left">←</button><button data-dir="up" aria-label="Up">↑</button><button data-dir="down" aria-label="Down">↓</button><button data-dir="right" aria-label="Right">→</button></div>
-<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 15.39 — Random Opening Time</span></footer>
+<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 15.40 — Characters Above Night Lighting</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -84,6 +84,9 @@ if (!window.Phaser) {
  const W=960,H=540,HUD_EDGE=26,pressed=new Set();
   // Baio stays at 0.60; NPCs are a little smaller at 0.56 and keep their original frame proportions.
   const WORLD_CHARACTER_SCALE=.60, NPC_CHARACTER_SCALE=.56;
+  // Glow is depth 60. NPCs and Baio must be in front of all world lighting.
+  // HUD begins at depth 100 and remains in front of world characters.
+  const DISTRICT_NPC_DEPTH=70, DISTRICT_PLAYER_DEPTH=90;
   const DISTRICT_BUILDING_SIZE={width:392,height:326};
   const NPC_HINT_Y=-Math.ceil(175*NPC_CHARACTER_SCALE)-30;
   // A new website visit starts at a random time of day: morning, midday,
@@ -331,8 +334,8 @@ if (!window.Phaser) {
    if(this.place!=='district')rect(0,0,W,H,0x142733);
    if(this.place==='district'){
     this.worldW=1920;this.worldH=1460;
-    // Layer order: aluminium floor 0, all buildings 1, light fixtures 3,
-    // NPCs 11, Baio 20, night tint 50, emissive neon glows 60, HUD 100+.
+    // Layer order: aluminium floor -2/-1, buildings 1, light fixtures 3,
+    // night tint 50, emissive neon 60, NPCs 70, Baio 90, HUD 100+.
     const fixtureLayer=this.add.graphics().setDepth(3);
     const fixtureRect=(x,y,w,h,color)=>{
      fixtureLayer.fillStyle(color);fixtureLayer.fillRect(x,y,w,h);
@@ -598,7 +601,7 @@ if (!window.Phaser) {
      shadow.fillStyle(0x12202c,.22);shadow.fillEllipse(0,2,25,6);
      npc.avatar=this.add.sprite(0,0,'npc-'+npc.appearance,0)
       .setOrigin(.5,175/184).setScale(NPC_CHARACTER_SCALE);
-     npc.sprite=this.add.container(0,0,[shadow,npc.avatar]).setDepth(11);
+     npc.sprite=this.add.container(0,0,[shadow,npc.avatar]).setDepth(DISTRICT_NPC_DEPTH);
      npc.direction='down';npc.walkFrame=0;
     }
     this.visitorClock=0;
@@ -731,9 +734,9 @@ if (!window.Phaser) {
    this.drawAvatar('down',0);
    const pos=this.spawn||(this.place==='district'?{x:196,y:406}:{x:480,y:340});
    this.player=this.add.container(pos.x,pos.y,[avatarShadow,this.avatarSprite]);
-   // The HOME exterior renders at depth 1; District NPCs render at depth 11.
-   // Keep Baio in front of the HOME sprite and other world scenery.
-   this.player.setDepth(this.place==='district'?20:5);
+   // Baio stays in front of every NPC, neon glow, lamp post and night tint.
+   // Only UI and dialogue overlays may cover the player.
+   this.player.setDepth(this.place==='district'?DISTRICT_PLAYER_DEPTH:5);
    // Pixel-art thought balloon follows the player, not the HUD or nearby NPC.
    // Only appears when E / SPACE can activate an NPC or an object.
    const bubbleArt=this.add.graphics();
