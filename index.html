@@ -396,12 +396,37 @@ if (!window.Phaser) {
      rect(lx-4,ly,8,27,0x52666a);rect(lx-8,ly-13,16,16,0x4c646c);
      rect(lx-5,ly-10,10,10,0xffe5a3);rect(lx-9,ly-16,18,4,0x364d56);
     }
-    // Decorative tree clusters on nearby grass parcels.
-    for(const [tx,ty] of [[665,552],[974,552],[665,688],[974,688],[75,320],[1790,320],[90,1030],[1800,1030]]){
-     g.fillStyle(0x568e63);g.fillCircle(tx+5,ty+7,23);
-     g.fillStyle(0x348b61);g.fillCircle(tx,ty,21);
-     g.fillStyle(0x83c88a);g.fillCircle(tx-7,ty-8,11);
-     g.fillStyle(0xa6dca1);g.fillCircle(tx+6,ty-10,5);
+    // More mature pixel-art trees, rooted in grass parcels away from public walkways.
+    const parkTrees=[
+     [270,72],[393,77],[90,614],[259,622],[378,610],
+     [1342,610],[1550,613],[1753,618],[78,963],[135,1012],
+     [1263,975],[1882,980],[958,115],[1858,80]
+    ];
+    for(const [tx,ty] of parkTrees){
+     g.fillStyle(0x527f63,.24);g.fillEllipse(tx+7,ty+13,49,18);
+     rect(tx-5,ty-3,10,20,0x806449);rect(tx-2,ty-7,4,22,0xa08159);
+     g.fillStyle(0x276c4f);g.fillCircle(tx+4,ty-19,28);
+     g.fillStyle(0x348b61);g.fillCircle(tx-8,ty-26,23);
+     g.fillStyle(0x57a876);g.fillCircle(tx+14,ty-31,20);
+     g.fillStyle(0x83c88a);g.fillCircle(tx-11,ty-37,13);
+     g.fillStyle(0xb8dfa0);g.fillCircle(tx+11,ty-41,7);
+    }
+    // Softly illuminated lampposts at both ends of each east-west path,
+    // and beside the north/south endpoints of both vertical paths.
+    const roadLamps=[
+     [36,332],[1884,332],[36,692],[1884,692],[36,1042],[1884,1042],
+     [419,48],[661,48],[979,48],[1221,48],
+     [419,1231],[661,1231],[979,1231],[1221,1231]
+    ];
+    for(const [lx,ly] of roadLamps){
+     g.fillStyle(0x243e4b,.18);g.fillEllipse(lx+5,ly+4,27,9);
+     rect(lx-5,ly-5,10,9,0x4b626b);
+     rect(lx-3,ly-45,6,42,0x344a56);
+     rect(lx-8,ly-51,16,10,0x647780);
+     g.fillStyle(0xffe9b0,.25);g.fillCircle(lx,ly-48,20);
+     rect(lx-6,ly-50,12,12,0xffe5a7);
+     rect(lx-3,ly-48,6,7,0xfff3ce);
+     rect(lx-11,ly-54,22,5,0x2e4854);
     }
     // Fountain spray is a separate graphics layer, animated during gameplay.
     this.fountainSpray=this.add.graphics().setDepth(12);
