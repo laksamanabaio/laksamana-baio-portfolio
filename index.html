@@ -64,7 +64,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 <div id="game" role="application" aria-label="2D exploration game. Move with WASD or arrow keys."></div>
 <button id="fullscreenToggle" type="button" aria-label="Masuk layar penuh" aria-pressed="false" title="Layar penuh (Esc untuk keluar)">⛶ <span>FULLSCREEN</span></button>
 <div class="touch" aria-label="Touch movement controls"><button data-dir="left" aria-label="Left">←</button><button data-dir="up" aria-label="Up">↑</button><button data-dir="down" aria-label="Down">↓</button><button data-dir="right" aria-label="Right">→</button></div>
-<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 15.23 — CONTACT HUB Visual Width Match</span></footer>
+<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 15.24 — Neon Aluminium District</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -304,21 +304,30 @@ if (!window.Phaser) {
        {id:'hub',x:0,y:1018,w:392,h:200,displayW:423}
       ];
      // Evenly sized sprite footprints leave pedestrian gaps between facades.
-     // Sunny garden district: grass parcels and continuous pedestrian promenades.
-    rect(0,0,this.worldW,this.worldH,0xa9dd85);
-    for(let x=0;x<this.worldW;x+=64)for(let y=0;y<this.worldH;y+=64){
-     rect(x+8,y+8,28,8,0xc0ee96);rect(x+44,y+42,9,9,0x8bd56d);
+     // Futuristic brushed-aluminium panel floors replace all green grass surfaces.
+    // This is a single static Phaser Graphics layer; it creates no extra load assets.
+    rect(0,0,this.worldW,this.worldH,0x364a58);
+    for(let yy=0;yy<this.worldH;yy+=80)for(let xx=0;xx<this.worldW;xx+=80){
+     const panel=((xx/80+yy/80)%2===0)?0x869ba7:0x94a7b1;
+     rect(xx+2,yy+2,76,76,panel);
+     rect(xx+4,yy+4,72,3,0xb5c5cc);
+     rect(xx+4,yy+7,2,65,0x6b818e);
+     rect(xx+9,yy+70,63,2,0x607583);
+     rect(xx+9,yy+10,3,3,0xd7e4e6);
+     rect(xx+68,yy+67,3,3,0x354c5b);
+     if((xx/80+yy/80)%3===0)rect(xx+31,yy+37,18,3,0x66afc3);
     }
-    const road=0xcbbfa9,curb=0xe8dfc9,mark=0xb8ad99;
+    // Preserve existing road placement, but switch to graphite-metal paving.
+    const road=0x425866,curb=0x293e4e,mark=0x6e8390;
     const horizontal=[[350,530],[710,890],[1240,1430]];
     const vertical=[[440,640],[1000,1200]];
     for(const [top,bottom] of horizontal)rect(0,top,this.worldW,bottom-top,road);
     for(const [left,right] of vertical)rect(left,0,right-left,this.worldH,road);
     // Paver seams, subtle enough to read as a park path rather than a highway.
     for(const [top,bottom] of horizontal)for(let yy=top+18;yy<bottom;yy+=38)
-     for(let xx=0;xx<this.worldW;xx+=76)rect(xx+(Math.floor(yy/38)%2)*38,yy,33,3,0xbcb09c);
+     for(let xx=0;xx<this.worldW;xx+=76)rect(xx+(Math.floor(yy/38)%2)*38,yy,33,3,0x607785);
     for(const [left,right] of vertical)for(let xx=left+20;xx<right;xx+=42)
-     for(let yy=0;yy<this.worldH;yy+=75)rect(xx,yy,3,32,0xbcb09c);
+     for(let yy=0;yy<this.worldH;yy+=75)rect(xx,yy,3,32,0x607785);
     // Repaint intersection surfaces, removing seams that could look like lane markings.
     for(const [top,bottom] of horizontal)for(const [left,right] of vertical)
      rect(left,top,right-left,bottom-top,road);
@@ -334,20 +343,59 @@ if (!window.Phaser) {
     for(const [top,bottom] of horizontal){
      for(let yy=top+12;yy<bottom-10;yy+=24)for(let xx=8;xx<this.worldW-12;xx+=48){
       if(vertical.some(([l,r])=>xx>=l-6&&xx<=r+6))continue;
-      rect(xx+(Math.floor(yy/24)%2)*21,yy,31,2,0xded2bc);
-      rect(xx+8,yy+9,3,3,0xb2a68f);
+      rect(xx+(Math.floor(yy/24)%2)*21,yy,31,2,0x859ba7);
+      rect(xx+8,yy+9,3,3,0x263f4e);
      }
     }
     for(const [left,right] of vertical){
      for(let xx=left+12;xx<right-10;xx+=24)for(let yy=8;yy<this.worldH-12;yy+=48){
       if(horizontal.some(([t,b])=>yy>=t-6&&yy<=b+6))continue;
-      rect(xx,yy+(Math.floor(xx/24)%2)*19,2,30,0xe0d4bf);
+      rect(xx,yy+(Math.floor(xx/24)%2)*19,2,30,0x8297a3);
      }
     }
-    // Pixel flower planters on grass verges; keep walking corridors clear.
+    // Recessed cyan neon and amber signal segments trace the outer edges
+    // of all roads. At intersections they stop, so no crosswalk is blocked.
+    const addNeonEdge=(at,start,end,isHorizontal,color)=>{
+     const len=end-start;
+     if(len<18)return;
+     if(isHorizontal){
+      rect(start,at-5,len,9,0x203846);
+      g.fillStyle(color,0.18);g.fillRect(start,at-8,len,15);
+      rect(start,at-3,len,3,color);
+      rect(start,at-3,len,1,0xe8ffff);
+      for(let p=start+14;p<end-16;p+=68){
+       rect(p,at-4,13,5,0xffbd67);
+       rect(p+2,at-4,9,1,0xffedc9);
+      }
+     }else{
+      rect(at-5,start,9,len,0x203846);
+      g.fillStyle(color,0.18);g.fillRect(at-8,start,15,len);
+      rect(at-3,start,3,len,color);
+      rect(at-3,start,1,len,0xe8ffff);
+      for(let p=start+14;p<end-16;p+=68){
+       rect(at-4,p,5,13,0xffbd67);
+       rect(at-4,p+2,1,9,0xffedc9);
+      }
+     }
+    };
+    for(const [top,bottom] of horizontal)for(let i=0;i<=vertical.length;i++){
+     const left=i===0?0:vertical[i-1][1];
+     const right=i===vertical.length?this.worldW:vertical[i][0];
+     addNeonEdge(top,left,right,true,0x3ce5f8);
+     addNeonEdge(bottom,left,right,true,0x59dff2);
+    }
+    for(const [left,right] of vertical)for(let i=0;i<=horizontal.length;i++){
+     const top=i===0?0:horizontal[i-1][1];
+     const bottom=i===horizontal.length?this.worldH:horizontal[i][0];
+     addNeonEdge(left,top,bottom,false,0x3ce5f8);
+     addNeonEdge(right,top,bottom,false,0x59dff2);
+    }
+    // Plants remain as decorative life in raised metallic boxes.
     for(const [px,py] of [[360,555],[1220,560],[370,680],[1225,680],[145,555],[1700,550],[155,695],[1730,695],[750,65],[890,65],[745,1080],[900,1080]]){
-     rect(px-26,py-12,52,25,0x7d8b73);
-     rect(px-23,py-15,46,22,0x56b95c);
+     rect(px-26,py-12,52,25,0x2d4755);
+     rect(px-24,py-14,48,18,0x9aabb5);
+     rect(px-22,py-12,44,14,0x42645e);
+     rect(px-26,py+10,52,3,0x52e7f2);
      for(let i=0;i<5;i++){
       const xx=px-18+i*9,yy=py-8+(i%2)*8;
       rect(xx,yy,7,7,i%2?0xf4c1c4:0xf6df9b);
@@ -356,20 +404,20 @@ if (!window.Phaser) {
     }
     // Baio Garden Plaza: a genuinely round pedestrian loop with a tiered fountain.
     const fx=820,fy=620;
-    // The circular stone plaza joins the four garden promenades seamlessly.
-    g.fillStyle(0x79c96b);g.fillCircle(fx+5,fy+8,211);
-    g.fillStyle(0xe7dcca);g.fillCircle(fx,fy,205);
-    g.lineStyle(8,0xf6ebd7);g.strokeCircle(fx,fy,201);
-    g.lineStyle(3,0xb7aa9c);g.strokeCircle(fx,fy,185);
+    // Alloy plaza plate with a glowing cyan outer perimeter; water is unchanged.
+    g.fillStyle(0x2a4352);g.fillCircle(fx+5,fy+8,211);
+    g.fillStyle(0x91a6b2);g.fillCircle(fx,fy,205);
+    g.lineStyle(8,0x59dbe9);g.strokeCircle(fx,fy,201);
+    g.lineStyle(3,0x3f6377);g.strokeCircle(fx,fy,185);
     // Concentric circular paving rings and radial tile joints.
     for(const rr of [136,157,178,194]){
-     g.lineStyle(2,rr%2?0xc6b7a5:0xd2c5b2,0.8);g.strokeCircle(fx,fy,rr);
+     g.lineStyle(2,rr%2?0x547282:0xc6d5db,0.8);g.strokeCircle(fx,fy,rr);
     }
     for(let i=0;i<24;i++){
      const ang=i*Math.PI/12;
      const x1=fx+137*Math.cos(ang),y1=fy+137*Math.sin(ang);
      const x2=fx+193*Math.cos(ang),y2=fy+193*Math.sin(ang);
-     g.lineStyle(2,0xc9baa7,0.7);g.lineBetween(x1,y1,x2,y2);
+     g.lineStyle(2,0x607987,0.7);g.lineBetween(x1,y1,x2,y2);
     }
     // Curved planted ring: small shrubs, flowers, and four garden gateways.
     for(let i=0;i<32;i++){
@@ -413,14 +461,17 @@ if (!window.Phaser) {
      rect(lx-4,ly,8,27,0x52666a);rect(lx-8,ly-13,16,16,0x4c646c);
      rect(lx-5,ly-10,10,10,0xffe5a3);rect(lx-9,ly-16,18,4,0x364d56);
     }
-    // More mature pixel-art trees, rooted in grass parcels away from public walkways.
+    // Trees remain as living greenery, now installed in metal planter bases.
     const parkTrees=[
      [430,570],[495,661],[545,610],[640,674],[480,688],
      [1225,558],[1320,671],[1415,610],[1470,650],[1370,580],
      [410,555],[595,557],[1295,555],[1480,695]
     ];
     for(const [tx,ty] of parkTrees){
-     g.fillStyle(0x527f63,.24);g.fillEllipse(tx+7,ty+13,49,18);
+     g.fillStyle(0x233c4a);g.fillEllipse(tx+5,ty+13,58,20);
+     rect(tx-27,ty+5,54,12,0x405a68);
+     rect(tx-27,ty+5,54,3,0x60e1ed);
+     rect(tx-23,ty+9,46,4,0x41645a);
      rect(tx-5,ty-3,10,20,0x806449);rect(tx-2,ty-7,4,22,0xa08159);
      g.fillStyle(0x359b50);g.fillCircle(tx+4,ty-19,28);
      g.fillStyle(0x4fbd5d);g.fillCircle(tx-8,ty-26,23);
@@ -1047,14 +1098,20 @@ if (!window.Phaser) {
     const m=this.minimap,{x:mx,y:my,w:mw,h:mh}=this.minimapLayout,sx=mw/this.worldW,sy=mh/this.worldH;
     m.clear();m.fillStyle(0x0b202c,0.93);m.fillRect(mx-5,my-23,mw+10,mh+28);
     m.lineStyle(2,0x6aa6a8);m.strokeRect(mx-5,my-23,mw+10,mh+28);
-     // Garden parcels use the same bright green as the district, inside the dark frame.
-     m.fillStyle(0xa9dd85);m.fillRect(mx,my,mw,mh);
+     // Minimap floor tracks the brushed-silver parcels instead of old greenery.
+     m.fillStyle(0x8da3ae);m.fillRect(mx,my,mw,mh);
     // Minimap uses exactly the same street coordinates as the playable district.
-    m.fillStyle(0xcbbfa9);
+    m.fillStyle(0x425866);
     for(const [top,bottom] of [[350,530],[710,890],[1240,1430]])m.fillRect(mx,my+top*sy,mw,(bottom-top)*sy);
     for(const [left,right] of [[440,640],[1000,1200]])m.fillRect(mx+left*sx,my,(right-left)*sx,mh);
+    // Cyan perimeter details echo the neon strips at miniature scale.
+    m.lineStyle(1,0x53d9e7,0.85);
+    for(const [top,bottom] of [[350,530],[710,890],[1240,1430]]){
+     m.lineBetween(mx,my+top*sy,mx+mw,my+top*sy);
+     m.lineBetween(mx,my+bottom*sy,mx+mw,my+bottom*sy);
+    }
     // Central fountain landmark on the real map coordinates.
-    m.fillStyle(0x5c9e77);m.fillCircle(mx+820*sx,my+620*sy,15);
+    m.fillStyle(0x587b92);m.fillCircle(mx+820*sx,my+620*sy,15);
     m.fillStyle(0x8dd6df);m.fillCircle(mx+820*sx,my+620*sy,6);
     // Four tiny pixel pictograms, each anchored at its building's true location.
     for(const b of this.buildings){
