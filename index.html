@@ -64,7 +64,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 <div id="game" role="application" aria-label="2D exploration game. Move with WASD or arrow keys."></div>
 <button id="fullscreenToggle" type="button" aria-label="Masuk layar penuh" aria-pressed="false" title="Layar penuh (Esc untuk keluar)">⛶ <span>FULLSCREEN</span></button>
 <div class="touch" aria-label="Touch movement controls"><button data-dir="left" aria-label="Left">←</button><button data-dir="up" aria-label="Up">↑</button><button data-dir="down" aria-label="Down">↓</button><button data-dir="right" aria-label="Right">→</button></div>
-<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 13.9 — Repaired Baio Sprite Animations</span></footer>
+<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 14.0 — Stable Baio Sprite & Foot Alignment</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -572,18 +572,20 @@ if (!window.Phaser) {
    avatarShadow.fillStyle(0x12202c,0.25);
    // Player coordinates now represent the boots touching the floor, so
    // the shadow is directly underneath them rather than 24px below.
-   avatarShadow.fillEllipse(0,0,33,8);
+   avatarShadow.fillEllipse(0,2,29,7);
    this.avatarSprite=this.add.sprite(0,0,'baio-player-v139',0)
-    .setOrigin(0.5,169/180)
+    .setOrigin(0.5,168/180)
     .setScale(0.56);
-   this.drawAvatar=(direction='down',step=0,walking=false,emote=null)=>{
+   // Use a fixed idle pose: adjacent painted idle poses vary slightly in
+   // shirt highlights, which produced visible flicker while standing still.
+   // Interaction emotes are represented by the speech bubble only. Switching
+   // to the artwork's emote row caused the boots to jump below ground level.
+   // Use the two cleanest walking poses, alternating at a calmer cadence.
+   this.drawAvatar=(direction='down',step=0,walking=false)=>{
     const rows={down:0,up:1,left:2,right:3};
     const row=rows[direction]??0;
-    // Preserve the direction when facing left, right or away. Only use
-    // front-facing talk/interact poses when standing still and facing down.
-    let frame=row*8+(walking?4:0)+Math.max(0,Math.min(3,step));
-    if(!walking&&row===0&&emote==='TALK')frame=33;
-    else if(!walking&&row===0&&emote==='INTERACT')frame=32;
+    const walkFrames=[4,6];
+    const frame=walking?row*8+walkFrames[step%2]:row*8;
     this.avatarSprite.setFrame(frame);
    };
    this.drawAvatar('down',0);
@@ -886,7 +888,7 @@ if (!window.Phaser) {
    if(x||y){
     this.avatarDirection=Math.abs(x)>Math.abs(y)?(x<0?'left':'right'):(y<0?'up':'down');
     this.avatarClock+=delta;
-    if(this.avatarClock>145){this.avatarClock=0;this.avatarStep=(this.avatarStep+1)%4}
+    if(this.avatarClock>195){this.avatarClock=0;this.avatarStep=(this.avatarStep+1)%2}
     this.avatarIdleClock=0;
    }else{
     this.avatarStep=0;this.avatarClock=0;
@@ -946,9 +948,7 @@ if (!window.Phaser) {
     this.thoughtBubble.y=-125+Math.sin(this.time.now/260)*2;
    }else this.thoughtType='';
    const still=!x&&!y;
-   const idleFrame=Math.floor(this.avatarIdleClock/500)%4;
-   this.drawAvatar(this.avatarDirection,still?idleFrame:this.avatarStep,!still,
-    canShowThought?thought:null);
+   this.drawAvatar(this.avatarDirection,still?0:this.avatarStep,!still);
    this.prompt.setVisible(!this.dialogNpc&&!this.journalOpen&&!this.readerObject);
    this.prompt.setText(this.near?'[E / SPACE] '+this.near.label:'WASD / ARROWS TO MOVE');
    if(this.npcHint){
