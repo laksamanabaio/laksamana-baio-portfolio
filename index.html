@@ -64,7 +64,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 <div id="game" role="application" aria-label="2D exploration game. Move with WASD or arrow keys."></div>
 <button id="fullscreenToggle" type="button" aria-label="Masuk layar penuh" aria-pressed="false" title="Layar penuh (Esc untuk keluar)">⛶ <span>FULLSCREEN</span></button>
 <div class="touch" aria-label="Touch movement controls"><button data-dir="left" aria-label="Left">←</button><button data-dir="up" aria-label="Up">↑</button><button data-dir="down" aria-label="Down">↓</button><button data-dir="right" aria-label="Right">→</button></div>
-<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 15.24 — Neon Aluminium District</span></footer>
+<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 15.25 — Dynamic Day & Night Cycle</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -86,6 +86,25 @@ if (!window.Phaser) {
   const WORLD_CHARACTER_SCALE=.60, NPC_CHARACTER_SCALE=.56;
   const DISTRICT_BUILDING_SIZE={width:392,height:326};
   const NPC_HINT_Y=-Math.ceil(175*NPC_CHARACTER_SCALE)-30;
+  // One real second advances one game minute (24 real minutes per game day).
+  // Kept outside World so visiting rooms does not restart the cycle.
+  const baioClock={minuteOfDay:8*60};
+  const formatGameTime=t=>{
+   const m=Math.floor(t)%1440;
+   return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+  };
+  const getDayPhase=t=>{
+   const m=((t%1440)+1440)%1440;
+   if(m>=19*60||m<5*60)return {name:'MALAM',neon:1,shade:.49,color:'#a9ddff'};
+   if(m<6*60){
+    const k=(6*60-m)/60;
+    return {name:'FAJAR',neon:k,shade:.49*k,color:'#ffd39e'};
+   }
+   if(m<11*60)return {name:'PAGI',neon:0,shade:0,color:'#ffe0a3'};
+   if(m<17*60)return {name:'SIANG',neon:0,shade:0,color:'#d5f4e6'};
+   const k=(m-17*60)/(2*60);
+   return {name:'SORE',neon:k,shade:.49*k,color:'#ffc48d'};
+  };
   // Preload all sprites and room art while visitors see the opening.
   const portfolioLoadState={progress:0,ready:false,started:false,errors:[]};
   const updateAssetProgress=progress=>{
@@ -353,28 +372,31 @@ if (!window.Phaser) {
       rect(xx,yy+(Math.floor(xx/24)%2)*19,2,30,0x8297a3);
      }
     }
-    // Recessed cyan neon and amber signal segments trace the outer edges
-    // of all roads. At intersections they stop, so no crosswalk is blocked.
+    // Dimmable neon glows above a separate world-darkening layer.
+    // At midday only unlit black/metal light-rail housings remain.
+    const n=this.roadNeon=this.add.graphics().setDepth(60).setBlendMode(Phaser.BlendModes.ADD);
     const addNeonEdge=(at,start,end,isHorizontal,color)=>{
      const len=end-start;
      if(len<18)return;
      if(isHorizontal){
       rect(start,at-5,len,9,0x203846);
-      g.fillStyle(color,0.18);g.fillRect(start,at-8,len,15);
-      rect(start,at-3,len,3,color);
-      rect(start,at-3,len,1,0xe8ffff);
+      n.fillStyle(color,.11);n.fillRect(start,at-10,len,19);
+      n.fillStyle(color,.22);n.fillRect(start,at-7,len,13);
+      n.fillStyle(color,1);n.fillRect(start,at-3,len,3);
+      n.fillStyle(0xf2ffff,.85);n.fillRect(start,at-3,len,1);
       for(let p=start+14;p<end-16;p+=68){
-       rect(p,at-4,13,5,0xffbd67);
-       rect(p+2,at-4,9,1,0xffedc9);
+       n.fillStyle(0xffb05c,.82);n.fillRect(p,at-5,13,7);
+       n.fillStyle(0xffe6ad,1);n.fillRect(p+2,at-4,9,2);
       }
      }else{
       rect(at-5,start,9,len,0x203846);
-      g.fillStyle(color,0.18);g.fillRect(at-8,start,15,len);
-      rect(at-3,start,3,len,color);
-      rect(at-3,start,1,len,0xe8ffff);
+      n.fillStyle(color,.11);n.fillRect(at-10,start,19,len);
+      n.fillStyle(color,.22);n.fillRect(at-7,start,13,len);
+      n.fillStyle(color,1);n.fillRect(at-3,start,3,len);
+      n.fillStyle(0xf2ffff,.85);n.fillRect(at-3,start,1,len);
       for(let p=start+14;p<end-16;p+=68){
-       rect(at-4,p,5,13,0xffbd67);
-       rect(at-4,p+2,1,9,0xffedc9);
+       n.fillStyle(0xffb05c,.82);n.fillRect(at-5,p,7,13);
+       n.fillStyle(0xffe6ad,1);n.fillRect(at-4,p+2,2,9);
       }
      }
     };
@@ -491,12 +513,22 @@ if (!window.Phaser) {
      rect(lx-5,ly-5,10,9,0x4b626b);
      rect(lx-3,ly-45,6,42,0x344a56);
      rect(lx-8,ly-51,16,10,0x647780);
-     g.fillStyle(0xffe9b0,.25);g.fillCircle(lx,ly-48,20);
-     rect(lx-6,ly-50,12,12,0xffe5a7);
-     rect(lx-3,ly-48,6,7,0xfff3ce);
+     // Lamp bulbs and their light pools share the road's day/night switch.
+     rect(lx-6,ly-50,12,12,0x61777c);
+     rect(lx-3,ly-48,6,7,0x8f9da0);
      rect(lx-11,ly-54,22,5,0x2e4854);
+     n.fillStyle(0xffd780,.045);n.fillEllipse(lx,ly-5,154,74);
+     n.fillStyle(0xffd780,.08);n.fillCircle(lx,ly-47,31);
+     n.fillStyle(0xffe7a0,.21);n.fillCircle(lx,ly-47,19);
+     n.fillStyle(0xfff1be,.95);n.fillRect(lx-6,ly-50,12,12);
+     n.fillStyle(0xffffff,1);n.fillRect(lx-3,ly-48,6,7);
     }
     // Fountain spray is a separate graphics layer, animated during gameplay.
+    // Shade buildings, NPCs and roads at night. Lamps stay above this overlay.
+    this.ambientShade=this.add.rectangle(
+     this.worldW/2,this.worldH/2,this.worldW,this.worldH,0x061424
+    ).setDepth(50).setAlpha(0);
+    this.roadNeon.setAlpha(0);
     this.fountainSpray=this.add.graphics().setDepth(12);
     this.fountainTime=0;
     this.zones=[];
@@ -736,6 +768,21 @@ if (!window.Phaser) {
    this.dialogPage=0;
    this.journalOpen=false;
    this.createJourneyHUD(freshVisit);
+    // Fixed clock HUD, shown in all scenes without overlapping the quest chip.
+    const clockX=HUD_EDGE,clockY=89;
+    this.clockBacking=this.add.graphics().setScrollFactor(0).setDepth(115);
+    this.clockBacking.fillStyle(0x071b28,.90);
+    this.clockBacking.fillRoundedRect(clockX,clockY,188,51,8);
+    this.clockBacking.lineStyle(1,0x679da9,.8);
+    this.clockBacking.strokeRoundedRect(clockX+.5,clockY+.5,187,50,8);
+    this.gameClockText=this.add.text(clockX+10,clockY+6,'08:00  PAGI',{
+     fontFamily:'monospace',fontSize:'16px',fontStyle:'bold',color:'#ffe0a3'
+    }).setScrollFactor(0).setDepth(116);
+    this.add.text(clockX+10,clockY+31,'1 DETIK = 1 MENIT GAME',{
+     fontFamily:'monospace',fontSize:'10px',color:'#a7cbd1'
+    }).setScrollFactor(0).setDepth(116);
+    this.lastClockText='';
+    this.updateWorldLighting(0);
    this.readerObject=null;this.readerPage=0;this.readerJustCompleted=false;
    if(this.place!=='district')this.createContentReader();
    if(this.place==='district'){
@@ -980,7 +1027,21 @@ if (!window.Phaser) {
     this.scene.restart({place:to,spawn});
    });
   }
-  update(_,delta){
+  updateWorldLighting(delta){
+    // Clamp background-tab frame gaps to prevent time jumping hours forward.
+    baioClock.minuteOfDay=(baioClock.minuteOfDay+Math.min(Math.max(delta,0),100)/1000)%1440;
+    const phase=getDayPhase(baioClock.minuteOfDay);
+    if(this.ambientShade)this.ambientShade.setAlpha(phase.shade);
+    if(this.roadNeon)this.roadNeon.setAlpha(phase.neon);
+    const label=formatGameTime(baioClock.minuteOfDay)+'  '+phase.name;
+    if(label!==this.lastClockText){
+     this.gameClockText.setText(label);
+     this.gameClockText.setColor(phase.color);
+     this.lastClockText=label;
+    }
+   }
+   update(_,delta){
+    this.updateWorldLighting(delta);
    const k=this.keys;let x=0,y=0;
    if(k.A.isDown||k.LEFT.isDown||pressed.has('left'))x--;
    if(k.D.isDown||k.RIGHT.isDown||pressed.has('right'))x++;
