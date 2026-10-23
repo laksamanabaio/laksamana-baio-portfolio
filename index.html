@@ -309,7 +309,7 @@ if (!window.Phaser) {
      './assets/district/'+revision+'/'+filename+'.png?v='+(revision==='v1512'?'15.12':'15.11'));
    }
    }
-  init(data){this.place=data.place||'home';this.spawn=data.spawn||null;this.changing=false}
+  init(data){this.place=data.place||'home';this.spawn=data.spawn||null;this.changing=false;this.roadNeon=null;this.ambientShade=null}
   create(){
    const g=this.add.graphics(),rect=(x,y,w,h,c)=>{g.fillStyle(c);g.fillRect(x,y,w,h)};
    rect(0,0,W,H,0x142733);
