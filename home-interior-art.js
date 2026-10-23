@@ -1,5 +1,5 @@
 /*
- * BAIO DISTRICT 2077 — HOME 13.4 / PARALLELOGRAM SUNLIGHT AND EXIT MAT
+ * BAIO DISTRICT 2077 — HOME 13.5 / RECTANGULAR WINDOW LIGHT AND DESIGN NOTES
  * Uses the seven approved isolated transparent PNGs, cropped and optimized
  * for the 960x540 game stage. The furniture, walls, rug and window are native
  * pixel art; Phaser Graphics is only used for the architectural shell, floor,
@@ -47,23 +47,12 @@ function renderHomeWithAssets(scene){
   }
   if(row%3===0)r(45,y+9,871,2,0xb77b50,.055);
  }
- // 2. The 342px morning window at x=224..566 casts a single broad
- // parallelogram of sunlight across the floor, not triangular spotlights.
- // A consistent x-offset at the sill and floor keeps both ends parallel.
- const windowLight=(left,right,shift,tint,opacity)=>{
-  const sill=145, floor=482;
-  lighting.fillStyle(tint,opacity);
-  lighting.fillTriangle(left,sill,right,sill,right+shift,floor);
-  lighting.fillTriangle(left,sill,right+shift,floor,left+shift,floor);
- };
- // Full glazing footprint, with slight inset to respect the window frame.
- windowLight(233,557,111,0xffdfaa,.095);
- // Three subtle pane-shaped reflections share the same perspective.
- windowLight(246,331,111,0xfff4cf,.047);
- windowLight(347,435,111,0xffefc5,.047);
- windowLight(451,545,111,0xfff4cf,.047);
- // A quiet warm glint adds definition without obscuring floor details.
- windowLight(309,324,111,0xe8aa75,.028);
+ // 2. The morning window spans x=224..566 and is 342x94 pixels.
+ // Cast exactly that same rectangular silhouette on a small section of
+ // the upper floor, instead of long light beams reaching toward the exit.
+ // Lighting stays behind furniture and avatars.
+ lighting.fillStyle(0xffe2a6,.105);
+ lighting.fillRect(224,166,342,94);
  r(28,39,16,458,0x172838);
  r(918,39,14,458,0x15283a);
  r(26,482,907,26,0x16283a);
@@ -137,7 +126,8 @@ function renderHomeWithAssets(scene){
   fontFamily:'monospace',fontSize:'12px',fontStyle:'bold',
   color:'#d9e4e2',stroke:'#172630',strokeThickness:1
  }).setOrigin(.5,0).setDepth(1.2);
- // Animated, non-text interaction beacons: cyan for About Me, amber for Blueprint.
+ // Animated, non-text interaction beacons: cyan for the computer chair,
+ // amber for Blueprint, and lime green for Design Notes on the coffee table.
  // Position is anchored to each object; the existing E / SPACE / tap gameplay
  // continues to work normally. No extra collision or clickable screen overlay.
  const interactionBeacon=(x,y,tint)=>{
@@ -170,5 +160,6 @@ function renderHomeWithAssets(scene){
   return marker;
  };
  interactionBeacon(696,185,0x76e4ee); // centered on the computer chair
- interactionBeacon(881,145,0xffc979);
+ interactionBeacon(881,145,0xffc979); // Blueprint
+ interactionBeacon(748,406,0xa5f27a); // Design Notes: middle of the coffee table
 }
