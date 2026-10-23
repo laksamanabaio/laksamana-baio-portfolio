@@ -64,7 +64,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 <div id="game" role="application" aria-label="2D exploration game. Move with WASD or arrow keys."></div>
 <button id="fullscreenToggle" type="button" aria-label="Masuk layar penuh" aria-pressed="false" title="Layar penuh (Esc untuk keluar)">⛶ <span>FULLSCREEN</span></button>
 <div class="touch" aria-label="Touch movement controls"><button data-dir="left" aria-label="Left">←</button><button data-dir="up" aria-label="Up">↑</button><button data-dir="down" aria-label="Down">↓</button><button data-dir="right" aria-label="Right">→</button></div>
-<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 15.5 — Garden Expansion & Smart Loading</span></footer>
+<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 15.6 — Bigger Buildings & Brighter Garden</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -82,9 +82,9 @@ if (!window.Phaser) {
 } else {
 
  const W=960,H=540,HUD_EDGE=26,pressed=new Set();
-  // Every in-world character uses the same 136x184 frame dimensions and display scale.
-  const WORLD_CHARACTER_SCALE=.60;
-  const NPC_HINT_Y=-Math.ceil(175*WORLD_CHARACTER_SCALE)-30;
+  // Baio stays at 0.60; NPCs are a little smaller at 0.56 and keep their original frame proportions.
+  const WORLD_CHARACTER_SCALE=.60, NPC_CHARACTER_SCALE=.56;
+  const NPC_HINT_Y=-Math.ceil(175*NPC_CHARACTER_SCALE)-30;
   // Preload all sprites and room art while visitors see the opening.
   const portfolioLoadState={progress:0,ready:false,started:false,errors:[]};
   const updateAssetProgress=progress=>{
@@ -286,11 +286,17 @@ if (!window.Phaser) {
    rect(0,0,W,H,0x142733);
    if(this.place==='district'){
     this.worldW=1920;this.worldH=1260;
-    this.buildings=[{id:'home',x:170,y:155,w:190,h:158},{id:'lab',x:1350,y:150,w:204,h:168},{id:'workshop',x:1370,y:905,w:210,h:130},{id:'hub',x:200,y:905,w:200,h:130}];
+    // Larger landmarks remain inside their grass parcels and maintain road access.
+     this.buildings=[
+      {id:'home',x:145,y:123,w:240,h:190},
+      {id:'lab',x:1326,y:113,w:252,h:205},
+      {id:'workshop',x:1345,y:905,w:260,h:148},
+      {id:'hub',x:175,y:905,w:250,h:148}
+     ];
     // Sunny garden district: grass parcels and continuous pedestrian promenades.
-    rect(0,0,this.worldW,this.worldH,0x86b88d);
+    rect(0,0,this.worldW,this.worldH,0xa9dd85);
     for(let x=0;x<this.worldW;x+=64)for(let y=0;y<this.worldH;y+=64){
-     rect(x+8,y+8,28,8,0x93c798);rect(x+44,y+42,9,9,0x6ca67e);
+     rect(x+8,y+8,28,8,0xc0ee96);rect(x+44,y+42,9,9,0x8bd56d);
     }
     const road=0xcbbfa9,curb=0xe8dfc9,mark=0xb8ad99;
     const horizontal=[[350,530],[710,890],[1060,1190]];
@@ -330,7 +336,7 @@ if (!window.Phaser) {
     // Pixel flower planters on grass verges; keep walking corridors clear.
     for(const [px,py] of [[360,555],[1220,560],[370,680],[1225,680],[145,555],[1700,550],[155,695],[1730,695],[750,65],[890,65],[745,1080],[900,1080]]){
      rect(px-26,py-12,52,25,0x7d8b73);
-     rect(px-23,py-15,46,22,0x477e58);
+     rect(px-23,py-15,46,22,0x56b95c);
      for(let i=0;i<5;i++){
       const xx=px-18+i*9,yy=py-8+(i%2)*8;
       rect(xx,yy,7,7,i%2?0xf4c1c4:0xf6df9b);
@@ -340,7 +346,7 @@ if (!window.Phaser) {
     // Baio Garden Plaza: a genuinely round pedestrian loop with a tiered fountain.
     const fx=820,fy=620;
     // The circular stone plaza joins the four garden promenades seamlessly.
-    g.fillStyle(0x648e70);g.fillCircle(fx+5,fy+8,211);
+    g.fillStyle(0x79c96b);g.fillCircle(fx+5,fy+8,211);
     g.fillStyle(0xe7dcca);g.fillCircle(fx,fy,205);
     g.lineStyle(8,0xf6ebd7);g.strokeCircle(fx,fy,201);
     g.lineStyle(3,0xb7aa9c);g.strokeCircle(fx,fy,185);
@@ -358,8 +364,8 @@ if (!window.Phaser) {
     for(let i=0;i<32;i++){
      const ang=i*Math.PI/16,xx=fx+194*Math.cos(ang),yy=fy+194*Math.sin(ang);
      if(Math.abs(Math.sin(ang))<0.22||Math.abs(Math.cos(ang))<0.22)continue;
-     g.fillStyle(0x3d9065);g.fillCircle(xx,yy,10);
-     g.fillStyle(0x74ba7d);g.fillCircle(xx-3,yy-4,6);
+     g.fillStyle(0x4cb85e);g.fillCircle(xx,yy,10);
+     g.fillStyle(0x91e478);g.fillCircle(xx-3,yy-4,6);
      if(i%3===0){g.fillStyle(0xf4a9bc);g.fillCircle(xx+4,yy-4,3)}
      if(i%5===0){g.fillStyle(0xf2db87);g.fillCircle(xx-5,yy+3,3)}
     }
@@ -400,16 +406,16 @@ if (!window.Phaser) {
     const parkTrees=[
      [270,72],[393,77],[90,614],[259,622],[378,610],
      [1342,610],[1550,613],[1753,618],[78,963],[135,1012],
-     [1263,975],[1882,980],[958,115],[1858,80]
+     [1263,975],[1882,980],[948,58],[1868,80]
     ];
     for(const [tx,ty] of parkTrees){
      g.fillStyle(0x527f63,.24);g.fillEllipse(tx+7,ty+13,49,18);
      rect(tx-5,ty-3,10,20,0x806449);rect(tx-2,ty-7,4,22,0xa08159);
-     g.fillStyle(0x276c4f);g.fillCircle(tx+4,ty-19,28);
-     g.fillStyle(0x348b61);g.fillCircle(tx-8,ty-26,23);
-     g.fillStyle(0x57a876);g.fillCircle(tx+14,ty-31,20);
-     g.fillStyle(0x83c88a);g.fillCircle(tx-11,ty-37,13);
-     g.fillStyle(0xb8dfa0);g.fillCircle(tx+11,ty-41,7);
+     g.fillStyle(0x359b50);g.fillCircle(tx+4,ty-19,28);
+     g.fillStyle(0x4fbd5d);g.fillCircle(tx-8,ty-26,23);
+     g.fillStyle(0x71d575);g.fillCircle(tx+14,ty-31,20);
+     g.fillStyle(0xa0eb8c);g.fillCircle(tx-11,ty-37,13);
+     g.fillStyle(0xd1f7aa);g.fillCircle(tx+11,ty-41,7);
     }
     // Softly illuminated lampposts at both ends of each east-west path,
     // and beside the north/south endpoints of both vertical paths.
@@ -454,6 +460,7 @@ if (!window.Phaser) {
       rect(wx+3,b.y+64,3,18,0x2b5361);
      }
      rect(b.x+12,b.y+105,b.w-24,6,t.trim);
+     rect(b.x+15,b.y+Math.round(b.h*.72),b.w-30,5,t.trim);
      // Distinctive rooftop details.
      if(b.id==='home'){
       rect(b.x+23,b.y-9,36,18,0x3c4548);rect(b.x+29,b.y-16,24,7,0x8d7562);
@@ -469,24 +476,24 @@ if (!window.Phaser) {
       rect(b.x+24,b.y-8,25,17,0x554878);
      }
      // Door sized against the unchanged character sprite.
-     rect(cx-30,dy-58,60,58,0x132b38);
-     rect(cx-22,dy-50,44,50,t.glass);
-     rect(cx-22,dy-50,44,6,t.trim);
-     rect(cx-3,dy-42,6,42,0x254657);
-     rect(cx-36,dy-3,72,7,0xcab18b);
-     this.add.text(cx,b.y+114,t.sign,{fontFamily:'monospace',fontSize:'15px',color:'#fff0d7',backgroundColor:'#172d3a',padding:{x:8,y:4}}).setOrigin(.5,0);
+     rect(cx-36,dy-70,72,70,0x132b38);
+     rect(cx-27,dy-62,54,62,t.glass);
+     rect(cx-27,dy-62,54,7,t.trim);
+     rect(cx-3,dy-53,6,53,0x254657);
+     rect(cx-43,dy-3,86,7,0xcab18b);
+     this.add.text(cx,b.y+Math.round(b.h*.63),t.sign,{fontFamily:'monospace',fontSize:'15px',color:'#fff0d7',backgroundColor:'#172d3a',padding:{x:8,y:4}}).setOrigin(.5,0);
      // Entrance remains directly below the building, outside its collision.
      this.zones.push({x:cx,y:dy+32,r:65,label:'Enter '+destinations[b.id].name,to:b.id});
     }
     // Background city blocks: atmospheric scenery, intentionally non-enterable.
     // Every footprint stays inside a parcel and outside the road corridors.
     this.sceneryBuildings=[
-     {x:690,y:115,w:220,h:192,type:'arcade',name:'NEON ARCADE',glow:0x69bfc4},
-     {x:1610,y:112,w:205,h:194,type:'tower',name:'DATA TOWER',glow:0x82a9e2},
-     {x:690,y:915,w:235,h:122,type:'cafe',name:'NIGHT CAFE',glow:0xe1a36d},
-     {x:1640,y:914,w:180,h:123,type:'market',name:'CYBER MART',glow:0xc78ed6},
-     {x:65,y:78,w:90,h:195,type:'tower',name:'',glow:0x78a8bc},
-     {x:1270,y:80,w:62,h:190,type:'tower',name:'',glow:0x6da8a9}
+     {x:665,y:89,w:270,h:218,type:'arcade',name:'NEON ARCADE',glow:0x69bfc4},
+     {x:1590,y:76,w:246,h:230,type:'tower',name:'DATA TOWER',glow:0x82a9e2},
+     {x:665,y:899,w:282,h:148,type:'cafe',name:'NIGHT CAFE',glow:0xe1a36d},
+     {x:1620,y:899,w:218,h:148,type:'market',name:'CYBER MART',glow:0xc78ed6},
+     {x:25,y:62,w:108,h:220,type:'tower',name:'',glow:0x78a8bc},
+     {x:1220,y:65,w:90,h:219,type:'tower',name:'',glow:0x6da8a9}
     ];
     for(const b of this.sceneryBuildings){
      const c=b.glow,roof=b.type==='cafe'?0x4b3b3c:0x263845;
@@ -556,9 +563,9 @@ if (!window.Phaser) {
     for(const npc of this.parkVisitors){
      // Art is aligned on the boots (the same ground-plane anchor as Baio).
      const shadow=this.add.graphics();
-     shadow.fillStyle(0x12202c,.22);shadow.fillEllipse(0,2,27,6);
+     shadow.fillStyle(0x12202c,.22);shadow.fillEllipse(0,2,25,6);
      npc.avatar=this.add.sprite(0,0,'npc-'+npc.appearance,0)
-      .setOrigin(.5,175/184).setScale(WORLD_CHARACTER_SCALE);
+      .setOrigin(.5,175/184).setScale(NPC_CHARACTER_SCALE);
      npc.sprite=this.add.container(0,0,[shadow,npc.avatar]).setDepth(11);
      npc.direction='down';npc.walkFrame=0;
     }
@@ -740,7 +747,7 @@ if (!window.Phaser) {
     }).setScrollFactor(0).setDepth(212).setVisible(false);
     this.dialogNext=this.add.text(916,488,'E / SPACE  ▸',{fontFamily:'monospace',fontSize:'12px',color:'#a8d9d4'}).setOrigin(1,.5).setScrollFactor(0).setDepth(212).setVisible(false);
     // Place the lower edge of the hint ABOVE the entire head silhouette:
-    // NPCs share Baio's 0.60 scale and boot-level anchor. Keep the hint
+    // NPCs use 0.56 scale and share Baio's boot-level anchor. Keep the hint
     // above the tallest visible hair silhouette as character sizes change.
     this.npcHint=this.add.text(0,NPC_HINT_Y,'',{fontFamily:'monospace',fontSize:'12px',color:'#fff8db',backgroundColor:'#173947',padding:{x:6,y:3}}).setOrigin(.5,1).setDepth(120).setVisible(false);
    }
@@ -953,7 +960,7 @@ if (!window.Phaser) {
    }
    this.changing=true;
    const to=this.near.to;
-   const exits={home:{x:265,y:410},lab:{x:1252,y:397},workshop:{x:1335,y:1090},hub:{x:340,y:1090}};
+   const exits={home:{x:265,y:410},lab:{x:1452,y:397},workshop:{x:1475,y:1120},hub:{x:300,y:1120}};
    const spawn=to==='district'
     ? (exits[this.place]||exits.home)
     : this.place==='district'
