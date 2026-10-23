@@ -64,7 +64,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 <div id="game" role="application" aria-label="2D exploration game. Move with WASD or arrow keys."></div>
 <button id="fullscreenToggle" type="button" aria-label="Masuk layar penuh" aria-pressed="false" title="Layar penuh (Esc untuk keluar)">⛶ <span>FULLSCREEN</span></button>
 <div class="touch" aria-label="Touch movement controls"><button data-dir="left" aria-label="Left">←</button><button data-dir="up" aria-label="Up">↑</button><button data-dir="down" aria-label="Down">↓</button><button data-dir="right" aria-label="Right">→</button></div>
-<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 15.17 — DATA TOWER Normal Height</span></footer>
+<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 15.18 — Tall DATA TOWER</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -462,7 +462,7 @@ if (!window.Phaser) {
     this.sceneryBuildings=[
       // ARCADE stays centered at x=820; the sprite fills the 640..1000 garden width without spilling onto either road.
       {id:'arcade',x:650,y:120,w:340,h:200,spriteW:360,spriteH:345},
-      {id:'tower',x:1208,y:120,w:307,h:200,spriteW:307,spriteH:326,visibleH:272},
+      {id:'tower',x:1208,y:120,w:307,h:200,spriteW:307,spriteH:540},
       {id:'cafe',x:560,y:1018,w:292,h:200,spriteW:292,spriteH:272},
       {id:'market',x:1295,y:1018,w:220,h:200,spriteW:220,spriteH:295},
       // These single-story buildings fit the grass between the first two roads.
@@ -475,15 +475,10 @@ if (!window.Phaser) {
      };
      for(const b of this.sceneryBuildings){
       // DATA TOWER now fills the garden parcel beside LABORATORY while retaining its right-edge alignment. CYBER MART remains left of WORKSHOP.
-      const facade=this.add.image(b.x+b.w/2,b.y+b.h+12,'district-'+sceneryTextures[b.id]+'-v1512')
+      // Anchor all buildings by their ground-level base. DATA TOWER is intentionally
+      // tall enough to extend outside the northern map edge, hiding its roof.
+      this.add.image(b.x+b.w/2,b.y+b.h+12,'district-'+sceneryTextures[b.id]+'-v1512')
        .setOrigin(.5,1).setDisplaySize(b.spriteW,b.spriteH).setDepth(1);
-      if(b.visibleH){
-       // Trim the tower's upper pixels, not its proportions or fixed street position.
-       // Keep the full 307px width and the original bottom/door ground anchor.
-       const sourceHeight=facade.frame.height;
-       const trimTop=Math.round(sourceHeight*(b.spriteH-b.visibleH)/b.spriteH);
-       facade.setCrop(0,trimTop,facade.frame.width,sourceHeight-trimTop);
-      }
      }
      for(const [x,y] of [[750,250],[850,1030],[1570,580],[120,630],[1660,1060]]){
      rect(x,y,74,54,0x294b57);rect(x+8,y+8,58,28,0x397080);rect(x+14,y+13,46,4,0x87c3bc);
@@ -953,7 +948,7 @@ if (!window.Phaser) {
      // Collision footprint: character feet cannot enter building walls/roofs.
      const blocked=(px,py)=>Math.hypot(px-820,py-620)<125||[...this.buildings,...this.sceneryBuildings].some(b=>{
       // Match any sprite wider than its plot footprint without shifting its center.
-      const height=b.visibleH||b.spriteH||DISTRICT_BUILDING_SIZE.height;
+      const height=b.spriteH||DISTRICT_BUILDING_SIZE.height;
       const width=b.spriteW||b.w;
       const left=b.x+(b.w-width)/2;
       const top=b.y+b.h+12-height;
