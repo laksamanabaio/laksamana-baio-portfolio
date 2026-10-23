@@ -402,15 +402,6 @@ if (!window.Phaser) {
      const x2=fx+193*Math.cos(ang),y2=fy+193*Math.sin(ang);
      g.lineStyle(2,0x607987,0.7);g.lineBetween(x1,y1,x2,y2);
     }
-    // Curved planted ring: small shrubs, flowers, and four garden gateways.
-    for(let i=0;i<32;i++){
-     const ang=i*Math.PI/16,xx=fx+194*Math.cos(ang),yy=fy+194*Math.sin(ang);
-     if(Math.abs(Math.sin(ang))<0.22||Math.abs(Math.cos(ang))<0.22)continue;
-     g.fillStyle(0x4cb85e);g.fillCircle(xx,yy,10);
-     g.fillStyle(0x91e478);g.fillCircle(xx-3,yy-4,6);
-     if(i%3===0){g.fillStyle(0xf4a9bc);g.fillCircle(xx+4,yy-4,3)}
-     if(i%5===0){g.fillStyle(0xf2db87);g.fillCircle(xx-5,yy+3,3)}
-    }
     // Stone fountain foundation, three levels of blue water and raised pedestal.
     g.fillStyle(0x8e918d);g.fillCircle(fx+5,fy+7,124);
     g.fillStyle(0xf5eee1);g.fillCircle(fx,fy,120);
@@ -439,28 +430,10 @@ if (!window.Phaser) {
      rect(bx+4,by+3,39,3,0xe5ba82);rect(bx+5,by+18,5,8,0x4c5960);
      rect(bx+38,by+18,5,8,0x4c5960);
     }
-    // Garden lanterns and planter boxes frame the approaches.
+    // Four decorative lanterns frame the central plaza approaches.
     for(const [lx,ly] of [[fx-222,fy-112],[fx+222,fy-112],[fx-222,fy+112],[fx+222,fy+112]]){
      rect(lx-4,ly,8,27,0x52666a);rect(lx-8,ly-13,16,16,0x4c646c);
      rect(lx-5,ly-10,10,10,0xffe5a3);rect(lx-9,ly-16,18,4,0x364d56);
-    }
-    // Trees remain as living greenery, now installed in metal planter bases.
-    const parkTrees=[
-     [430,570],[495,661],[545,610],[640,674],[480,688],
-     [1225,558],[1320,671],[1415,610],[1470,650],[1370,580],
-     [410,555],[595,557],[1295,555],[1480,695]
-    ];
-    for(const [tx,ty] of parkTrees){
-     g.fillStyle(0x233c4a);g.fillEllipse(tx+5,ty+13,58,20);
-     rect(tx-27,ty+5,54,12,0x405a68);
-     rect(tx-27,ty+5,54,3,0x60e1ed);
-     rect(tx-23,ty+9,46,4,0x41645a);
-     rect(tx-5,ty-3,10,20,0x806449);rect(tx-2,ty-7,4,22,0xa08159);
-     g.fillStyle(0x359b50);g.fillCircle(tx+4,ty-19,28);
-     g.fillStyle(0x4fbd5d);g.fillCircle(tx-8,ty-26,23);
-     g.fillStyle(0x71d575);g.fillCircle(tx+14,ty-31,20);
-     g.fillStyle(0xa0eb8c);g.fillCircle(tx-11,ty-37,13);
-     g.fillStyle(0xd1f7aa);g.fillCircle(tx+11,ty-41,7);
     }
     // Softly illuminated lampposts at both ends of each east-west path,
     // and beside the north/south endpoints of both vertical paths.
@@ -544,7 +517,7 @@ if (!window.Phaser) {
      {kind:'woman',shirt:0xd9a1aa,route:'line',ax:670,ay:800,bx:970,by:800,speed:.17,phase:2.4},
      {kind:'man',shirt:0x7c9ac4,route:'line',ax:680,ay:437,bx:965,by:437,speed:.19,phase:1.7}
     ];
-    const npcStories=[["Raka","Beautiful morning, isn't it? The fountain is the heart of Baio Garden.","Want to get to know Baio? Start at HOME, in the northwest part of the district."],["Nadia","I love taking a morning walk around the plaza. It's such a peaceful place.","Visit the LABORATORY to explore Baio's professional experience in design."],["Mr. Bima","This garden used to be much quieter. It's wonderful to see people enjoying it.","A little tip: follow the stone pathways and use the minimap to find your way."],["Maya","Hey there! I just walked past HOME.","That's where Baio introduces himself. Press E near the entrance to step inside."],["Dimas","Welcome to the LABORATORY neighborhood!","Curious about Baio's UI/UX background? The LABORATORY is a great place to start."],["Grandma Sari","Take your time, dear. The flowers are lovely this morning.","You'll find the WORKSHOP in the southeast, where Baio's projects are showcased."],["Grandpa Arman","A morning stroll through the garden is my favorite routine.","Looking to connect with Baio? The CONTACT HUB is in the southwest."],["Lina","I just came from the Contact Hub. The southern path is lovely!","Look for the signs on each building so you know where you're headed."],["Reno","Hello! I'm looking for inspiration for my next creative project.","The WORKSHOP is where you can discover what Baio has been working on."],["Grandma Ratih","Don't forget to enjoy the scenery along the way.","If you get lost, look for the yellow dot on your minimap. That's you!"],["Adit","The eastern garden pathway is my favorite part of the district.","You can enter the four main portfolio buildings. The others bring the city to life."],["Tara","What a refreshing morning for a walk!","Use WASD or the arrow keys to explore. On mobile, try the touch controls."],["Mr. Jaya","There's no rush. Take your time and explore.","You can also travel between the LABORATORY and WORKSHOP using their portals."],["Citra","I could listen to the fountain all morning.","Visit each of the four main buildings to get the full portfolio experience."],["Fajar","Hey, explorer! There are stories waiting around every corner.","Whenever an interaction prompt appears, press E or Space, or tap the screen."]];
+    const npcStories=[["Raka","Beautiful morning, isn't it? The fountain is the heart of Baio Garden.","Want to get to know Baio? Start at HOME, in the northwest part of the district."],["Nadia","I love taking a morning walk around the plaza. It's such a peaceful place.","Visit the LABORATORY to explore Baio's professional experience in design."],["Mr. Bima","This garden used to be much quieter. It's wonderful to see people enjoying it.","A little tip: follow the stone pathways and use the minimap to find your way."],["Maya","Hey there! I just walked past HOME.","That's where Baio introduces himself. Press E near the entrance to step inside."],["Dimas","Welcome to the LABORATORY neighborhood!","Curious about Baio's UI/UX background? The LABORATORY is a great place to start."],["Grandma Sari","Take your time, dear. The futuristic plaza looks lovely.","You'll find the WORKSHOP in the southeast, where Baio's projects are showcased."],["Grandpa Arman","A morning stroll through the garden is my favorite routine.","Looking to connect with Baio? The CONTACT HUB is in the southwest."],["Lina","I just came from the Contact Hub. The southern path is lovely!","Look for the signs on each building so you know where you're headed."],["Reno","Hello! I'm looking for inspiration for my next creative project.","The WORKSHOP is where you can discover what Baio has been working on."],["Grandma Ratih","Don't forget to enjoy the scenery along the way.","If you get lost, look for the yellow dot on your minimap. That's you!"],["Adit","The eastern garden pathway is my favorite part of the district.","You can enter the four main portfolio buildings. The others bring the city to life."],["Tara","What a refreshing morning for a walk!","Use WASD or the arrow keys to explore. On mobile, try the touch controls."],["Mr. Jaya","There's no rush. Take your time and explore.","You can also travel between the LABORATORY and WORKSHOP using their portals."],["Citra","I could listen to the fountain all morning.","Visit each of the four main buildings to get the full portfolio experience."],["Fajar","Hey, explorer! There are stories waiting around every corner.","Whenever an interaction prompt appears, press E or Space, or tap the screen."]];
     // Use distinct reference designs for young/adult men and women, and
     // the elderly NPCs. Keep the existing names, routes and dialogue pages.
     const npcLookByName={
