@@ -9,8 +9,16 @@
 :root{--hud-margin:26px;--hud-margin-compact:16px}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#091923;color:#f5e9d7;font-family:system-ui,-apple-system,sans-serif}
 main{position:relative;width:100vw;height:100dvh;overflow:hidden;background:#091923}
+main:fullscreen{width:100%;height:100%;background:#091923}
 #game{position:absolute;inset:0;width:100%;height:100%;overflow:hidden;background:#142733}
 #game canvas{display:block;image-rendering:pixelated}
+/* A visible, optional way to re-enter fullscreen after pressing Esc.
+   On phones it moves away from the on-screen movement controls. */
+#fullscreenToggle{position:absolute;left:14px;bottom:14px;z-index:30;display:flex;align-items:center;gap:7px;padding:8px 11px;cursor:pointer;border:1px solid #88c9cf;border-radius:6px;background:#142d3add;color:#def8f5;font:700 11px monospace;letter-spacing:.05em;box-shadow:0 2px 8px #07141b80}
+#fullscreenToggle:hover,#fullscreenToggle:focus-visible{background:#245164;outline:2px solid #9ce8e4;outline-offset:2px}
+#fullscreenToggle[aria-pressed="true"]{border-color:#f3c889;color:#ffe5ad}
+@media(pointer:coarse){#fullscreenToggle{left:auto;right:12px;bottom:12px}}
+@media(max-height:430px){#fullscreenToggle{padding:5px 8px;font-size:10px}}
 header{position:absolute;top:var(--hud-margin);left:var(--hud-margin);z-index:5;pointer-events:none;text-shadow:0 2px 5px #091923}
 h1{font-size:clamp(1rem,2vw,1.5rem);margin:0 0 3px;letter-spacing:.08em}
 p{margin:0;color:#c2d5d9;font-size:clamp(.65rem,1.1vw,.85rem)}
@@ -54,8 +62,9 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 <main>
 <header><h1>Laksamana Baio</h1><p>Interactive portfolio · Walkable District 2077</p></header>
 <div id="game" role="application" aria-label="2D exploration game. Move with WASD or arrow keys."></div>
+<button id="fullscreenToggle" type="button" aria-label="Masuk layar penuh" aria-pressed="false" title="Layar penuh (Esc untuk keluar)">⛶ <span>FULLSCREEN</span></button>
 <div class="touch" aria-label="Touch movement controls"><button data-dir="left" aria-label="Left">←</button><button data-dir="up" aria-label="Up">↑</button><button data-dir="down" aria-label="Down">↓</button><button data-dir="right" aria-label="Right">→</button></div>
-<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 13.6 — Larger Baio Character</span></footer>
+<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 13.7 — Fullscreen & Responsive Fit</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -946,10 +955,42 @@ if (!window.Phaser) {
    }
   }
  }
- const game=new Phaser.Game({type:Phaser.AUTO,parent:'game',width:W,height:H,backgroundColor:'#142733',pixelArt:true,render:{pixelArt:true,antialias:false},scene:[World],scale:{mode:Phaser.Scale.ENVELOP,autoCenter:Phaser.Scale.CENTER_BOTH}});
+ // FIT keeps every edge of the 960 × 540 world visible on laptop screens.
+ // ENVELOP previously cropped the game on short-height / narrow viewports.
+ const game=new Phaser.Game({type:Phaser.AUTO,parent:'game',width:W,height:H,backgroundColor:'#142733',pixelArt:true,render:{pixelArt:true,antialias:false},scene:[World],scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH}});
  const opening=document.getElementById('opening');
  const loading=document.getElementById('loading');
+ const main=document.querySelector('main');
+ const fullscreenToggle=document.getElementById('fullscreenToggle');
+ const updateFullscreenButton=()=>{
+  const active=document.fullscreenElement===main;
+  fullscreenToggle.setAttribute('aria-pressed',String(active));
+  fullscreenToggle.setAttribute('aria-label',active?'Keluar dari layar penuh':'Masuk layar penuh');
+  fullscreenToggle.title=active?'Keluar layar penuh (Esc)':'Layar penuh (Esc untuk keluar)';
+  fullscreenToggle.querySelector('span').textContent=active?'EXIT FULLSCREEN':'FULLSCREEN';
+  // The available canvas size changes as Chrome hides/reveals its UI.
+  // Let Phaser recalculate its FIT scale without changing game world coordinates.
+  game.scale.refresh();
+ };
+ const requestGameFullscreen=()=>{
+  if(!document.fullscreenElement&&main.requestFullscreen){
+   // Called synchronously from a button click: Chrome requires a user gesture.
+   // If the browser denies this request, the FIT layout still shows all content.
+   const pending=main.requestFullscreen();
+   if(pending&&pending.catch)pending.catch(()=>updateFullscreenButton());
+  }
+ };
+ document.addEventListener('fullscreenchange',updateFullscreenButton);
+ fullscreenToggle.addEventListener('click',()=>{
+  if(document.fullscreenElement){
+   const pending=document.exitFullscreen();
+   if(pending&&pending.catch)pending.catch(()=>updateFullscreenButton());
+  }else requestGameFullscreen();
+ });
  document.getElementById('startGame').addEventListener('click',()=>{
+  // Browser security forbids automatic fullscreen on page load. The START
+  // click is a valid gesture; Esc returns to the normal browser view.
+  requestGameFullscreen();
   // The journey starts at Home, but entering it does not finish the quest.
   opening.hidden=true;
   loading.classList.add('active');
