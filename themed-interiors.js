@@ -1,7 +1,7 @@
 /*
  * BAIO DISTRICT 2077 — themed interiors / Workshop, Laboratory, Contact Hub.
- * All scenery is Phaser pixel art, sharing HOME's shell, furniture silhouettes
- * and original v13 kitchen, dining and workstation sprites. No external art.
+ * Purpose-built fabrication machines, research equipment and communications
+ * hardware. HOME-style computer sprites remain; no dining or kitchens.
  */
 function renderThemedInterior(scene,place){
  const settings={
@@ -59,13 +59,6 @@ function renderThemedInterior(scene,place){
   fill(furniture,x+3,y+h-9,w-6,5,p.dark,.77);
   fill(furniture,x+w-8,y+9,4,h-18,p.dark,.63);
  };
- const label=(x,y,message,size=11,color=0xe9f3ed)=>{
-  return scene.add.text(x,y,message,{
-   fontFamily:'monospace',fontSize:size+'px',fontStyle:'bold',
-   color:typeof color==='number'?'#'+color.toString(16).padStart(6,'0'):color,
-   stroke:'#102432',strokeThickness:2
-  }).setOrigin(.5).setDepth(3);
- };
  const led=(x,y,c=p.accent)=>{
   fill(details,x-3,y-3,10,10,c,.14);
   fill(details,x-1,y-1,6,6,c,.38);
@@ -109,11 +102,14 @@ function renderThemedInterior(scene,place){
   fill(details,x-2,y-1,w+4,h+2,p.accent,.24);
   fill(details,x,y,w,h,p.accent,.87);
  }
- // Backlit wall control strips, branding and small tech monitors.
+ // Unlabeled glowing telemetry and waveform display.
  panel(355,65,250,65,p.dark);
  fill(details,365,74,230,3,p.accent,.68);
- label(480,87,p.title,23,p.bright);
- label(480,113,p.subtitle,10,0xd9e6e7);
+ for(let k=0;k<19;k++){
+  const ht=7+Math.round((.5+.5*Math.sin(k*1.3))*26);
+  fill(details,377+k*11,113-ht,6,ht,p.accent,.39+.14*(k%3));
+ }
+ for(let k=0;k<4;k++)led(401+k*53,117,p.bright);
  for(let x=91;x<=246;x+=31){
   fill(details,x,99,19,23,0x162b3b);
   fill(details,x+3,104,13,4,p.accent,.75);
@@ -124,14 +120,20 @@ function renderThemedInterior(scene,place){
   fill(details,x+3,109,17,3,p.accent,.62);
   fill(details,x+3,116,11,2,0xe1f5e8,.54);
  }
- // Shared floor EXIT docking tile at the same HOME south doorway.
- fill(details,418,474,123,32,0x162d3b);
- fill(details,430,482,100,21,0x395467);
- fill(details,439,484,82,11,0x183c52);
- fill(details,450,481,61,3,p.bright,.87);
- fill(details,421,484,4,18,p.accent);
- fill(details,535,484,4,18,p.accent);
- label(480,460,'EXIT · DISTRICT',11,0xddebe6);
+ // HOME-style woven EXIT doormat, without a floating explanation.
+ const mat=scene.add.graphics().setDepth(1.15);
+ mat.fillStyle(0x101b25,.25);mat.fillRoundedRect(433,450,96,26,3);
+ mat.fillStyle(0x34434b,.96);mat.fillRoundedRect(433,445,94,27,3);
+ mat.fillStyle(0x1a2934,.95);mat.fillRoundedRect(436,448,88,21,2);
+ mat.lineStyle(1,0x71818a,.55);mat.strokeRoundedRect(434,446,92,25,3);
+ for(let xx=440;xx<520;xx+=7){
+  mat.fillStyle(0x72818a,.32);mat.fillRect(xx,450,3,1);
+  mat.fillRect(xx,466,3,1);
+ }
+ scene.add.text(480,452,'EXIT',{
+  fontFamily:'monospace',fontSize:'12px',fontStyle:'bold',
+  color:'#d9e4e2',stroke:'#172630',strokeThickness:1
+ }).setOrigin(.5,0).setDepth(1.2);
  scene.zones=[
   {x:480,y:450,r:48,label:'Return to Baio District',to:'district'}
  ];
@@ -146,12 +148,40 @@ function renderThemedInterior(scene,place){
   return sprite;
  };
  if(place==='workshop'||place==='lab'){
-  // Functional pantry and dinner area remain part of both active workspaces.
-  mount('kitchen',59,310,293,125,place==='workshop'?0xffe5d6:0xd9fff8);
-  mount('dining',102,392,164,88,place==='workshop'?0xffe7d7:0xdffffb);
-  collide(79,322,252,57);
-  collide(108,416,144,46);
-  label(200,382,'PANTRY  /  BREAK',10,p.bright);
+  // Former pantry becomes a purpose-built industrial or scientific work bay.
+  if(place==='workshop'){
+   // Automated 3D printer and gantry fabricating a prototype.
+   panel(71,352,250,88,0x68534b);
+   metal(81,369,230,60);
+   fill(details,99,362,193,7,0x182e3d);
+   for(const xx of [130,253]){
+    fill(details,xx,369,12,42,p.accent,.81);
+    fill(details,xx+3,375,6,5,p.bright);
+   }
+   fill(details,127,389,146,10,0x152d40);
+   for(let k=0;k<7;k++)fill(details,150+k*17,392,9,5,k%2?p.bright:p.accent,.86);
+   fill(details,184,371,29,11,0x293d49);
+   fill(details,194,382,8,26,p.bright);
+   for(let xx=78;xx<315;xx+=46){
+    fill(details,xx,441,38,16,0x243a48);
+    fill(details,xx+3,443,31,5,p.accent,.7);
+    fill(details,xx+15,451,7,2,p.bright);
+   }
+  }else{
+   // Research sample analyzers and refrigerated microscopy pods.
+   panel(71,352,252,90,0x63999b);
+   metal(80,368,235,63);
+   for(let xx=94;xx<311;xx+=43){
+    fill(details,xx,378,31,42,0x244655);
+    fill(details,xx+3,380,25,30,0x4c96a3);
+    fill(details,xx+6,384,19,23,p.accent,.65);
+    fill(details,xx+11,392,8,5,p.bright,.94);
+    fill(details,xx+4,413,23,4,0xe7fff8,.41);
+   }
+   fill(details,164,357,63,12,0x193e4d);
+   for(let k=0;k<4;k++)led(177+k*13,362);
+  }
+  collide(78,360,241,82);
   // A read-only workstation uses the same native HOME computer pixel art.
   mount('workstation',628,172,228,112,place==='workshop'?0xffe4cf:0xd1fffa);
   collide(633,193,220,61);
@@ -159,7 +189,6 @@ function renderThemedInterior(scene,place){
   fill(details,657,153,166,15,0x193342);
   fill(details,668,158,72,5,p.accent,.83);
   fill(details,747,158,64,5,p.bright,.58);
-  label(744,291,place==='lab'?'CAREER TERMINAL':'PROJECT COMPUTER',12,p.bright);
   scene.zones.push({
    x:737,y:304,r:70,
    label:place==='lab'?'Explore Experience at Computer':'View Project Showcase at Computer',
@@ -185,7 +214,6 @@ function renderThemedInterior(scene,place){
   portalAura.lineStyle(2,p.bright,.63);portalAura.strokeRoundedRect(px+20,py+15,56,40,4);
   scene.tweens.add({targets:portalAura,alpha:.30,duration:1600,yoyo:true,repeat:-1});
   fill(details,439,235,82,5,p.accent,.8);
-  label(480,249,place==='lab'?'TO WORKSHOP':'TO LABORATORY',10,p.bright);
   scene.zones.push({x:480,y:282,r:61,
    label:place==='lab'?'Travel to Workshop':'Travel to Laboratory',
    to:place==='lab'?'workshop':'lab'});
@@ -227,7 +255,6 @@ function renderThemedInterior(scene,place){
     fill(details,x+4,217,13,12,p.accent,.8);
     fill(details,x+7,232,7,13,0x132a3b);
    }
-   label(214,289,'PROTOTYPE BAY / 01',11,p.bright);
    scene.zones.push({x:310,y:316,r:86,label:'Inspect Workshop Prototype',object:'workshop-engine'});
    collide(78,186,268,113);
    // Floor cables and parts crates along wall.
@@ -251,7 +278,6 @@ function renderThemedInterior(scene,place){
    fill(details,96,268,233,10,0x203c50);
    fill(details,116,272,193,2,p.accent,.86);
    for(const x of [145,212,282])led(x,260,p.bright);
-   label(214,290,'SPECIMEN ANALYSIS / 02',11,p.bright);
    scene.zones.push({x:310,y:316,r:86,label:'Inspect Research Samples',object:'lab-samples'});
    collide(78,188,268,112);
   }
@@ -269,7 +295,6 @@ function renderThemedInterior(scene,place){
     fill(details,x,y+22,31,3,p.mid,.76);
    }
   }
-  label(147,326,'PARCEL SORTER',11,p.bright);
   scene.zones.push({x:157,y:348,r:72,label:'Inspect Parcel Sorting Area',object:'hub-mail'});
   collide(72,166,158,156);
   // Visitor bench and queue guides, avoiding the center walkway.
@@ -294,14 +319,12 @@ function renderThemedInterior(scene,place){
   fill(details,487,187,71,7,p.accent,.68);
   fill(details,487,199,53,4,p.bright,.68);
   fill(details,487,206,63,3,0xe7deff,.46);
-  label(432,285,'MESSAGE COUNTER',12,p.bright);
   collide(252,203,365,89);
   // Directly accessible contact computer (separate from front counter).
   mount('workstation',642,178,212,112,0xece4ff);
   collide(645,194,207,64);
   fill(details,667,153,162,15,0x2d3652);
   fill(details,677,159,105,4,p.accent,.9);
-  label(750,298,'CONTACT COMPUTER',12,p.bright);
   scene.zones.push({x:749,y:317,r:72,label:'Open Contact Console at Computer',object:'hub'});
   const beacon=scene.add.graphics().setDepth(4.7);
   beacon.fillStyle(p.accent,.20);beacon.fillCircle(750,309,14);
