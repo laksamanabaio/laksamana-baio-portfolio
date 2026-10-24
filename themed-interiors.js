@@ -367,43 +367,84 @@ function renderThemedInterior(scene,place){
   beacon.fillStyle(0xf9f7ff);beacon.fillCircle(750,309,3);
   scene.tweens.add({targets:beacon,alpha:.45,duration:1000,yoyo:true,repeat:-1});
  }
- // One stationary themed custodian per building. The base sprite sheets are
- // the same approved 4-direction NPC art used outdoors (136x184, boot anchor).
- // Outfit overlay adds a dedicated uniform without changing facial artwork.
- const staff=p.guard;
- const shadow=scene.add.graphics();
- shadow.fillStyle(0x071c2b,.26);shadow.fillEllipse(0,3,28,8);
- const avatar=scene.add.sprite(0,0,'npc-'+staff.appearance,0)
-  .setOrigin(.5,175/184).setScale(.56);
- const uniform=scene.add.graphics();
- const U=(x,y,w,h,color,alpha=1)=>fill(uniform,x,y,w,h,color,alpha);
- if(place==='workshop'){
-  // Workshop engineer: dark copper work apron, shoulder straps, tool belt.
-  U(-13,-50,26,25,0x5e4235,.95);
-  U(-11,-52,4,15,p.accent);U(7,-52,4,15,p.accent);
-  U(-11,-37,22,4,0x2e3c44);
-  U(-6,-44,12,3,0xc3a281);U(4,-33,6,5,0xe4b46e);
-  U(-10,-28,20,4,0x58392e);
- }else if(place==='lab'){
-  // White research coat with teal inner garment and clipped ID badge.
-  U(-13,-51,26,27,0xe1eee9,.94);
-  U(-3,-51,6,22,0x4fabae);
-  U(-12,-49,3,22,0xffffff);U(9,-49,3,22,0xffffff);
-  U(5,-45,6,4,p.accent);U(-9,-34,6,5,0xbad3d9);
-  U(-2,-40,3,2,0xf7fffb);
- }else{
-  // Postal/front desk uniform: lavender vest, cream shirt and badge.
-  U(-13,-49,26,22,0x665789,.92);
-  U(-11,-49,5,19,p.accent);U(6,-49,5,19,p.accent);
-  U(-5,-49,10,9,0xebdce7);
-  U(4,-40,5,3,0xffdf9d);
-  U(-11,-28,22,4,0x302d4a);
+ // Staff outfits are recolored INSIDE the original 32 walking sprite frames.
+ // The former graphics 'uniform' was a separate static rectangle that looked
+ // like NPCs were holding their own shirts. Do not use that overlay.
+ const staff=p.guard,nativeKey='npc-'+staff.appearance;
+ const costumeKey=nativeKey+'-interior-'+place+'-v1548';
+ if(!scene.textures.exists(costumeKey)){
+  try{
+   const source=scene.textures.get(nativeKey).getSourceImage();
+   const canvas=document.createElement('canvas');
+   canvas.width=source.width;canvas.height=source.height;
+   const ctx=canvas.getContext('2d',{willReadFrequently:true});
+   ctx.drawImage(source,0,0);
+   const image=ctx.getImageData(0,0,canvas.width,canvas.height);
+   const bytes=image.data,target=p.accent;
+   const tr=target>>16,tg=target>>8&255,tb=target&255;
+   for(let yy=0;yy<canvas.height;yy++){
+    const sy=yy%184;
+    // Torsos only: keep face, arms, hair, trousers and boots intact.
+    if(sy<84||sy>125)continue;
+    for(let xx=0;xx<canvas.width;xx++){
+     const sx=xx%136;
+     if(sx<38||sx>99)continue;
+     const index=(yy*canvas.width+xx)*4;
+     if(bytes[index+3]<90)continue;
+     const r=bytes[index],g=bytes[index+1],b=bytes[index+2];
+     const value=(r+g+b)/3;
+     if(value<28||value>245)continue;
+     // Human skin tones should never be recolored.
+     if(r>g*1.11&&g>b*1.06&&r>82)continue;
+     const brightness=Math.max(.46,Math.min(1.25,value/125));
+     bytes[index]=Math.min(255,Math.round(tr*brightness));
+     bytes[index+1]=Math.min(255,Math.round(tg*brightness));
+     bytes[index+2]=Math.min(255,Math.round(tb*brightness));
+    }
+   }
+   ctx.putImageData(image,0,0);
+   scene.textures.addSpriteSheet(costumeKey,canvas,{
+    frameWidth:136,frameHeight:184,margin:0,spacing:0
+   });
+  }catch(error){
+   console.warn('Interior NPC costume recolor unavailable:',error);
+  }
  }
- const guard=scene.add.container(staff.x,staff.y,[shadow,avatar,uniform]).setDepth(4.25);
- scene.roomGuard={
+ const textureKey=scene.textures.exists(costumeKey)?costumeKey:nativeKey;
+ const shadow=scene.add.graphics();
+ shadow.fillStyle(0x071c2b,.25);shadow.fillEllipse(0,3,28,8);
+ const avatar=scene.add.sprite(0,0,textureKey,0)
+  .setOrigin(.5,175/184).setScale(.56);
+ // Four predictable waypoints within unobstructed room floor. Contact Hub
+ // guards pace in front of the counter; lab/workshop staff inspect work bays.
+ const patrol=place==='hub'
+  ?[[385,350],[462,354],[494,377],[372,378]]
+  :[[387,346],[433,352],[444,387],[365,388]];
+ const container=scene.add.container(patrol[0][0],patrol[0][1],[shadow,avatar]).setDepth(4.25);
+ const actor={
   name:staff.name,appearance:staff.appearance,pages:staff.pages,
-  sprite:guard,avatar
+  sprite:container,avatar,portraitTexture:textureKey,
+  stepIndex:1,stepTimer:0
  };
+ actor.update=delta=>{
+  if(scene.dialogNpc||scene.journalOpen||scene.readerObject){
+   avatar.setFrame(0);return;
+  }
+  const end=patrol[actor.stepIndex],dx=end[0]-container.x,dy=end[1]-container.y;
+  const distance=Math.hypot(dx,dy);
+  if(distance<2.5){
+   actor.stepIndex=(actor.stepIndex+1)%patrol.length;
+   return;
+  }
+  const speed=Math.min(distance,.034*Math.min(delta,50));
+  container.x+=dx/distance*speed;
+  container.y+=dy/distance*speed;
+  const dir=Math.abs(dx)>Math.abs(dy)?(dx<0?'left':'right'):(dy<0?'up':'down');
+  const row={down:0,up:1,left:2,right:3}[dir];
+  actor.stepTimer+=Math.min(delta,50);
+  avatar.setFrame(row*8+4+(Math.floor(actor.stepTimer/165)%4));
+ };
+ scene.roomGuard=actor;
  // The existing interaction hint and conversation panel show the staff
  // member's name; avoid a permanent badge overlapping their hair.
  return true;
