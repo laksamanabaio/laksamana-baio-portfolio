@@ -147,6 +147,24 @@ function renderThemedInterior(scene,place){
   if(tint!==undefined)sprite.setTint(tint);
   return sprite;
  };
+ // Color-coded, textless animations drawn over HOME-style computer screens.
+ const animateComputer=(x,y)=>{
+  const gfx=scene.add.graphics().setDepth(2.44),pulse={value:0};
+  const paint=()=>{
+   const t=pulse.value;
+   gfx.clear();
+   fill(gfx,x,y,111,42,0x102737,.90);
+   fill(gfx,x+3,y+3,105,36,0x244d5c,.87);
+   for(let i=0;i<6;i++){
+    const width=Math.round(90*(.29+.65*(.5+.5*Math.sin(t*Math.PI*2+i*1.15))));
+    fill(gfx,x+7,y+6+i*5,width,2,i%2?p.bright:p.accent,.78);
+   }
+   fill(gfx,x+4,y+4+Math.round(t*32),103,2,p.bright,.82);
+   fill(gfx,x+3,y+38,105,2,p.accent,.94);
+  };
+  paint();
+  scene.tweens.add({targets:pulse,value:1,duration:2100,repeat:-1,ease:'Linear',onUpdate:paint});
+ };
  if(place==='workshop'||place==='lab'){
   // Former pantry becomes a purpose-built industrial or scientific work bay.
   if(place==='workshop'){
@@ -184,6 +202,7 @@ function renderThemedInterior(scene,place){
   collide(78,360,241,82);
   // A read-only workstation uses the same native HOME computer pixel art.
   mount('workstation',628,172,228,112,place==='workshop'?0xffe4cf:0xd1fffa);
+  animateComputer(687,189);
   collide(633,193,220,61);
   // Dual-screen telemetry terminal and floor-level cable runs.
   fill(details,657,153,166,15,0x193342);
@@ -194,27 +213,42 @@ function renderThemedInterior(scene,place){
    label:place==='lab'?'Explore Experience at Computer':'View Project Showcase at Computer',
    object:place
   });
-  // Dedicated twin-district transit gate: dimensional pillars, center
-  // animated, and an easily reachable interaction zone.
-  const port=scene.add.graphics().setDepth(2.35);
-  const px=432,py=153,pw=96,ph=74;
-  fill(port,px-8,py+5,pw+16,ph+8,0x102130,.30);
-  fill(port,px,py,pw,ph,p.dark);
-  fill(port,px+8,py+5,pw-16,ph-10,0x162c41);
-  fill(port,px+16,py+10,pw-32,ph-20,0x235467);
-  fill(port,px+20,py+14,pw-40,ph-28,p.accent,.35);
-  port.lineStyle(4,p.accent,.95);port.strokeRoundedRect(px+12,py+8,pw-24,ph-18,6);
-  fill(port,px-5,py-5,11,ph+15,0x2e4753);
-  fill(port,px+pw-6,py-5,11,ph+15,0x2e4753);
-  for(let a=0;a<5;a++){
-   fill(port,px+24+a*10,py+23+(a%2)*5,5,18,p.bright,.18);
+  // Advanced circular quantum teleport ring with an orbiting BLUE energy aura.
+  const cx=480,cy=205,port=scene.add.graphics().setDepth(2.35);
+  port.fillStyle(0x061524,.31);port.fillEllipse(cx,cy+54,145,27);
+  port.fillStyle(0x152f45);port.fillCircle(cx,cy,55);
+  port.lineStyle(10,0x203b54,.97);port.strokeCircle(cx,cy,51);
+  port.lineStyle(6,0x418cba,.95);port.strokeCircle(cx,cy,44);
+  port.lineStyle(2,0xa2faff,.80);port.strokeCircle(cx,cy,34);
+  port.fillStyle(0x13517b,.77);port.fillCircle(cx,cy,31);
+  port.fillStyle(0x2d9cc6,.36);port.fillCircle(cx,cy,25);
+  for(let j=0;j<8;j++){
+   const angle=j*Math.PI/4;
+   port.fillStyle(j%2?0x70dffe:0xc5faff,.90);
+   port.fillCircle(cx+Math.cos(angle)*48,cy+Math.sin(angle)*48,3);
   }
-  const portalAura=scene.add.graphics().setDepth(2.36);
-  portalAura.fillStyle(p.accent,.18);portalAura.fillRoundedRect(px+18,py+13,60,44,4);
-  portalAura.lineStyle(2,p.bright,.63);portalAura.strokeRoundedRect(px+20,py+15,56,40,4);
-  scene.tweens.add({targets:portalAura,alpha:.30,duration:1600,yoyo:true,repeat:-1});
-  fill(details,439,235,82,5,p.accent,.8);
-  scene.zones.push({x:480,y:282,r:61,
+  const aura=scene.add.graphics().setDepth(2.47),rotation={phase:0};
+  const paintPortal=()=>{
+   aura.clear();
+   const angle=rotation.phase*Math.PI*2;
+   aura.lineStyle(15,0x40cbff,.09);
+   aura.strokeCircle(cx,cy,50+2*Math.sin(angle));
+   aura.lineStyle(5,0x77ecff,.39);
+   aura.arc(cx,cy,43,angle,angle+Math.PI*.68,false);aura.strokePath();
+   aura.lineStyle(3,0xc2ffff,.93);
+   aura.arc(cx,cy,38,-angle,Math.PI*.4-angle,false);aura.strokePath();
+   aura.lineStyle(3,0x48caff,.75);
+   aura.strokeCircle(cx,cy,27+3*Math.sin(angle*2));
+   for(let j=0;j<12;j++){
+    const t=angle*(j%2?-1:1)+j*Math.PI/6;
+    const radius=41+6*Math.sin(angle*3+j);
+    aura.fillStyle(j%3===0?0xffffff:0x73dfff,.64+.3*(.5+.5*Math.sin(angle+j)));
+    aura.fillCircle(cx+Math.cos(t)*radius,cy+Math.sin(t)*radius,j%3===0?3:2);
+   }
+  };
+  paintPortal();
+  scene.tweens.add({targets:rotation,phase:1,duration:3000,repeat:-1,ease:'Linear',onUpdate:paintPortal});
+  scene.zones.push({x:480,y:287,r:59,
    label:place==='lab'?'Travel to Workshop':'Travel to Laboratory',
    to:place==='lab'?'workshop':'lab'});
   // Computer interface's interaction pulse.
@@ -322,6 +356,7 @@ function renderThemedInterior(scene,place){
   collide(252,203,365,89);
   // Directly accessible contact computer (separate from front counter).
   mount('workstation',642,178,212,112,0xece4ff);
+  animateComputer(691,192);
   collide(645,194,207,64);
   fill(details,667,153,162,15,0x2d3652);
   fill(details,677,159,105,4,p.accent,.9);
