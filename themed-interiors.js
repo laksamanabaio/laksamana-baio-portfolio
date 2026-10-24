@@ -228,7 +228,7 @@ function renderThemedInterior(scene,place){
     fill(details,x+7,232,7,13,0x132a3b);
    }
    label(214,289,'PROTOTYPE BAY / 01',11,p.bright);
-   scene.zones.push({x:219,y:316,r:71,label:'Inspect Workshop Prototype',object:'workshop-engine'});
+   scene.zones.push({x:310,y:316,r:86,label:'Inspect Workshop Prototype',object:'workshop-engine'});
    collide(78,186,268,113);
    // Floor cables and parts crates along wall.
    for(let x=73;x<334;x+=72){
@@ -252,7 +252,7 @@ function renderThemedInterior(scene,place){
    fill(details,116,272,193,2,p.accent,.86);
    for(const x of [145,212,282])led(x,260,p.bright);
    label(214,290,'SPECIMEN ANALYSIS / 02',11,p.bright);
-   scene.zones.push({x:219,y:316,r:71,label:'Inspect Research Samples',object:'lab-samples'});
+   scene.zones.push({x:310,y:316,r:86,label:'Inspect Research Samples',object:'lab-samples'});
    collide(78,188,268,112);
   }
  }else{
@@ -346,10 +346,7 @@ function renderThemedInterior(scene,place){
   name:staff.name,appearance:staff.appearance,pages:staff.pages,
   sprite:guard,avatar
  };
- // Unobtrusive desk ID badge hovering near the guard's head.
- scene.add.text(staff.x,staff.y-110,staff.name.toUpperCase(),{
-  fontFamily:'monospace',fontSize:'11px',fontStyle:'bold',
-  color:'#f3fcf3',backgroundColor:'#163243',padding:{x:6,y:3}
- }).setOrigin(.5,1).setDepth(4.5);
+ // The existing interaction hint and conversation panel show the staff
+ // member's name; avoid a permanent badge overlapping their hair.
  return true;
 }
