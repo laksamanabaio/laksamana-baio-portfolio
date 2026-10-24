@@ -1,5 +1,5 @@
 /*
- * BAIO DISTRICT 2077 — HOME 13.5 / RECTANGULAR WINDOW LIGHT AND DESIGN NOTES
+ * BAIO DISTRICT 2077 — HOME 15.43 / TIME-AWARE WINDOW PANORAMA
  * Uses the seven approved isolated transparent PNGs, cropped and optimized
  * for the 960x540 game stage. The furniture, walls, rug and window are native
  * pixel art; Phaser Graphics is only used for the architectural shell, floor,
@@ -74,7 +74,7 @@ function renderHomeWithAssets(scene){
  // 2. Reference-driven wall-attached furniture positions, kept inside the room.
  // The bedroom rug ends against the kitchen wall; the kitchen sprite is in
  // front of it, so the partition neatly hides any overlap at their seam.
- mount('window',224,12,342,94,1.6);       // left with the bed, flush to north wall
+ scene.homeWindow=mount('window',224,12,342,94,1.6); // retain approved placement and scale
  mount('bed',44,96,213,157,1.8);          // lower, at left wall; bottom tucked behind kitchen wall
  mount('workstation',580,92,248,112,2.0); // left and down, inside the north wall
  mount('blueprint',842,84,74,48,2.8);    // flush against right wall but within room
