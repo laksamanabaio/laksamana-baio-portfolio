@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Laboratory HD interior v15.72.
+/* BAIO DISTRICT 2077 — Laboratory HD interior v15.73.
  * The Lab is constructed from the approved transparent high-resolution props.
  * Old procedural laboratory furnishings are not rendered in this scene.
  */
@@ -148,9 +148,12 @@ function renderHDLabInterior(scene){
  ];
  scene.zones=[
   {x:480,y:450,r:37,label:'Return to Baio District',to:'district'},
-  // The trigger is the small central staircase landing, not the right side.
-  // Feet in the center of the stairs activate E/Space; lateral approaches do not.
-  {x:portalCX,y:teleporter.y+205,w:56,h:44,r:23,
+  // Stair interaction runs from the upper steps to their bottom landing.
+  // The player's position represents their FEET: when climbing, those feet
+  // move above the old 208px cutoff. Keep X tightly within the center stairs,
+  // never to the machine's left or right side.
+  // Teleport at y=25: interact at feet y=184..252 (not just 208..252).
+  {x:portalCX,y:teleporter.y+193,w:60,h:68,
    id:'lab-teleport-stairs',label:'Teleport to Workshop',to:'workshop'},
   {x:753,y:268,r:68,label:'Explore Experience at Computer',object:'lab'},
   {x:563,y:231,r:60,label:'Inspect DNA Research',object:'lab-samples'},
