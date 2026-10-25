@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Laboratory HD interior v15.65.
+/* BAIO DISTRICT 2077 — Laboratory HD interior v15.66.
  * The Lab is constructed from the approved transparent high-resolution props.
  * Old procedural laboratory furnishings are not rendered in this scene.
  */
@@ -53,27 +53,30 @@ function renderHDLabInterior(scene){
  }).setOrigin(.5,0).setDepth(1.3);
  // Each image is a real PNG-origin transparent HD art asset, optimized as WebP.
  // Position and display size are isolated in this table for future fine tuning.
- // Both glassware chemistry benches are scaled up and aligned one above the
- // other along the far-right wall. Keep the central floor/EXIT walkway open.
- // All other science props remain at their current coordinates.
+ // The chemical storage / specimen refrigerator wall is mounted at EXACTLY
+ // HOME kitchen's coordinates (39,236) and size (352x192), depth 2.6.
+ // It replaces the kitchen visually; no dining furniture or chairs are added.
+ // Existing DNA, board, computer, teleport and both right benches stay put.
  const items=[
   {name:'teleport',x:45,y:30,w:177,depth:2.15},
   {name:'dna-research-board',x:250,y:0,w:166,depth:2.06},
   {name:'dna-machine',x:441,y:10,w:244,depth:2.1},
   {name:'computer',x:705,y:95,w:213,depth:2.1},
+  {name:'chemical-storage-wall',x:39,y:236,w:352,h:192,depth:2.6}, // matches HOME kitchen
   {name:'chemical-bench',x:687,y:239,w:215,depth:2.23}, // upper bench
   {name:'chemical-bench',x:687,y:358,w:215,depth:2.24}  // lower bench
  ];
  scene.labAssetLayout=items;
  for(const item of items){
   const key=item.name==='dna-research-board'
-   ?'lab-v1561-dna-research-board':'lab-v1549-'+item.name;
+   ?'lab-v1561-dna-research-board':item.name==='chemical-storage-wall'
+   ?'lab-v1566-chemical-storage-wall':'lab-v1549-'+item.name;
   if(!scene.textures.exists(key)){
    console.warn('Lab HD asset missing:',key);
    continue;
   }
   const texture=scene.textures.get(key).getSourceImage();
-  const h=item.w*texture.height/texture.width;
+  const h=item.h||item.w*texture.height/texture.width;
   scene.add.image(item.x,item.y,key).setOrigin(0,0)
    .setDisplaySize(item.w,h).setDepth(item.depth);
  }
@@ -128,6 +131,11 @@ function renderHDLabInterior(scene){
  // NPCs patrol away from the solid station.
  scene.homeFurniture=[
   {x:48,y:115,w:170,h:115}, // solid teleport body, podium and steps move together
+  // Match HOME kitchen wall/counter collisions so Baio cannot cross the
+  // solid chemical storage wall or its specimen refrigerator cabinets.
+  {x:43,y:238,w:344,h:12}, // full-width partition top
+  {x:367,y:244,w:21,h:171}, // upright at east end of partition
+  {x:78,y:293,w:272,h:70}, // cabinet, shelf and refrigerator bodies
   {x:445,y:147,w:236,h:67}, // DNA collision follows another 10px left
   {x:711,y:199,w:203,h:48}, // computer collider follows 5px left movement
   {x:689,y:305,w:211,h:50}, // upper right chemistry bench
@@ -135,7 +143,9 @@ function renderHDLabInterior(scene){
  ];
  scene.zones=[
   {x:480,y:450,r:37,label:'Return to Baio District',to:'district'},
-  {x:135,y:243,r:50,label:'Teleport to Workshop',to:'workshop'},
+  // The new wall occupies the old south approach to teleport. From its
+  // east side, the right edge of the teleport can still be reached.
+  {x:232,y:221,r:53,label:'Teleport to Workshop',to:'workshop'},
   {x:753,y:268,r:68,label:'Explore Experience at Computer',object:'lab'},
   {x:563,y:231,r:60,label:'Inspect DNA Research',object:'lab-samples'},
   {x:650,y:389,r:60,label:'Inspect Chemical Samples',object:'lab-samples'}
