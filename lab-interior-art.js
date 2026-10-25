@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Laboratory HD interior v15.68.
+/* BAIO DISTRICT 2077 — Laboratory HD interior v15.69.
  * The Lab is constructed from the approved transparent high-resolution props.
  * Old procedural laboratory furnishings are not rendered in this scene.
  */
@@ -130,11 +130,15 @@ function renderHDLabInterior(scene){
  // NPCs patrol away from the solid station.
  scene.homeFurniture=[
   {x:48,y:115,w:170,h:115}, // solid teleport body, podium and steps move together
-  // Match HOME kitchen wall/counter collisions so Baio cannot cross the
-  // solid chemical storage wall or its specimen refrigerator cabinets.
-  {x:43,y:268,w:344,h:12}, // full-width partition top follows wall
-  {x:367,y:274,w:21,h:171}, // east partition follows wall
-  {x:78,y:323,w:272,h:70}, // chemical cabinets and refrigerator follow wall
+  // A single continuous solid footprint protects ALL exposed sides of this
+  // 352x192 chemical storage module (art bounds: x39..391, y266..458).
+  // Previous thin partition/counter strips left a walkable gap at the left
+  // refrigerator and in front of the base: Baio visibly clipped into them.
+  // The gameplay collider checks feet with +/-10px margin; extend the right
+  // edge by another ~34px to also account for the avatar's visible body.
+  // Bottom reaches below the playable floor so he cannot walk behind it.
+  // Keep the northern corridor (feet y <= 257) clear for the teleport.
+  {x:10,y:266,w:405,h:212}, // entire chemical wall / fridges / shelving
   {x:445,y:147,w:236,h:67}, // DNA collision follows another 10px left
   {x:711,y:199,w:203,h:48}, // computer collider follows 5px left movement
   {x:689,y:305,w:211,h:50}, // upper right chemistry bench
