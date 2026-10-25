@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Laboratory HD interior v15.75.
+/* BAIO DISTRICT 2077 — Laboratory HD interior v15.76.
  * The Lab is constructed from the approved transparent high-resolution props.
  * Old procedural laboratory furnishings are not rendered in this scene.
  */
@@ -138,7 +138,12 @@ function renderHDLabInterior(scene){
   // The collider follows the lowered asset and does not extend to the
   // bottom of the room, so Baio can still pass below the wall at y457..466.
   {x:10,y:256,w:405,h:192}, // chemical wall / fridge / shelving
-  {x:445,y:147,w:236,h:67}, // DNA collision follows another 10px left
+  // The freestanding DNA research digital board occupies x250..416 and its
+  // visible stand ends around y214. Keep the player OUT of its screen and
+  // frame, but preserve the narrow y224..246 passage to the teleport stairs.
+  // The game already adds 10px horizontal / 9px vertical collision margins.
+  {x:250,y:30,w:166,h:184}, // DNA digital research board + stand
+  {x:445,y:147,w:236,h:67}, // DNA machine, separate from digital board
   {x:711,y:199,w:203,h:48}, // computer collider follows 5px left movement
   {x:689,y:305,w:211,h:50}, // upper right chemistry bench
   {x:689,y:424,w:211,h:50}  // lower right chemistry bench
