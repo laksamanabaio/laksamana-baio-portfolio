@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Laboratory HD interior v15.73.
+/* BAIO DISTRICT 2077 — Laboratory HD interior v15.74.
  * The Lab is constructed from the approved transparent high-resolution props.
  * Old procedural laboratory furnishings are not rendered in this scene.
  */
@@ -53,15 +53,15 @@ function renderHDLabInterior(scene){
  }).setOrigin(.5,0).setDepth(1.3);
  // Each image is a real PNG-origin transparent HD art asset, optimized as WebP.
  // Position and display size are isolated in this table for future fine tuning.
- // The chemical storage/refrigerator wall keeps HOME kitchen's 352x192 size
- // and X=39, now Y=256 (10px above v15.69). No dining furniture or chairs.
+ // The chemical storage/refrigerator wall stays 352x192 at X=39.
+ // Raised 25px (Y: 256 -> 231) to open a walkable floor lane beneath it.
  // Existing DNA, board, computer, teleport and both right benches stay put.
  const items=[
   {name:'teleport',x:45,y:25,w:177,depth:2.15},
   {name:'dna-research-board',x:250,y:3,w:166,depth:2.06},
   {name:'dna-machine',x:441,y:10,w:244,depth:2.1},
   {name:'computer',x:705,y:95,w:213,depth:2.1},
-  {name:'chemical-storage-wall',x:39,y:256,w:352,h:192,depth:2.6}, // matches HOME kitchen
+  {name:'chemical-storage-wall',x:39,y:231,w:352,h:192,depth:2.6}, // matches HOME kitchen
   {name:'chemical-bench',x:687,y:239,w:215,depth:2.23}, // upper bench
   {name:'chemical-bench',x:687,y:358,w:215,depth:2.24}  // lower bench
  ];
@@ -132,15 +132,12 @@ function renderHDLabInterior(scene){
   {x:48,y:110,w:170,h:65}, // rear teleporter body; no clipping into the energy tube
   {x:48,y:178,w:53,h:47},  // left podium / stair railing
   {x:165,y:178,w:53,h:47}, // right podium / stair railing
-  // A single continuous solid footprint protects ALL exposed sides of this
-  // 352x192 chemical storage module (art bounds: x39..391, y256..448).
-  // Previous thin partition/counter strips left a walkable gap at the left
-  // refrigerator and in front of the base: Baio visibly clipped into them.
-  // The gameplay collider checks feet with +/-10px margin; extend the right
-  // edge by another ~34px to also account for the avatar's visible body.
-  // Bottom reaches below the playable floor so he cannot walk behind it.
-  // Keep a walkable northern approach to the teleport from its right side.
-  {x:10,y:256,w:405,h:212}, // entire chemical wall / fridges / shelving
+  // One continuous solid collider matches the raised chemical wall
+  // (art x39..391, y231..423), with lateral clearance for Baio's sprite.
+  // Do not extend it below the asset: feet can now walk UNDERNEATH via
+  // the bottom floor lane (y433..466). Still solid across fridge/shelves.
+  // The teleporter's upper stair landing remains accessible (y184..221).
+  {x:10,y:231,w:405,h:192}, // raised chemical wall / fridge / shelving
   {x:445,y:147,w:236,h:67}, // DNA collision follows another 10px left
   {x:711,y:199,w:203,h:48}, // computer collider follows 5px left movement
   {x:689,y:305,w:211,h:50}, // upper right chemistry bench
