@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Laboratory HD interior v15.50.
+/* BAIO DISTRICT 2077 — Laboratory HD interior v15.51.
  * The Lab is constructed from the approved transparent high-resolution props.
  * Old procedural laboratory furnishings are not rendered in this scene.
  */
@@ -56,11 +56,11 @@ function renderHDLabInterior(scene){
  // Upper row, left to right: TELEPORT, cooler, central DNA, cooler, COMPUTER.
  // The four pieces of glassware/chemistry furniture below are unchanged.
  const items=[
-  {name:'teleport',x:55,y:110,w:177,depth:2.15},
+  {name:'teleport',x:55,y:80,w:177,depth:2.15},
   {name:'chemical-fridge',x:243,y:167,w:108,depth:2.12},
   {name:'dna-machine',x:358,y:149,w:244,depth:2.1},
   {name:'chemical-fridge',x:607,y:167,w:100,depth:2.12},
-  {name:'computer',x:710,y:145,w:213,depth:2.1},
+  {name:'computer',x:710,y:105,w:213,depth:2.1},
   {name:'glassware-rack',x:54,y:330,w:170,depth:2.2},
   {name:'chemical-bench',x:229,y:361,w:185,depth:2.23},
   {name:'chemical-bench',x:591,y:361,w:185,depth:2.23},
@@ -103,19 +103,21 @@ function renderHDLabInterior(scene){
  paintPortal();
  scene.tweens.add({targets:portalMotion,phase:1,duration:2800,repeat:-1,
   ease:'Linear',onUpdate:paintPortal});
- // The three HD monitors on the new computer are kept alive by a subtle
- // animated, teal oscilloscope graph. No blueprint or floating label.
+ // Align animated graphics to the computer's actual position so future
+ // movement of this prop always carries the animated monitor display.
+ const computer=items.find(item=>item.name==='computer');
+ const monitorOffsetY=computer.y-145;
  const screen=scene.add.graphics().setDepth(2.3),ui={phase:0};
  const paintScreen=()=>{
   screen.clear();
   const t=ui.phase*Math.PI*2;
   for(let k=0;k<8;k++){
    const x=799+k*6,amp=Math.sin(t+k*.84);
-   rect(screen,x,167+Math.round(amp*4),3,6+(k%3)*2,k%2?C.ice:C.cyan,.42);
+   rect(screen,x,167+monitorOffsetY+Math.round(amp*4),3,6+(k%3)*2,k%2?C.ice:C.cyan,.42);
   }
-  rect(screen,790,182+Math.round(ui.phase*10),51,1,C.ice,.48);
+  rect(screen,790,182+monitorOffsetY+Math.round(ui.phase*10),51,1,C.ice,.48);
   for(let k=0;k<4;k++){
-   rect(screen,733+k*4,197+Math.round(Math.sin(t+k)*2),2,7,C.cyan,.48);
+   rect(screen,733+k*4,197+monitorOffsetY+Math.round(Math.sin(t+k)*2),2,7,C.cyan,.48);
   }
  };
  paintScreen();
@@ -128,7 +130,7 @@ function renderHDLabInterior(scene){
   {x:245,y:256,w:105,h:40}, // west chemical fridge
   {x:362,y:286,w:236,h:67}, // centered DNA station
   {x:609,y:256,w:96,h:40},  // east chemical fridge
-  {x:716,y:249,w:203,h:48}, // computer moved up
+  {x:716,y:209,w:203,h:48}, // computer moved 40px up
   {x:55,y:426,w:164,h:34},  // glass rack left
   {x:230,y:418,w:183,h:43}, // chemistry bench left
   {x:592,y:418,w:183,h:43}, // chemistry bench right
@@ -136,8 +138,8 @@ function renderHDLabInterior(scene){
  ];
  scene.zones=[
   {x:480,y:450,r:37,label:'Return to Baio District',to:'district'},
-  {x:145,y:323,r:50,label:'Teleport to Workshop',to:'workshop'},
-  {x:758,y:318,r:68,label:'Explore Experience at Computer',object:'lab'},
+  {x:145,y:293,r:50,label:'Teleport to Workshop',to:'workshop'},
+  {x:758,y:278,r:68,label:'Explore Experience at Computer',object:'lab'},
   {x:480,y:370,r:60,label:'Inspect DNA Research',object:'lab-samples'},
   {x:265,y:389,r:49,label:'Inspect Chemical Samples',object:'lab-samples'}
  ];
