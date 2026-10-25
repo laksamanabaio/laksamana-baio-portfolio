@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Workshop HD interior v16.04.
+/* BAIO DISTRICT 2077 — Workshop HD interior v16.05.
  * Six transparent neon-orange Workshop props, with individually tuned scale.
  * Collision shapes and teleport interactions follow the enlarged artwork.
  */
@@ -239,3 +239,5 @@ function renderHDWorkshopInterior(scene){
  scene.roomGuard=actor;
  return true;
 }
+// The entry script verifies the renderer version so it cannot use stale code.
+renderHDWorkshopInterior.buildVersion='16.05';

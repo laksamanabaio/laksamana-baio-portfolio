@@ -4,6 +4,14 @@
  * hardware. HOME-style computer sprites remain; no dining or kitchens.
  */
 function renderThemedInterior(scene,place){
+ // Workshop never renders obsolete procedural assets on a failed HD load.
+ if(place==='workshop'){
+  if(typeof renderHDWorkshopInterior==='function'&&
+     renderHDWorkshopInterior.buildVersion==='16.05')
+   return renderHDWorkshopInterior(scene);
+  console.error('Workshop HD renderer unavailable; legacy Workshop disabled');
+  return false;
+ }
  const settings={
   workshop:{
    title:'WORKSHOP',subtitle:'PROJECT FABRICATION BAY',
