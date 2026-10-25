@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Laboratory HD interior v15.69.
+/* BAIO DISTRICT 2077 — Laboratory HD interior v15.70.
  * The Lab is constructed from the approved transparent high-resolution props.
  * Old procedural laboratory furnishings are not rendered in this scene.
  */
@@ -54,14 +54,14 @@ function renderHDLabInterior(scene){
  // Each image is a real PNG-origin transparent HD art asset, optimized as WebP.
  // Position and display size are isolated in this table for future fine tuning.
  // The chemical storage/refrigerator wall keeps HOME kitchen's 352x192 size
- // and X=39, now Y=266 (20px above v15.67). No dining furniture or chairs.
+ // and X=39, now Y=256 (10px above v15.69). No dining furniture or chairs.
  // Existing DNA, board, computer, teleport and both right benches stay put.
  const items=[
-  {name:'teleport',x:45,y:30,w:177,depth:2.15},
+  {name:'teleport',x:45,y:25,w:177,depth:2.15},
   {name:'dna-research-board',x:250,y:3,w:166,depth:2.06},
   {name:'dna-machine',x:441,y:10,w:244,depth:2.1},
   {name:'computer',x:705,y:95,w:213,depth:2.1},
-  {name:'chemical-storage-wall',x:39,y:266,w:352,h:192,depth:2.6}, // matches HOME kitchen
+  {name:'chemical-storage-wall',x:39,y:256,w:352,h:192,depth:2.6}, // matches HOME kitchen
   {name:'chemical-bench',x:687,y:239,w:215,depth:2.23}, // upper bench
   {name:'chemical-bench',x:687,y:358,w:215,depth:2.24}  // lower bench
  ];
@@ -129,16 +129,16 @@ function renderHDLabInterior(scene){
  // approach the machine from the OPEN floor at its front to interact.
  // NPCs patrol away from the solid station.
  scene.homeFurniture=[
-  {x:48,y:115,w:170,h:115}, // solid teleport body, podium and steps move together
+  {x:48,y:110,w:170,h:115}, // solid teleport body, podium and steps move together
   // A single continuous solid footprint protects ALL exposed sides of this
-  // 352x192 chemical storage module (art bounds: x39..391, y266..458).
+  // 352x192 chemical storage module (art bounds: x39..391, y256..448).
   // Previous thin partition/counter strips left a walkable gap at the left
   // refrigerator and in front of the base: Baio visibly clipped into them.
   // The gameplay collider checks feet with +/-10px margin; extend the right
   // edge by another ~34px to also account for the avatar's visible body.
   // Bottom reaches below the playable floor so he cannot walk behind it.
-  // Keep the northern corridor (feet y <= 257) clear for the teleport.
-  {x:10,y:266,w:405,h:212}, // entire chemical wall / fridges / shelving
+  // Keep a walkable northern approach to the teleport from its right side.
+  {x:10,y:256,w:405,h:212}, // entire chemical wall / fridges / shelving
   {x:445,y:147,w:236,h:67}, // DNA collision follows another 10px left
   {x:711,y:199,w:203,h:48}, // computer collider follows 5px left movement
   {x:689,y:305,w:211,h:50}, // upper right chemistry bench
@@ -148,7 +148,7 @@ function renderHDLabInterior(scene){
   {x:480,y:450,r:37,label:'Return to Baio District',to:'district'},
   // The new wall occupies the old south approach to teleport. From its
   // east side, the right edge of the teleport can still be reached.
-  {x:232,y:221,r:53,label:'Teleport to Workshop',to:'workshop'},
+  {x:232,y:216,r:53,label:'Teleport to Workshop',to:'workshop'},
   {x:753,y:268,r:68,label:'Explore Experience at Computer',object:'lab'},
   {x:563,y:231,r:60,label:'Inspect DNA Research',object:'lab-samples'},
   {x:650,y:389,r:60,label:'Inspect Chemical Samples',object:'lab-samples'}
