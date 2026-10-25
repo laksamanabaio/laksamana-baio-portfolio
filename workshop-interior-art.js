@@ -1,6 +1,6 @@
-/* BAIO DISTRICT 2077 — Workshop HD interior v15.92.
- * Six original, transparent, neon-orange props replace the old procedural
- * Workshop furniture. Geometry matches Laboratory v15.91 exactly.
+/* BAIO DISTRICT 2077 — Workshop HD interior v15.93.
+ * Six transparent neon-orange Workshop props, with individually tuned scale.
+ * Collision shapes and teleport interactions follow the enlarged artwork.
  */
 function renderHDWorkshopInterior(scene){
  const C={orange:0xff962d,amber:0xffc16d,ice:0xa3ecf2};
@@ -50,16 +50,16 @@ function renderHDWorkshopInterior(scene){
   color:'#fff0d9',stroke:'#111e2c',strokeThickness:1
  }).setOrigin(.5,0).setDepth(1.3);
 
- // One-for-one mapping with Lab items. Dimensions are computed from the
- // corresponding Lab sprite at runtime so the in-game width, height, x/y,
- // and depth remain identical, regardless of Workshop image proportions.
+ // Workshop-specific display sizes. The blueprint keeps its exact Lab layout;
+ // the other four fixtures are enlarged, and the prototype bench uses its
+ // native 16:9 aspect ratio rather than the short laboratory-table ratio.
  const items=[
-  {name:'teleport',asset:'workshop-teleport',labKey:'lab-v1549-teleport',x:45,y:25,w:177,depth:2.15},
+  {name:'teleport',asset:'workshop-teleport',labKey:'lab-v1549-teleport',x:35,y:10,w:196,h:221,depth:2.15},
   {name:'dna-research-board',asset:'flying-car-blueprint',labKey:'lab-v1561-dna-research-board',x:250,y:3,w:166,depth:2.06},
-  {name:'dna-machine',asset:'three-d-printer',labKey:'lab-v1549-dna-machine',x:441,y:10,w:244,depth:2.1},
-  {name:'computer',asset:'workshop-computer',labKey:'lab-v1549-computer',x:705,y:95,w:213,depth:2.1},
-  {name:'chemical-storage-wall',asset:'tools-storage-wall',labKey:'lab-v1566-chemical-storage-wall',x:39,y:256,w:352,h:192,depth:2.6},
-  {name:'research-workbench-long',asset:'prototype-bench',labKey:'lab-v1584-research-workbench-long',x:568,y:267,w:329,depth:2.62}
+  {name:'dna-machine',asset:'three-d-printer',labKey:'lab-v1549-dna-machine',x:433,y:5,w:260,h:216,depth:2.1},
+  {name:'computer',asset:'workshop-computer',labKey:'lab-v1549-computer',x:683,y:73,w:233,h:175,depth:2.1},
+  {name:'chemical-storage-wall',asset:'tools-storage-wall',labKey:'lab-v1566-chemical-storage-wall',x:30,y:254,w:383,h:205,depth:2.6},
+  {name:'research-workbench-long',asset:'prototype-bench',labKey:'lab-v1584-research-workbench-long',x:568,y:248,w:329,h:185,depth:2.62}
  ];
  scene.workshopAssetLayout=items;
  for(const item of items){
@@ -92,11 +92,11 @@ function renderHDWorkshopInterior(scene){
    repeat:-1,ease:'Sine.easeInOut',onUpdate:paint});
  };
  const teleporter=items[0],board=items[1],printer=items[2],computer=items[3],bench=items[5];
- interactionBeacon(teleporter.x+teleporter.w/2,teleporter.y+178,0xa5f27a);
- interactionBeacon(printer.x+printer.w/2,printer.y+162,0xffc979);
- interactionBeacon(computer.x+computer.w/2,computer.y+93,0x76e4ee);
+ interactionBeacon(teleporter.x+teleporter.w/2,teleporter.y+Math.round(teleporter.h*.89),0xa5f27a);
+ interactionBeacon(printer.x+printer.w/2,printer.y+Math.round(printer.h*.80),0xffc979);
+ interactionBeacon(computer.x+computer.w/2,computer.y+Math.round(computer.h*.66),0x76e4ee);
  interactionBeacon(board.x+board.w/2,board.y+196,0xffb452);
- interactionBeacon(bench.x+bench.w/2,bench.y+100,0xffb452);
+ interactionBeacon(bench.x+bench.w/2,bench.y+Math.round(bench.h*.63),0xffb452);
 
  // Orange energy shimmer and rising particles stay inside the teleport.
  const energy=scene.add.graphics().setDepth(2.25);
@@ -124,7 +124,7 @@ function renderHDWorkshopInterior(scene){
  const paintStatus=()=>{
   status.clear();const t=progress.p*Math.PI*2;
   for(let k=0;k<6;k++){
-   rect(status,printer.x+printer.w*.69+k*4,printer.y+144+
+   rect(status,printer.x+printer.w*.69+k*4,printer.y+printer.h*.72+
     Math.round(Math.sin(t+k)*2),2,4+k%3,0xffbe68,.24);
   }
  };
@@ -132,21 +132,22 @@ function renderHDWorkshopInterior(scene){
  scene.tweens.add({targets:progress,p:1,duration:2350,repeat:-1,
   ease:'Linear',onUpdate:paintStatus});
 
- // Exactly the Lab v15.91 collision footprints, maintaining walkable aisles
- // and a clear center strip on the front staircase for both directions.
+ // Enlarged-asset colliders. Keep the FRONT-CENTER teleport stairs open,
+ // leave a passage below the digital board and above the tool wall, and
+ // preserve a southern aisle under the prototype bench.
  scene.homeFurniture=[
-  {x:48,y:110,w:170,h:65},
-  {x:48,y:178,w:53,h:47},
-  {x:165,y:178,w:53,h:47},
-  {x:29,y:265,w:340,h:183},
-  {x:250,y:30,w:166,h:184},
-  {x:445,y:147,w:236,h:67},
-  {x:711,y:199,w:203,h:48},
-  {x:580,y:322,w:311,h:79}
+  {x:40,y:110,w:188,h:67}, // enlarged teleport body
+  {x:42,y:181,w:52,h:45},  // left stair rail (not center steps)
+  {x:174,y:181,w:53,h:45}, // right stair rail (not center steps)
+  {x:30,y:263,w:375,h:192}, // enlarged tools wall
+  {x:250,y:30,w:166,h:184}, // blueprint unchanged
+  {x:435,y:150,w:250,h:70}, // enlarged 3D printer
+  {x:688,y:197,w:228,h:55}, // enlarged computer
+  {x:579,y:310,w:309,h:123} // corrected-height prototype bench
  ];
  scene.zones=[
   {x:480,y:450,r:37,label:'Return to Baio District',to:'district'},
-  {x:portalCX,y:teleporter.y+193,w:60,h:68,
+  {x:portalCX,y:teleporter.y+215,w:64,h:70,
    id:'workshop-teleport-stairs',label:'Teleport to Laboratory',to:'lab'},
   {x:753,y:268,r:68,label:'View Project Showcase at Computer',object:'workshop'},
   {x:563,y:231,r:60,label:'Inspect 3D Prototype Printer',object:'workshop-engine'},
