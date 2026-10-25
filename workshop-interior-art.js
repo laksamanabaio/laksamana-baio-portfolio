@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Workshop HD interior v15.99.
+/* BAIO DISTRICT 2077 — Workshop HD interior v16.00.
  * Six transparent neon-orange Workshop props, with individually tuned scale.
  * Collision shapes and teleport interactions follow the enlarged artwork.
  */
@@ -56,10 +56,10 @@ function renderHDWorkshopInterior(scene){
  const items=[
   {name:'teleport',asset:'workshop-teleport',labKey:'lab-v1549-teleport',x:40,y:5,w:196,h:221,depth:2.15},
   {name:'dna-research-board',asset:'flying-car-blueprint',labKey:'lab-v1561-dna-research-board',x:235,y:3,w:166,depth:2.06},
-  {name:'dna-machine',asset:'three-d-printer',labKey:'lab-v1549-dna-machine',x:398,y:0,w:260,h:216,depth:2.1},
-  {name:'computer',asset:'workshop-computer',labKey:'lab-v1549-computer',x:664,y:32,w:260,h:196,depth:2.1},
-  {name:'chemical-storage-wall',asset:'tools-storage-wall',labKey:'lab-v1566-chemical-storage-wall',x:45,y:234,w:383,h:205,depth:2.6},
-  {name:'research-workbench-long',asset:'prototype-bench',labKey:'lab-v1584-research-workbench-long',x:545,y:224,w:371,h:209,depth:2.62}
+  {name:'dna-machine',asset:'three-d-printer',labKey:'lab-v1549-dna-machine',x:403,y:0,w:260,h:216,depth:2.1},
+  {name:'computer',asset:'workshop-computer',labKey:'lab-v1549-computer',x:664,y:29,w:260,h:196,depth:2.1},
+  {name:'chemical-storage-wall',asset:'tools-storage-wall',labKey:'lab-v1566-chemical-storage-wall',x:45,y:224,w:383,h:205,depth:2.6},
+  {name:'research-workbench-long',asset:'prototype-bench',labKey:'lab-v1584-research-workbench-long',x:545,y:219,w:371,h:209,depth:2.62}
  ];
  scene.workshopAssetLayout=items;
  for(const item of items){
@@ -139,20 +139,20 @@ function renderHDWorkshopInterior(scene){
   {x:45,y:105,w:188,h:67}, // teleport body follows 5px right shift
   {x:47,y:176,w:52,h:45},  // left stair rail (not center steps)
   {x:179,y:176,w:53,h:45}, // right stair rail (not center steps)
-  {x:45,y:257,w:373,h:177}, // visible tool-wall body; top collision starts at y248 after 9px player margin
+  {x:45,y:247,w:373,h:177}, // tool wall 10px up; visible top starts at effective y238
   {x:235,y:30,w:166,h:184}, // blueprint 5px right
-  {x:400,y:145,w:250,h:70}, // printer 5px right
-  {x:669,y:177,w:250,h:61}, // larger computer moved 30px up, collider covers desk
-  {x:559,y:298,w:343,h:137} // enlarged bench; south aisle and Pak Damar patrol remain clear
+  {x:405,y:145,w:250,h:70}, // printer another 5px right
+  {x:669,y:174,w:250,h:61}, // computer moved 3px up, collider covers desk
+  {x:559,y:293,w:343,h:137} // bench 5px up; south aisle and Pak Damar patrol remain clear
  ];
  scene.zones=[
   {x:480,y:450,r:37,label:'Return to Baio District',to:'district'},
   {x:portalCX,y:teleporter.y+215,w:64,h:70,
    id:'workshop-teleport-stairs',label:'Teleport to Laboratory',to:'lab'},
   {x:747,y:268,r:68,label:'View Project Showcase at Computer',object:'workshop'},
-  {x:528,y:226,r:60,label:'Inspect 3D Prototype Printer',object:'workshop-engine'},
+  {x:533,y:226,r:60,label:'Inspect 3D Prototype Printer',object:'workshop-engine'},
   {x:316,y:231,r:52,label:'Inspect Flying Car Blueprint',object:'workshop-engine'},
-  {x:736,y:420,r:44,label:'Inspect Flying Car Prototype',object:'workshop-engine'}
+  {x:736,y:415,r:44,label:'Inspect Flying Car Prototype',object:'workshop-engine'}
  ];
 
  // Workshop engineer: same existing NPC identity, conversations, and walking
