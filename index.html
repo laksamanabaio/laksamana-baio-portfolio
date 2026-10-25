@@ -125,7 +125,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  </span>
 </div>
 <div class="touch" aria-label="Touch movement controls"><button data-dir="left" aria-label="Left">←</button><button data-dir="up" aria-label="Up">↑</button><button data-dir="down" aria-label="Down">↓</button><button data-dir="right" aria-label="Right">→</button></div>
-<footer><span></span><span>Prototype 16.13 — HUD-Aligned Game Buttons</span></footer>
+<footer><span></span><span>Prototype 16.14 — Shift to Sprint</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -1004,7 +1004,7 @@ if (!window.Phaser) {
    this.thoughtType='';
    const freshVisit=false;
    if(this.place==='district')this.cameras.main.startFollow(this.player,true,0.12,0.12);
-   this.keys=this.input.keyboard.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,E,SPACE');
+   this.keys=this.input.keyboard.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,SHIFT,E,SPACE');
       this.near=null;
    this.dialogNpc=null;
    this.dialogPage=0;
@@ -1318,32 +1318,39 @@ if (!window.Phaser) {
    if(k.S.isDown||k.DOWN.isDown||pressed.has('down'))y++;
    if(this.dialogNpc||this.journalOpen||this.readerObject){x=0;y=0}
    if(x||y){
-    const length=Math.hypot(x,y),speed=195*Math.min(delta,50)/1000;
+    // Hold either Shift key to sprint. Normal speed is unchanged.
+    const length=Math.hypot(x,y),sprinting=k.SHIFT.isDown;
+    const speed=(sprinting?312:195)*Math.min(delta,50)/1000;
     const minY=this.place==='district'?35:143,maxY=this.place==='district'?this.worldH-35:466;
-    const nextX=Phaser.Math.Clamp(this.player.x+x/length*speed,35,this.place==='district'?this.worldW-35:890);
-    const nextY=Phaser.Math.Clamp(this.player.y+y/length*speed,minY,maxY);
+    const maxX=this.place==='district'?this.worldW-35:890;
+    // Substeps keep collision checking precise at sprint speed even on
+    // low-frame-rate devices: never advance the feet more than 5px at once.
+    const steps=Math.max(1,Math.ceil(speed/5));
+    const dx=x/length*speed/steps,dy=y/length*speed/steps;
+    let blocked;
     if(this.place==='district'){
      // Collision footprint: character feet cannot enter building walls/roofs.
-     const blocked=(px,py)=>Math.hypot(px-820,py-620)<125||[...this.buildings,...this.sceneryBuildings].some(b=>{
-      // Match any sprite wider than its plot footprint without shifting its center.
+     blocked=(px,py)=>Math.hypot(px-820,py-620)<125||[...this.buildings,...this.sceneryBuildings].some(b=>{
       const height=b.spriteH||DISTRICT_BUILDING_SIZE.height;
       const width=b.spriteW||b.w;
       const left=b.x+(b.w-width)/2;
       const top=b.y+b.h+12-height;
       return px>left+1&&px<left+width-1&&py>top&&py<b.y+b.h+9;
      });
-     if(!blocked(nextX,this.player.y))this.player.x=nextX;
-     if(!blocked(this.player.x,nextY))this.player.y=nextY;
-    }else if(this.place!=='district'&&this.homeFurniture){
-     const blocked=(px,py)=>this.homeFurniture.some(b=>
+    }else if(this.homeFurniture){
+     blocked=(px,py)=>this.homeFurniture.some(b=>
       px>b.x-10&&px<b.x+b.w+10&&py>b.y-9&&py<b.y+b.h+9);
-     if(!blocked(nextX,this.player.y))this.player.x=nextX;
-     if(!blocked(this.player.x,nextY))this.player.y=nextY;
-    }else{this.player.x=nextX;this.player.y=nextY;}
+    }
+    for(let i=0;i<steps;i++){
+     const nextX=Phaser.Math.Clamp(this.player.x+dx,35,maxX);
+     const nextY=Phaser.Math.Clamp(this.player.y+dy,minY,maxY);
+     if(!blocked||!blocked(nextX,this.player.y))this.player.x=nextX;
+     if(!blocked||!blocked(this.player.x,nextY))this.player.y=nextY;
+    }
    }
    if(x||y){
     this.avatarDirection=Math.abs(x)>Math.abs(y)?(x<0?'left':'right'):(y<0?'up':'down');
-    this.avatarClock+=delta;
+    this.avatarClock+=Math.min(delta,50)*(k.SHIFT.isDown?1.6:1);
     if(this.avatarClock>165){this.avatarClock=0;this.avatarStep=(this.avatarStep+1)%4}
     this.avatarIdleClock=0;
    }else{
