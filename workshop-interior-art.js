@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Workshop HD interior v15.98.
+/* BAIO DISTRICT 2077 — Workshop HD interior v15.99.
  * Six transparent neon-orange Workshop props, with individually tuned scale.
  * Collision shapes and teleport interactions follow the enlarged artwork.
  */
@@ -50,16 +50,16 @@ function renderHDWorkshopInterior(scene){
   color:'#fff0d9',stroke:'#111e2c',strokeThickness:1
  }).setOrigin(.5,0).setDepth(1.3);
 
- // Workshop-specific display sizes. The blueprint keeps its exact Lab layout;
- // the other four fixtures are enlarged, and the prototype bench uses its
- // native 16:9 aspect ratio rather than the short laboratory-table ratio.
+ // Workshop-specific display sizes. Preserve each HD image's proportions;
+ // the tool wall has a transparent top margin that is NOT solid collision.
+ // Keep the prototype bench inside the room and clear of Pak Damar's patrol.
  const items=[
   {name:'teleport',asset:'workshop-teleport',labKey:'lab-v1549-teleport',x:40,y:5,w:196,h:221,depth:2.15},
   {name:'dna-research-board',asset:'flying-car-blueprint',labKey:'lab-v1561-dna-research-board',x:235,y:3,w:166,depth:2.06},
   {name:'dna-machine',asset:'three-d-printer',labKey:'lab-v1549-dna-machine',x:398,y:0,w:260,h:216,depth:2.1},
-  {name:'computer',asset:'workshop-computer',labKey:'lab-v1549-computer',x:671,y:62,w:245,h:185,depth:2.1},
-  {name:'chemical-storage-wall',asset:'tools-storage-wall',labKey:'lab-v1566-chemical-storage-wall',x:40,y:244,w:383,h:205,depth:2.6},
-  {name:'research-workbench-long',asset:'prototype-bench',labKey:'lab-v1584-research-workbench-long',x:550,y:233,w:355,h:200,depth:2.62}
+  {name:'computer',asset:'workshop-computer',labKey:'lab-v1549-computer',x:664,y:32,w:260,h:196,depth:2.1},
+  {name:'chemical-storage-wall',asset:'tools-storage-wall',labKey:'lab-v1566-chemical-storage-wall',x:45,y:234,w:383,h:205,depth:2.6},
+  {name:'research-workbench-long',asset:'prototype-bench',labKey:'lab-v1584-research-workbench-long',x:545,y:224,w:371,h:209,depth:2.62}
  ];
  scene.workshopAssetLayout=items;
  for(const item of items){
@@ -139,11 +139,11 @@ function renderHDWorkshopInterior(scene){
   {x:45,y:105,w:188,h:67}, // teleport body follows 5px right shift
   {x:47,y:176,w:52,h:45},  // left stair rail (not center steps)
   {x:179,y:176,w:53,h:45}, // right stair rail (not center steps)
-  {x:40,y:253,w:375,h:192}, // tools wall shifted 10px right and 10px up
+  {x:45,y:257,w:373,h:177}, // visible tool-wall body; top collision starts at y248 after 9px player margin
   {x:235,y:30,w:166,h:184}, // blueprint 5px right
   {x:400,y:145,w:250,h:70}, // printer 5px right
-  {x:676,y:192,w:238,h:62}, // enlarged computer with bottom kept in place
-  {x:559,y:304,w:340,h:131} // larger prototype bench, lower aisle open
+  {x:669,y:177,w:250,h:61}, // larger computer moved 30px up, collider covers desk
+  {x:559,y:298,w:343,h:137} // enlarged bench; south aisle and Pak Damar patrol remain clear
  ];
  scene.zones=[
   {x:480,y:450,r:37,label:'Return to Baio District',to:'district'},
