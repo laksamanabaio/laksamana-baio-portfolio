@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Laboratory HD interior v15.76.
+/* BAIO DISTRICT 2077 — Laboratory HD interior v15.77.
  * The Lab is constructed from the approved transparent high-resolution props.
  * Old procedural laboratory furnishings are not rendered in this scene.
  */
@@ -56,15 +56,14 @@ function renderHDLabInterior(scene){
  // Chemical refrigerator and shelving stay 352x192 at X=39.
  // Lowered 25px from Y=231 back to Y=256, restoring the path into
  // the teleport front stairs while keeping the bottom path walkable.
- // Existing DNA, board, computer, teleport and both right benches stay put.
+ // Keep DNA machine, digital research board, computer, teleport and storage wall.
+ // Both right-side chemical benches have been removed.
  const items=[
   {name:'teleport',x:45,y:25,w:177,depth:2.15},
   {name:'dna-research-board',x:250,y:3,w:166,depth:2.06},
   {name:'dna-machine',x:441,y:10,w:244,depth:2.1},
   {name:'computer',x:705,y:95,w:213,depth:2.1},
-  {name:'chemical-storage-wall',x:39,y:256,w:352,h:192,depth:2.6}, // matches HOME kitchen
-  {name:'chemical-bench',x:687,y:239,w:215,depth:2.23}, // upper bench
-  {name:'chemical-bench',x:687,y:358,w:215,depth:2.24}  // lower bench
+  {name:'chemical-storage-wall',x:39,y:256,w:352,h:192,depth:2.6} // matches HOME kitchen
  ];
  scene.labAssetLayout=items;
  for(const item of items){
@@ -144,9 +143,7 @@ function renderHDLabInterior(scene){
   // The game already adds 10px horizontal / 9px vertical collision margins.
   {x:250,y:30,w:166,h:184}, // DNA digital research board + stand
   {x:445,y:147,w:236,h:67}, // DNA machine, separate from digital board
-  {x:711,y:199,w:203,h:48}, // computer collider follows 5px left movement
-  {x:689,y:305,w:211,h:50}, // upper right chemistry bench
-  {x:689,y:424,w:211,h:50}  // lower right chemistry bench
+  {x:711,y:199,w:203,h:48} // computer collider follows 5px left movement
  ];
  scene.zones=[
   {x:480,y:450,r:37,label:'Return to Baio District',to:'district'},
@@ -158,8 +155,7 @@ function renderHDLabInterior(scene){
   {x:portalCX,y:teleporter.y+193,w:60,h:68,
    id:'lab-teleport-stairs',label:'Teleport to Workshop',to:'workshop'},
   {x:753,y:268,r:68,label:'Explore Experience at Computer',object:'lab'},
-  {x:563,y:231,r:60,label:'Inspect DNA Research',object:'lab-samples'},
-  {x:650,y:389,r:60,label:'Inspect Chemical Samples',object:'lab-samples'}
+  {x:563,y:231,r:60,label:'Inspect DNA Research',object:'lab-samples'}
  ];
  // The same approved 32-frame walking scientist used in v15.48.
  // Preserve the lab-uniform recolor when available, otherwise derive it.
@@ -203,7 +199,7 @@ function renderHDLabInterior(scene){
  const actor={name:'Dr. Nira',appearance:'nadia',
   pages:[
    'Welcome to Laboratory! I’m Nira. We study ideas, test hypotheses, and explore how things work.',
-   'Look at the DNA machine, chemical refrigerators and experimental tables. The computer opens Baio’s professional experience.',
+   'Look at the DNA machine, digital research board and chemical refrigerators. The computer opens Baio’s professional experience.',
    'The glowing TELEPORT platform with stairs connects this Lab to the Workshop.'
   ],
   sprite:actorContainer,avatar,portraitTexture:npcTexture,waypoint:1,clock:0};
