@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Workshop HD interior v16.00.
+/* BAIO DISTRICT 2077 — Workshop HD interior v16.01.
  * Six transparent neon-orange Workshop props, with individually tuned scale.
  * Collision shapes and teleport interactions follow the enlarged artwork.
  */
@@ -91,12 +91,9 @@ function renderHDWorkshopInterior(scene){
   scene.tweens.add({targets:pulse,p:1,duration:1050,yoyo:true,
    repeat:-1,ease:'Sine.easeInOut',onUpdate:paint});
  };
- const teleporter=items[0],board=items[1],printer=items[2],computer=items[3],bench=items[5];
+ const teleporter=items[0],printer=items[2],computer=items[3];
  interactionBeacon(teleporter.x+teleporter.w/2,teleporter.y+Math.round(teleporter.h*.89),0xa5f27a);
- interactionBeacon(printer.x+printer.w/2,printer.y+Math.round(printer.h*.80),0xffc979);
  interactionBeacon(computer.x+computer.w/2,computer.y+Math.round(computer.h*.66),0x76e4ee);
- interactionBeacon(board.x+board.w/2,board.y+196,0xffb452);
- interactionBeacon(bench.x+bench.w/2,bench.y+Math.round(bench.h*.63),0xffb452);
 
  // Orange energy shimmer and rising particles stay inside the teleport.
  const energy=scene.add.graphics().setDepth(2.25);
@@ -147,12 +144,12 @@ function renderHDWorkshopInterior(scene){
  ];
  scene.zones=[
   {x:480,y:450,r:37,label:'Return to Baio District',to:'district'},
-  {x:portalCX,y:teleporter.y+215,w:64,h:70,
+  // The old interaction started at foot Y=185 and vanished on upper stairs.
+  // Keep the lower landing (Y=255) but extend the same 64px-wide center
+  // strip up to Y=155. Side rails remain non-interactive.
+  {x:portalCX,y:teleporter.y+200,w:64,h:100,
    id:'workshop-teleport-stairs',label:'Teleport to Laboratory',to:'lab'},
-  {x:747,y:268,r:68,label:'View Project Showcase at Computer',object:'workshop'},
-  {x:533,y:226,r:60,label:'Inspect 3D Prototype Printer',object:'workshop-engine'},
-  {x:316,y:231,r:52,label:'Inspect Flying Car Blueprint',object:'workshop-engine'},
-  {x:736,y:415,r:44,label:'Inspect Flying Car Prototype',object:'workshop-engine'}
+  {x:747,y:268,r:68,label:'View Project Showcase at Computer',object:'workshop'}
  ];
 
  // Workshop engineer: same existing NPC identity, conversations, and walking
