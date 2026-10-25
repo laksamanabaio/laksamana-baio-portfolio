@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Laboratory HD interior v15.71.
+/* BAIO DISTRICT 2077 — Laboratory HD interior v15.72.
  * The Lab is constructed from the approved transparent high-resolution props.
  * Old procedural laboratory furnishings are not rendered in this scene.
  */
@@ -125,11 +125,13 @@ function renderHDLabInterior(scene){
  paintScreen();
  scene.tweens.add({targets:ui,phase:1,duration:2150,repeat:-1,
   ease:'Linear',onUpdate:paintScreen});
- // Collision includes the teleport ring, its base and staircase: Baio must
- // approach the machine from the OPEN floor at its front to interact.
- // NPCs patrol away from the solid station.
+ // Keep the machine solid at its rear and on both sides, but leave its
+ // FRONT-CENTER STAIRS walkable. Previously a single 170x115 block made
+ // Baio's feet collide with the very stairs needed for interaction.
  scene.homeFurniture=[
-  {x:48,y:110,w:170,h:115}, // solid teleport body, podium and steps move together
+  {x:48,y:110,w:170,h:65}, // rear teleporter body; no clipping into the energy tube
+  {x:48,y:178,w:53,h:47},  // left podium / stair railing
+  {x:165,y:178,w:53,h:47}, // right podium / stair railing
   // A single continuous solid footprint protects ALL exposed sides of this
   // 352x192 chemical storage module (art bounds: x39..391, y256..448).
   // Previous thin partition/counter strips left a walkable gap at the left
@@ -146,10 +148,10 @@ function renderHDLabInterior(scene){
  ];
  scene.zones=[
   {x:480,y:450,r:37,label:'Return to Baio District',to:'district'},
-  // The only active teleport trigger is directly in front of its stairway.
-  // Character feet must be over this narrow landing, never beside the machine.
-  // Its center tracks the teleporter's artwork rather than a detached side point.
-  {x:portalCX,y:teleporter.y+214,w:86,h:32,label:'Teleport to Workshop',to:'workshop'},
+  // The trigger is the small central staircase landing, not the right side.
+  // Feet in the center of the stairs activate E/Space; lateral approaches do not.
+  {x:portalCX,y:teleporter.y+205,w:56,h:44,r:23,
+   id:'lab-teleport-stairs',label:'Teleport to Workshop',to:'workshop'},
   {x:753,y:268,r:68,label:'Explore Experience at Computer',object:'lab'},
   {x:563,y:231,r:60,label:'Inspect DNA Research',object:'lab-samples'},
   {x:650,y:389,r:60,label:'Inspect Chemical Samples',object:'lab-samples'}
