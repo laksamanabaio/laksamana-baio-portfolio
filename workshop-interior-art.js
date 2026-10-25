@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Workshop HD interior v16.01.
+/* BAIO DISTRICT 2077 — Workshop HD interior v16.02.
  * Six transparent neon-orange Workshop props, with individually tuned scale.
  * Collision shapes and teleport interactions follow the enlarged artwork.
  */
@@ -154,40 +154,10 @@ function renderHDWorkshopInterior(scene){
 
  // Workshop engineer: same existing NPC identity, conversations, and walking
  // frames; patrol positioned in the newly available central aisle.
- const baseNpcKey='npc-dimas',customNpcKey=baseNpcKey+'-interior-workshop-v1548';
- // Preserve the original warm workshop uniform worn by Pak Damar.
- if(!scene.textures.exists(customNpcKey)){
-  try{
-   const source=scene.textures.get(baseNpcKey).getSourceImage();
-   const canvas=document.createElement('canvas');
-   canvas.width=source.width;canvas.height=source.height;
-   const context=canvas.getContext('2d',{willReadFrequently:true});
-   context.drawImage(source,0,0);
-   const pixels=context.getImageData(0,0,canvas.width,canvas.height);
-   const data=pixels.data,tr=0xe5,tg=0xa1,tb=0x6f;
-   for(let y=0;y<canvas.height;y++){
-    const sy=y%184;if(sy<84||sy>125)continue;
-    for(let x=0;x<canvas.width;x++){
-     const sx=x%136;if(sx<38||sx>99)continue;
-     const pos=(y*canvas.width+x)*4;
-     if(data[pos+3]<90)continue;
-     const r=data[pos],g=data[pos+1],b=data[pos+2];
-     const value=(r+g+b)/3;
-     if(value<28||value>245)continue;
-     if(r>g*1.11&&g>b*1.06&&r>82)continue;
-     const light=Math.max(.46,Math.min(1.25,value/125));
-     data[pos]=Math.min(255,Math.round(tr*light));
-     data[pos+1]=Math.min(255,Math.round(tg*light));
-     data[pos+2]=Math.min(255,Math.round(tb*light));
-    }
-   }
-   context.putImageData(pixels,0,0);
-   scene.textures.addSpriteSheet(customNpcKey,canvas,{
-    frameWidth:136,frameHeight:184,margin:0,spacing:0
-   });
-  }catch(err){console.warn('Workshop staff uniform unavailable',err)}
- }
- const npcTexture=scene.textures.exists(customNpcKey)?customNpcKey:baseNpcKey;
+ // Pak Damar now has his own full-detail brown technician sprite sheet.
+ // Same 8x4 rows and 136x184 frames as Dr. Nira, without runtime recoloring.
+ const damarKey='npc-pak-damar-v1602-hd';
+ const npcTexture=scene.textures.exists(damarKey)?damarKey:'npc-dimas';
  const shadow=scene.add.graphics();
  shadow.fillStyle(0x071c2b,.25);shadow.fillEllipse(0,3,28,8);
  const avatar=scene.add.sprite(0,0,npcTexture,0)
