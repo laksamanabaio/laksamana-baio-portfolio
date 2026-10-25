@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Workshop HD interior v15.96.
+/* BAIO DISTRICT 2077 — Workshop HD interior v15.97.
  * Six transparent neon-orange Workshop props, with individually tuned scale.
  * Collision shapes and teleport interactions follow the enlarged artwork.
  */
@@ -54,9 +54,9 @@ function renderHDWorkshopInterior(scene){
  // the other four fixtures are enlarged, and the prototype bench uses its
  // native 16:9 aspect ratio rather than the short laboratory-table ratio.
  const items=[
-  {name:'teleport',asset:'workshop-teleport',labKey:'lab-v1549-teleport',x:35,y:10,w:196,h:221,depth:2.15},
+  {name:'teleport',asset:'workshop-teleport',labKey:'lab-v1549-teleport',x:35,y:5,w:196,h:221,depth:2.15},
   {name:'dna-research-board',asset:'flying-car-blueprint',labKey:'lab-v1561-dna-research-board',x:230,y:3,w:166,depth:2.06},
-  {name:'dna-machine',asset:'three-d-printer',labKey:'lab-v1549-dna-machine',x:383,y:0,w:260,h:216,depth:2.1},
+  {name:'dna-machine',asset:'three-d-printer',labKey:'lab-v1549-dna-machine',x:393,y:0,w:260,h:216,depth:2.1},
   {name:'computer',asset:'workshop-computer',labKey:'lab-v1549-computer',x:683,y:73,w:233,h:175,depth:2.1},
   {name:'chemical-storage-wall',asset:'tools-storage-wall',labKey:'lab-v1566-chemical-storage-wall',x:30,y:254,w:383,h:205,depth:2.6},
   {name:'research-workbench-long',asset:'prototype-bench',labKey:'lab-v1584-research-workbench-long',x:568,y:248,w:329,h:185,depth:2.62}
@@ -136,12 +136,12 @@ function renderHDWorkshopInterior(scene){
  // leave a passage below the digital board and above the tool wall, and
  // preserve a southern aisle under the prototype bench.
  scene.homeFurniture=[
-  {x:40,y:110,w:188,h:67}, // enlarged teleport body
-  {x:42,y:181,w:52,h:45},  // left stair rail (not center steps)
-  {x:174,y:181,w:53,h:45}, // right stair rail (not center steps)
+  {x:40,y:105,w:188,h:67}, // teleport body follows 5px upward move
+  {x:42,y:176,w:52,h:45},  // left stair rail (not center steps)
+  {x:174,y:176,w:53,h:45}, // right stair rail (not center steps)
   {x:30,y:263,w:375,h:192}, // enlarged tools wall
   {x:230,y:30,w:166,h:184}, // blueprint shifted another 10px left
-  {x:385,y:145,w:250,h:70}, // 3D printer follows 50px left, 5px up movement
+  {x:395,y:145,w:250,h:70}, // 3D printer collider follows 10px right move
   {x:688,y:197,w:228,h:55}, // enlarged computer
   {x:579,y:310,w:309,h:123} // corrected-height prototype bench
  ];
@@ -150,7 +150,7 @@ function renderHDWorkshopInterior(scene){
   {x:portalCX,y:teleporter.y+215,w:64,h:70,
    id:'workshop-teleport-stairs',label:'Teleport to Laboratory',to:'lab'},
   {x:753,y:268,r:68,label:'View Project Showcase at Computer',object:'workshop'},
-  {x:513,y:226,r:60,label:'Inspect 3D Prototype Printer',object:'workshop-engine'},
+  {x:523,y:226,r:60,label:'Inspect 3D Prototype Printer',object:'workshop-engine'},
   {x:311,y:231,r:52,label:'Inspect Flying Car Blueprint',object:'workshop-engine'},
   {x:741,y:420,r:44,label:'Inspect Flying Car Prototype',object:'workshop-engine'}
  ];
