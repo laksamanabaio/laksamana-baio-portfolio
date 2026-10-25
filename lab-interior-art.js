@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Laboratory HD interior v15.49.
+/* BAIO DISTRICT 2077 — Laboratory HD interior v15.50.
  * The Lab is constructed from the approved transparent high-resolution props.
  * Old procedural laboratory furnishings are not rendered in this scene.
  */
@@ -53,12 +53,14 @@ function renderHDLabInterior(scene){
  }).setOrigin(.5,0).setDepth(1.3);
  // Each image is a real PNG-origin transparent HD art asset, optimized as WebP.
  // Position and display size are isolated in this table for future fine tuning.
+ // Upper row, left to right: TELEPORT, cooler, central DNA, cooler, COMPUTER.
+ // The four pieces of glassware/chemistry furniture below are unchanged.
  const items=[
-  {name:'dna-machine',x:52,y:155,w:247,depth:2.1},
-  {name:'chemical-fridge',x:305,y:167,w:116,depth:2.12},
-  {name:'teleport',x:420,y:116,w:160,depth:2.15},
-  {name:'chemical-fridge',x:589,y:167,w:116,depth:2.12},
-  {name:'computer',x:710,y:155,w:213,depth:2.1},
+  {name:'teleport',x:55,y:110,w:177,depth:2.15},
+  {name:'chemical-fridge',x:243,y:167,w:108,depth:2.12},
+  {name:'dna-machine',x:358,y:149,w:244,depth:2.1},
+  {name:'chemical-fridge',x:607,y:167,w:100,depth:2.12},
+  {name:'computer',x:710,y:145,w:213,depth:2.1},
   {name:'glassware-rack',x:54,y:330,w:170,depth:2.2},
   {name:'chemical-bench',x:229,y:361,w:185,depth:2.23},
   {name:'chemical-bench',x:591,y:361,w:185,depth:2.23},
@@ -79,16 +81,23 @@ function renderHDLabInterior(scene){
  // Energy shimmer only: the transparent TELEPORT asset contains the staircase,
  // lit podium, tube, existing aura and TELEPORT sign. Portal art remains unchanged.
  const energy=scene.add.graphics().setDepth(2.25);
+ // Neon aura tracks the teleporter's revised position and visual scale.
+ const teleporter=items.find(item=>item.name==='teleport');
+ const portalScale=teleporter.w/160;
+ const portalCX=teleporter.x+80*portalScale;
+ const portalAuraY=teleporter.y+141*portalScale;
+ const portalParticleY=teleporter.y+104*portalScale;
  const portalMotion={phase:0};
  const paintPortal=()=>{
   energy.clear();
   const t=portalMotion.phase*Math.PI*2;
   energy.lineStyle(1.5,0xc3ffff,.30+.2*Math.sin(t));
-  energy.strokeEllipse(500,257,73+4*Math.sin(t),16+2*Math.sin(t));
+  energy.strokeEllipse(portalCX,portalAuraY,73*portalScale+4*Math.sin(t),16*portalScale+2*Math.sin(t));
   for(let n=0;n<8;n++){
    const angle=t+n*.85,rad=25+6*Math.sin(t*2+n);
    energy.fillStyle(n%3===0?0xffffff:0x8eefff,.40+.25*Math.sin(t+n)**2);
-   energy.fillCircle(500+Math.cos(angle)*rad,220+Math.sin(angle)*53,n%2?1.4:2.1);
+   energy.fillCircle(portalCX+Math.cos(angle)*rad*portalScale,
+    portalParticleY+Math.sin(angle)*53*portalScale,n%2?1.4:2.1);
   }
  };
  paintPortal();
@@ -102,11 +111,11 @@ function renderHDLabInterior(scene){
   const t=ui.phase*Math.PI*2;
   for(let k=0;k<8;k++){
    const x=799+k*6,amp=Math.sin(t+k*.84);
-   rect(screen,x,177+Math.round(amp*4),3,6+(k%3)*2,k%2?C.ice:C.cyan,.42);
+   rect(screen,x,167+Math.round(amp*4),3,6+(k%3)*2,k%2?C.ice:C.cyan,.42);
   }
-  rect(screen,790,192+Math.round(ui.phase*10),51,1,C.ice,.48);
+  rect(screen,790,182+Math.round(ui.phase*10),51,1,C.ice,.48);
   for(let k=0;k<4;k++){
-   rect(screen,733+k*4,207+Math.round(Math.sin(t+k)*2),2,7,C.cyan,.48);
+   rect(screen,733+k*4,197+Math.round(Math.sin(t+k)*2),2,7,C.cyan,.48);
   }
  };
  paintScreen();
@@ -115,10 +124,11 @@ function renderHDLabInterior(scene){
  // Walking/collision footprints correspond to the physical feet of each prop.
  // The front staircase is deliberately NOT blocked so Baio can approach it.
  scene.homeFurniture=[
-  {x:55,y:294,w:243,h:66},  // genetic analysis machine
-  {x:307,y:256,w:111,h:40}, // coolant chamber west
-  {x:590,y:256,w:113,h:40}, // coolant chamber east
-  {x:716,y:259,w:203,h:48}, // computer desk
+  // No collider across the front of the teleporter staircase.
+  {x:245,y:256,w:105,h:40}, // west chemical fridge
+  {x:362,y:286,w:236,h:67}, // centered DNA station
+  {x:609,y:256,w:96,h:40},  // east chemical fridge
+  {x:716,y:249,w:203,h:48}, // computer moved up
   {x:55,y:426,w:164,h:34},  // glass rack left
   {x:230,y:418,w:183,h:43}, // chemistry bench left
   {x:592,y:418,w:183,h:43}, // chemistry bench right
@@ -126,9 +136,9 @@ function renderHDLabInterior(scene){
  ];
  scene.zones=[
   {x:480,y:450,r:37,label:'Return to Baio District',to:'district'},
-  {x:500,y:326,r:46,label:'Teleport to Workshop',to:'workshop'},
-  {x:758,y:328,r:68,label:'Explore Experience at Computer',object:'lab'},
-  {x:329,y:323,r:62,label:'Inspect DNA Research',object:'lab-samples'},
+  {x:145,y:323,r:50,label:'Teleport to Workshop',to:'workshop'},
+  {x:758,y:318,r:68,label:'Explore Experience at Computer',object:'lab'},
+  {x:480,y:370,r:60,label:'Inspect DNA Research',object:'lab-samples'},
   {x:265,y:389,r:49,label:'Inspect Chemical Samples',object:'lab-samples'}
  ];
  // The same approved 32-frame walking scientist used in v15.48.
