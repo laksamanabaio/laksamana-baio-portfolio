@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Laboratory HD interior v15.80.
+/* BAIO DISTRICT 2077 — Laboratory HD interior v15.81.
  * The Lab is constructed from the approved transparent high-resolution props.
  * Old procedural laboratory furnishings are not rendered in this scene.
  */
@@ -157,46 +157,20 @@ function renderHDLabInterior(scene){
   {x:753,y:268,r:68,label:'Explore Experience at Computer',object:'lab'},
   {x:563,y:231,r:60,label:'Inspect DNA Research',object:'lab-samples'}
  ];
- // The same approved 32-frame walking scientist used in v15.48.
- // Preserve the lab-uniform recolor when available, otherwise derive it.
- const native='npc-nadia',uniform='npc-nadia-interior-lab-v1548';
- if(!scene.textures.exists(uniform)){
-  try{
-   const source=scene.textures.get(native).getSourceImage();
-   const canvas=document.createElement('canvas');
-   canvas.width=source.width;canvas.height=source.height;
-   const ctx=canvas.getContext('2d',{willReadFrequently:true});
-   ctx.drawImage(source,0,0);
-   const frame=ctx.getImageData(0,0,canvas.width,canvas.height),arr=frame.data;
-   for(let y=0;y<canvas.height;y++){
-    const fy=y%184;
-    if(fy<84||fy>125)continue;
-    for(let x=0;x<canvas.width;x++){
-     const fx=x%136;
-     if(fx<38||fx>99)continue;
-     const p=(y*canvas.width+x)*4;
-     if(arr[p+3]<90)continue;
-     const r=arr[p],g=arr[p+1],b=arr[p+2],v=(r+g+b)/3;
-     if(v<28||v>245||(r>g*1.11&&g>b*1.06&&r>82))continue;
-     const l=Math.max(.46,Math.min(1.25,v/125));
-     arr[p]=Math.round(98*l);arr[p+1]=Math.round(222*l);
-     arr[p+2]=Math.round(216*l);
-    }
-   }
-   ctx.putImageData(frame,0,0);
-   scene.textures.addSpriteSheet(uniform,canvas,{frameWidth:136,frameHeight:184,
-    margin:0,spacing:0});
-  }catch(error){console.warn('Lab staff uniform unavailable',error)}
- }
- const npcTexture=scene.textures.exists(uniform)?uniform:native;
+ // Dr. Nira's own white-lab-coat sprite replaces the recolored Nadia artwork.
+ // 4 directions (DOWN, UP, LEFT, RIGHT) x 4 animated frames, 68x92 pixels.
+ // The 2x display scale keeps the same world proportions as other NPCs.
+ const niraKey='npc-dr-nira-labcoat-v1581';
+ const hasNira=scene.textures.exists(niraKey);
+ const npcTexture=hasNira?niraKey:'npc-nadia';
  const shadow=scene.add.graphics();
  shadow.fillStyle(0x0c2730,.24);shadow.fillEllipse(0,3,29,8);
  const avatar=scene.add.sprite(0,0,npcTexture,0)
-  .setOrigin(.5,175/184).setScale(.56);
+  .setOrigin(.5,hasNira?88/92:175/184).setScale(hasNira?1.12:.56);
  const patrol=[[554,377],[573,384],[578,414],[547,416]];
  const actorContainer=scene.add.container(patrol[0][0],patrol[0][1],[shadow,avatar])
   .setDepth(4.25);
- const actor={name:'Dr. Nira',appearance:'nadia',
+ const actor={name:'Dr. Nira',appearance:'dr-nira',
   pages:[
    'Welcome to Laboratory! I’m Nira. We study ideas, test hypotheses, and explore how things work.',
    'Look at the DNA machine, digital research board and chemical refrigerators. The computer opens Baio’s professional experience.',
@@ -213,7 +187,8 @@ function renderHDLabInterior(scene){
   const direction=Math.abs(dx)>Math.abs(dy)?(dx<0?'left':'right'):(dy<0?'up':'down');
   const row={down:0,up:1,left:2,right:3}[direction];
   actor.clock+=Math.min(delta,50);
-  avatar.setFrame(row*8+4+(Math.floor(actor.clock/165)%4));
+  const stepFrame=Math.floor(actor.clock/165)%4;
+  avatar.setFrame(hasNira?row*4+stepFrame:row*8+4+stepFrame);
  };
  scene.roomGuard=actor;
  return true;
