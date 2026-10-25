@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Laboratory HD interior v15.63.
+/* BAIO DISTRICT 2077 — Laboratory HD interior v15.64.
  * The Lab is constructed from the approved transparent high-resolution props.
  * Old procedural laboratory furnishings are not rendered in this scene.
  */
@@ -57,7 +57,7 @@ function renderHDLabInterior(scene){
  // remain. Both chemical refrigerators and glassware racks have been removed.
  const items=[
   {name:'teleport',x:45,y:30,w:177,depth:2.15},
-  {name:'dna-research-board',x:250,y:-30,w:166,depth:2.06},
+  {name:'dna-research-board',x:250,y:0,w:166,depth:2.06},
   {name:'dna-machine',x:441,y:10,w:244,depth:2.1},
   {name:'computer',x:705,y:95,w:213,depth:2.1},
   {name:'chemical-bench',x:229,y:361,w:185,depth:2.23},
