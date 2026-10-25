@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Laboratory HD interior v15.60.
+/* BAIO DISTRICT 2077 — Laboratory HD interior v15.61.
  * The Lab is constructed from the approved transparent high-resolution props.
  * Old procedural laboratory furnishings are not rendered in this scene.
  */
@@ -54,9 +54,11 @@ function renderHDLabInterior(scene){
  // Each image is a real PNG-origin transparent HD art asset, optimized as WebP.
  // Position and display size are isolated in this table for future fine tuning.
  // Upper row: TELEPORT, two chemical coolers, DNA immediately left of COMPUTER.
- // The four pieces of glassware/chemistry furniture below are unchanged.
+ // The new DNA notes board is positioned against the wall behind two
+ // cooler units: all old science props keep their existing coordinates.
  const items=[
   {name:'teleport',x:45,y:30,w:177,depth:2.15},
+  {name:'dna-research-board',x:260,y:20,w:166,depth:2.06},
   {name:'chemical-fridge',x:243,y:167,w:108,depth:2.12},
   {name:'dna-machine',x:451,y:10,w:244,depth:2.1},
   {name:'chemical-fridge',x:355,y:167,w:100,depth:2.12},
@@ -68,7 +70,8 @@ function renderHDLabInterior(scene){
  ];
  scene.labAssetLayout=items;
  for(const item of items){
-  const key='lab-v1549-'+item.name;
+  const key=item.name==='dna-research-board'
+   ?'lab-v1561-dna-research-board':'lab-v1549-'+item.name;
   if(!scene.textures.exists(key)){
    console.warn('Lab HD asset missing:',key);
    continue;
