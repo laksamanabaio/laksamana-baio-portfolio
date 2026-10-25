@@ -7,7 +7,7 @@ function renderThemedInterior(scene,place){
  // Workshop never renders obsolete procedural assets on a failed HD load.
  if(place==='workshop'){
   if(typeof renderHDWorkshopInterior==='function'&&
-     renderHDWorkshopInterior.buildVersion==='16.05')
+     renderHDWorkshopInterior.buildVersion==='16.06')
    return renderHDWorkshopInterior(scene);
   console.error('Workshop HD renderer unavailable; legacy Workshop disabled');
   return false;

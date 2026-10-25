@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Workshop HD interior v16.05.
+/* BAIO DISTRICT 2077 — Workshop HD interior v16.06.
  * Six transparent neon-orange Workshop props, with individually tuned scale.
  * Collision shapes and teleport interactions follow the enlarged artwork.
  */
@@ -186,11 +186,11 @@ function renderHDWorkshopInterior(scene){
    &&!((i===3&&lastSegment===4)||(i===4&&lastSegment===3)));
  const segment=segments[Math.floor(Math.random()*segments.length)];
  scene.game.registry.set('workshopDamarLastEntrySegment',segment);
- const progress=.15+Math.random()*.70;
+ const entryProgress=.15+Math.random()*.70;
  const startX=patrol[segment][0]+
-  (patrol[segment+1][0]-patrol[segment][0])*progress;
+  (patrol[segment+1][0]-patrol[segment][0])*entryProgress;
  const startY=patrol[segment][1]+
-  (patrol[segment+1][1]-patrol[segment][1])*progress;
+  (patrol[segment+1][1]-patrol[segment][1])*entryProgress;
  const startDirection=Math.random()<.5?1:-1;
  const startWaypoint=startDirection>0?segment+1:segment;
  const dx0=patrol[startWaypoint][0]-startX;
@@ -240,4 +240,4 @@ function renderHDWorkshopInterior(scene){
  return true;
 }
 // The entry script verifies the renderer version so it cannot use stale code.
-renderHDWorkshopInterior.buildVersion='16.05';
+renderHDWorkshopInterior.buildVersion='16.06';
