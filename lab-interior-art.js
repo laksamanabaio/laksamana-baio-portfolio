@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Laboratory HD interior v15.78.
+/* BAIO DISTRICT 2077 — Laboratory HD interior v15.79.
  * The Lab is constructed from the approved transparent high-resolution props.
  * Old procedural laboratory furnishings are not rendered in this scene.
  */
@@ -65,7 +65,7 @@ function renderHDLabInterior(scene){
   {name:'computer',x:705,y:95,w:213,depth:2.1},
   {name:'chemical-storage-wall',x:39,y:256,w:352,h:192,depth:2.6}, // matches HOME kitchen
   // Left-profile cyborg in a glowing liquid stasis sphere.
-  {name:'cyborg-pod-left',x:720,y:214,w:180,h:240,depth:2.35} // lower-right Laboratory
+  {name:'cyborg-pod-left',x:770,y:314,w:180,h:240,depth:2.35} // lower-right Laboratory
  ];
  scene.labAssetLayout=items;
  for(const item of items){
@@ -148,7 +148,7 @@ function renderHDLabInterior(scene){
   {x:445,y:147,w:236,h:67}, // DNA machine, separate from digital board
   {x:711,y:199,w:203,h:48}, // computer collider follows 5px left movement
   // Stop Baio from clipping through the stasis tank and its heavy podium.
-  {x:699,y:250,w:201,h:215} // bottom-right cyborg pod
+  {x:749,y:350,w:201,h:215} // bottom-right cyborg pod
  ];
  scene.zones=[
   {x:480,y:450,r:37,label:'Return to Baio District',to:'district'},
