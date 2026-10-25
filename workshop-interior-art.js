@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Workshop HD interior v16.02.
+/* BAIO DISTRICT 2077 — Workshop HD interior v16.03.
  * Six transparent neon-orange Workshop props, with individually tuned scale.
  * Collision shapes and teleport interactions follow the enlarged artwork.
  */
@@ -154,9 +154,10 @@ function renderHDWorkshopInterior(scene){
 
  // Workshop engineer: same existing NPC identity, conversations, and walking
  // frames; patrol positioned in the newly available central aisle.
- // Pak Damar now has his own full-detail brown technician sprite sheet.
- // Same 8x4 rows and 136x184 frames as Dr. Nira, without runtime recoloring.
- const damarKey='npc-pak-damar-v1602-hd';
+ // Pak Damar's frame artwork is widened to match the visible NPC footprint.
+ // Same 8x4 rows, 136x184 cells, foot alignment and .56 scale as Dr. Nira.
+ // His mustache and brown technician outfit stay intact; no runtime recoloring.
+ const damarKey='npc-pak-damar-v1603-hd';
  const npcTexture=scene.textures.exists(damarKey)?damarKey:'npc-dimas';
  const shadow=scene.add.graphics();
  shadow.fillStyle(0x071c2b,.25);shadow.fillEllipse(0,3,28,8);
