@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Laboratory HD interior v15.82.
+/* BAIO DISTRICT 2077 — Laboratory HD interior v15.83.
  * The Lab is constructed from the approved transparent high-resolution props.
  * Old procedural laboratory furnishings are not rendered in this scene.
  */
@@ -157,9 +157,11 @@ function renderHDLabInterior(scene){
   {x:753,y:268,r:68,label:'Explore Experience at Computer',object:'lab'},
   {x:563,y:231,r:60,label:'Inspect DNA Research',object:'lab-samples'}
  ];
- // Dr. Nira uses the same 136x184, 32-frame NPC format as the District cast.
+ // Dr. Nira uses the same HD 136x184, 32-frame layout as the District NPCs.
+ // All views now have identical visible heights and aligned feet, including
+ // the left/right walking frames. Full-detail RGBA replaces 32-color art.
  // Rows DOWN/UP/LEFT/RIGHT, with 4 idle and 4 walking frames per row.
- const niraKey='npc-dr-nira-v1582';
+ const niraKey='npc-dr-nira-v1583-hd';
  const npcTexture=scene.textures.exists(niraKey)?niraKey:'npc-nadia';
  const shadow=scene.add.graphics();
  shadow.fillStyle(0x0c2730,.24);shadow.fillEllipse(0,3,29,8);
