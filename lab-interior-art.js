@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Laboratory HD interior v15.89.
+/* BAIO DISTRICT 2077 — Laboratory HD interior v15.90.
  * The Lab is constructed from the approved transparent high-resolution props.
  * Old procedural laboratory furnishings are not rendered in this scene.
  */
@@ -226,7 +226,27 @@ function renderHDLabInterior(scene){
   [858,438]  // south-east endpoint, below research bench
  ];
  const pauseCorners=new Set([0,1,3,5]);
- const actorContainer=scene.add.container(554,377,[shadow,avatar])
+ // Each entry starts from a different point ON the unchanged patrol path.
+ // Phaser's shared registry survives scene.restart, so consecutive Lab visits
+ // never choose the same segment. Direction, frame phase, and position vary.
+ const segmentCount=patrol.length-1;
+ const lastSegment=scene.game.registry.get('labNiraLastEntrySegment');
+ const choices=Array.from({length:segmentCount},(_,i)=>i)
+  .filter(i=>i!==lastSegment);
+ const segment=choices[Math.floor(Math.random()*choices.length)];
+ scene.game.registry.set('labNiraLastEntrySegment',segment);
+ const progress=.15+Math.random()*.70;
+ const startX=patrol[segment][0]+
+  (patrol[segment+1][0]-patrol[segment][0])*progress;
+ const startY=patrol[segment][1]+
+  (patrol[segment+1][1]-patrol[segment][1])*progress;
+ const startDirection=Math.random()<.5?1:-1;
+ const startWaypoint=startDirection>0?segment+1:segment;
+ const startDx=patrol[startWaypoint][0]-startX;
+ const startDy=patrol[startWaypoint][1]-startY;
+ const startFacing=Math.abs(startDx)>Math.abs(startDy)
+  ?(startDx<0?'left':'right'):(startDy<0?'up':'down');
+ const actorContainer=scene.add.container(startX,startY,[shadow,avatar])
   .setDepth(4.25);
  const actor={name:'Dr. Nira',appearance:'dr-nira',
   pages:[
@@ -235,7 +255,8 @@ function renderHDLabInterior(scene){
    'The glowing TELEPORT platform with stairs connects this Lab to the Workshop.'
   ],
   sprite:actorContainer,avatar,portraitTexture:npcTexture,
-  waypoint:3,routeDirection:1,waitMs:0,clock:0,facing:'down'};
+  waypoint:startWaypoint,routeDirection:startDirection,waitMs:0,
+  clock:Math.floor(Math.random()*660),facing:startFacing};
  actor.update=delta=>{
   const dt=Math.min(delta,50);
   const rows={down:0,up:1,left:2,right:3};
