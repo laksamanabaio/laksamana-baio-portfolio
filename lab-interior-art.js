@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Laboratory HD interior v15.81.
+/* BAIO DISTRICT 2077 — Laboratory HD interior v15.82.
  * The Lab is constructed from the approved transparent high-resolution props.
  * Old procedural laboratory furnishings are not rendered in this scene.
  */
@@ -157,16 +157,14 @@ function renderHDLabInterior(scene){
   {x:753,y:268,r:68,label:'Explore Experience at Computer',object:'lab'},
   {x:563,y:231,r:60,label:'Inspect DNA Research',object:'lab-samples'}
  ];
- // Dr. Nira's own white-lab-coat sprite replaces the recolored Nadia artwork.
- // 4 directions (DOWN, UP, LEFT, RIGHT) x 4 animated frames, 68x92 pixels.
- // The 2x display scale keeps the same world proportions as other NPCs.
- const niraKey='npc-dr-nira-labcoat-v1581';
- const hasNira=scene.textures.exists(niraKey);
- const npcTexture=hasNira?niraKey:'npc-nadia';
+ // Dr. Nira uses the same 136x184, 32-frame NPC format as the District cast.
+ // Rows DOWN/UP/LEFT/RIGHT, with 4 idle and 4 walking frames per row.
+ const niraKey='npc-dr-nira-v1582';
+ const npcTexture=scene.textures.exists(niraKey)?niraKey:'npc-nadia';
  const shadow=scene.add.graphics();
  shadow.fillStyle(0x0c2730,.24);shadow.fillEllipse(0,3,29,8);
  const avatar=scene.add.sprite(0,0,npcTexture,0)
-  .setOrigin(.5,hasNira?88/92:175/184).setScale(hasNira?1.12:.56);
+  .setOrigin(.5,175/184).setScale(.56);
  const patrol=[[554,377],[573,384],[578,414],[547,416]];
  const actorContainer=scene.add.container(patrol[0][0],patrol[0][1],[shadow,avatar])
   .setDepth(4.25);
@@ -187,8 +185,7 @@ function renderHDLabInterior(scene){
   const direction=Math.abs(dx)>Math.abs(dy)?(dx<0?'left':'right'):(dy<0?'up':'down');
   const row={down:0,up:1,left:2,right:3}[direction];
   actor.clock+=Math.min(delta,50);
-  const stepFrame=Math.floor(actor.clock/165)%4;
-  avatar.setFrame(hasNira?row*4+stepFrame:row*8+4+stepFrame);
+  avatar.setFrame(row*8+4+(Math.floor(actor.clock/165)%4));
  };
  scene.roomGuard=actor;
  return true;
