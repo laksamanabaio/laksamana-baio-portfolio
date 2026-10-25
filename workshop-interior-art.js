@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Workshop HD interior v15.94.
+/* BAIO DISTRICT 2077 — Workshop HD interior v15.95.
  * Six transparent neon-orange Workshop props, with individually tuned scale.
  * Collision shapes and teleport interactions follow the enlarged artwork.
  */
@@ -55,7 +55,7 @@ function renderHDWorkshopInterior(scene){
  // native 16:9 aspect ratio rather than the short laboratory-table ratio.
  const items=[
   {name:'teleport',asset:'workshop-teleport',labKey:'lab-v1549-teleport',x:35,y:10,w:196,h:221,depth:2.15},
-  {name:'dna-research-board',asset:'flying-car-blueprint',labKey:'lab-v1561-dna-research-board',x:240,y:3,w:166,depth:2.06},
+  {name:'dna-research-board',asset:'flying-car-blueprint',labKey:'lab-v1561-dna-research-board',x:230,y:3,w:166,depth:2.06},
   {name:'dna-machine',asset:'three-d-printer',labKey:'lab-v1549-dna-machine',x:433,y:5,w:260,h:216,depth:2.1},
   {name:'computer',asset:'workshop-computer',labKey:'lab-v1549-computer',x:683,y:73,w:233,h:175,depth:2.1},
   {name:'chemical-storage-wall',asset:'tools-storage-wall',labKey:'lab-v1566-chemical-storage-wall',x:30,y:254,w:383,h:205,depth:2.6},
@@ -140,7 +140,7 @@ function renderHDWorkshopInterior(scene){
   {x:42,y:181,w:52,h:45},  // left stair rail (not center steps)
   {x:174,y:181,w:53,h:45}, // right stair rail (not center steps)
   {x:30,y:263,w:375,h:192}, // enlarged tools wall
-  {x:240,y:30,w:166,h:184}, // blueprint moved 10px left
+  {x:230,y:30,w:166,h:184}, // blueprint shifted another 10px left
   {x:435,y:150,w:250,h:70}, // enlarged 3D printer
   {x:688,y:197,w:228,h:55}, // enlarged computer
   {x:579,y:310,w:309,h:123} // corrected-height prototype bench
@@ -151,7 +151,7 @@ function renderHDWorkshopInterior(scene){
    id:'workshop-teleport-stairs',label:'Teleport to Laboratory',to:'lab'},
   {x:753,y:268,r:68,label:'View Project Showcase at Computer',object:'workshop'},
   {x:563,y:231,r:60,label:'Inspect 3D Prototype Printer',object:'workshop-engine'},
-  {x:321,y:231,r:52,label:'Inspect Flying Car Blueprint',object:'workshop-engine'},
+  {x:311,y:231,r:52,label:'Inspect Flying Car Blueprint',object:'workshop-engine'},
   {x:741,y:420,r:44,label:'Inspect Flying Car Prototype',object:'workshop-engine'}
  ];
 
