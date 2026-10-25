@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Laboratory HD interior v15.57.
+/* BAIO DISTRICT 2077 — Laboratory HD interior v15.58.
  * The Lab is constructed from the approved transparent high-resolution props.
  * Old procedural laboratory furnishings are not rendered in this scene.
  */
@@ -58,7 +58,7 @@ function renderHDLabInterior(scene){
  const items=[
   {name:'teleport',x:45,y:30,w:177,depth:2.15},
   {name:'chemical-fridge',x:243,y:167,w:108,depth:2.12},
-  {name:'dna-machine',x:461,y:45,w:244,depth:2.1},
+  {name:'dna-machine',x:461,y:-5,w:244,depth:2.1},
   {name:'chemical-fridge',x:355,y:167,w:100,depth:2.12},
   {name:'computer',x:705,y:95,w:213,depth:2.1},
   {name:'glassware-rack',x:54,y:330,w:170,depth:2.2},
@@ -130,7 +130,7 @@ function renderHDLabInterior(scene){
  scene.homeFurniture=[
   {x:48,y:115,w:170,h:115}, // solid teleport body, podium and steps move together
   {x:245,y:256,w:105,h:40}, // west chemical fridge
-  {x:465,y:182,w:236,h:67}, // DNA footprint follows 50px upward move
+  {x:465,y:132,w:236,h:67}, // DNA footprint follows new 50px upward move
   {x:357,y:256,w:96,h:40},  // second cooler left of DNA
   {x:711,y:199,w:203,h:48}, // computer collider follows 5px left movement
   {x:55,y:426,w:164,h:34},  // glass rack left
@@ -142,7 +142,7 @@ function renderHDLabInterior(scene){
   {x:480,y:450,r:37,label:'Return to Baio District',to:'district'},
   {x:135,y:243,r:50,label:'Teleport to Workshop',to:'workshop'},
   {x:753,y:268,r:68,label:'Explore Experience at Computer',object:'lab'},
-  {x:583,y:266,r:60,label:'Inspect DNA Research',object:'lab-samples'},
+  {x:583,y:216,r:60,label:'Inspect DNA Research',object:'lab-samples'},
   {x:265,y:389,r:49,label:'Inspect Chemical Samples',object:'lab-samples'}
  ];
  // The same approved 32-frame walking scientist used in v15.48.
