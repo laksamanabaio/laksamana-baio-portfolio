@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Laboratory HD interior v15.67.
+/* BAIO DISTRICT 2077 — Laboratory HD interior v15.68.
  * The Lab is constructed from the approved transparent high-resolution props.
  * Old procedural laboratory furnishings are not rendered in this scene.
  */
@@ -53,15 +53,15 @@ function renderHDLabInterior(scene){
  }).setOrigin(.5,0).setDepth(1.3);
  // Each image is a real PNG-origin transparent HD art asset, optimized as WebP.
  // Position and display size are isolated in this table for future fine tuning.
- // The chemical storage/refrigerator wall matches HOME kitchen's size (352x192)
- // and X=39, but sits 50px lower at Y=286. No dining furniture or chairs.
+ // The chemical storage/refrigerator wall keeps HOME kitchen's 352x192 size
+ // and X=39, now Y=266 (20px above v15.67). No dining furniture or chairs.
  // Existing DNA, board, computer, teleport and both right benches stay put.
  const items=[
   {name:'teleport',x:45,y:30,w:177,depth:2.15},
-  {name:'dna-research-board',x:250,y:0,w:166,depth:2.06},
+  {name:'dna-research-board',x:250,y:3,w:166,depth:2.06},
   {name:'dna-machine',x:441,y:10,w:244,depth:2.1},
   {name:'computer',x:705,y:95,w:213,depth:2.1},
-  {name:'chemical-storage-wall',x:39,y:286,w:352,h:192,depth:2.6}, // matches HOME kitchen
+  {name:'chemical-storage-wall',x:39,y:266,w:352,h:192,depth:2.6}, // matches HOME kitchen
   {name:'chemical-bench',x:687,y:239,w:215,depth:2.23}, // upper bench
   {name:'chemical-bench',x:687,y:358,w:215,depth:2.24}  // lower bench
  ];
@@ -132,9 +132,9 @@ function renderHDLabInterior(scene){
   {x:48,y:115,w:170,h:115}, // solid teleport body, podium and steps move together
   // Match HOME kitchen wall/counter collisions so Baio cannot cross the
   // solid chemical storage wall or its specimen refrigerator cabinets.
-  {x:43,y:288,w:344,h:12}, // full-width partition top follows the lowered wall
-  {x:367,y:294,w:21,h:171}, // east wall partition follows 50px lower
-  {x:78,y:343,w:272,h:70}, // chemical cabinets and refrigerator follow lowered wall
+  {x:43,y:268,w:344,h:12}, // full-width partition top follows wall
+  {x:367,y:274,w:21,h:171}, // east partition follows wall
+  {x:78,y:323,w:272,h:70}, // chemical cabinets and refrigerator follow wall
   {x:445,y:147,w:236,h:67}, // DNA collision follows another 10px left
   {x:711,y:199,w:203,h:48}, // computer collider follows 5px left movement
   {x:689,y:305,w:211,h:50}, // upper right chemistry bench
