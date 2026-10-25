@@ -123,7 +123,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  </span>
 </div>
 <div class="touch" aria-label="Touch movement controls"><button data-dir="left" aria-label="Left">←</button><button data-dir="up" aria-label="Up">↑</button><button data-dir="down" aria-label="Down">↓</button><button data-dir="right" aria-label="Right">→</button></div>
-<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 15.71 — Front-only Lab Teleport Interaction</span></footer>
+<footer><span>Move: WASD / Arrow Keys · Touch buttons on mobile</span><span>Prototype 15.72 — Front Stair Teleport Interaction</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -136,7 +136,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 <script src="./home-interior.js?v=11.8"></script>
 <script src="./home-interior-art.js?v=13.5"></script>
 <script src="./themed-interiors.js?v=15.48"></script>
-<script src="./lab-interior-art.js?v=15.71"></script>
+<script src="./lab-interior-art.js?v=15.72"></script>
 <script src="./cyberpop-music.js?v=15.42"></script>
 <script>
 if (!window.Phaser) {
@@ -1297,11 +1297,21 @@ if (!window.Phaser) {
    // Room keepers walk around without colliding with the workspaces,
    // and stop their walking animation during dialogue.
    if(this.roomGuard&&this.roomGuard.update)this.roomGuard.update(delta);
-   // Stairs can have a front-only rectangular interaction area; other zones remain circular.
-   const door=this.zones.find(z=>z.w!=null&&z.h!=null
-    ? Math.abs(this.player.x-z.x)<=z.w/2&&Math.abs(this.player.y-z.y)<=z.h/2
-    : Math.hypot(this.player.x-z.x,this.player.y-z.y)<z.r
-   )||null;
+   // LAB teleport is *always* detected at the front stair landing.
+   // Recalculate from the rendered art position as a guard against a stale
+   // old round zone at the machine's right side.
+   const door=this.zones.find(z=>{
+    if(this.place==='lab'&&z.to==='workshop'){
+     const teleport=this.labAssetLayout?.find(item=>item.name==='teleport');
+     const stairX=teleport?teleport.x+teleport.w/2:z.x;
+     const stairY=teleport?teleport.y+205:z.y;
+     return Math.abs(this.player.x-stairX)<=28
+      &&Math.abs(this.player.y-stairY)<=22;
+    }
+    return z.w!=null&&z.h!=null
+     ? Math.abs(this.player.x-z.x)<=z.w/2&&Math.abs(this.player.y-z.y)<=z.h/2
+     : Math.hypot(this.player.x-z.x,this.player.y-z.y)<z.r;
+   })||null;
    let npcNearby=null,nearest=60;
    if(this.place==='district'&&this.parkVisitors){
     for(const npc of this.parkVisitors){
