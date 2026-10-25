@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Laboratory HD interior v15.51.
+/* BAIO DISTRICT 2077 — Laboratory HD interior v15.52.
  * The Lab is constructed from the approved transparent high-resolution props.
  * Old procedural laboratory furnishings are not rendered in this scene.
  */
@@ -56,11 +56,11 @@ function renderHDLabInterior(scene){
  // Upper row, left to right: TELEPORT, cooler, central DNA, cooler, COMPUTER.
  // The four pieces of glassware/chemistry furniture below are unchanged.
  const items=[
-  {name:'teleport',x:55,y:80,w:177,depth:2.15},
+  {name:'teleport',x:55,y:65,w:177,depth:2.15},
   {name:'chemical-fridge',x:243,y:167,w:108,depth:2.12},
   {name:'dna-machine',x:358,y:149,w:244,depth:2.1},
   {name:'chemical-fridge',x:607,y:167,w:100,depth:2.12},
-  {name:'computer',x:710,y:105,w:213,depth:2.1},
+  {name:'computer',x:710,y:95,w:213,depth:2.1},
   {name:'glassware-rack',x:54,y:330,w:170,depth:2.2},
   {name:'chemical-bench',x:229,y:361,w:185,depth:2.23},
   {name:'chemical-bench',x:591,y:361,w:185,depth:2.23},
@@ -130,7 +130,7 @@ function renderHDLabInterior(scene){
   {x:245,y:256,w:105,h:40}, // west chemical fridge
   {x:362,y:286,w:236,h:67}, // centered DNA station
   {x:609,y:256,w:96,h:40},  // east chemical fridge
-  {x:716,y:209,w:203,h:48}, // computer moved 40px up
+  {x:716,y:199,w:203,h:48}, // computer collision follows raised desk
   {x:55,y:426,w:164,h:34},  // glass rack left
   {x:230,y:418,w:183,h:43}, // chemistry bench left
   {x:592,y:418,w:183,h:43}, // chemistry bench right
@@ -138,8 +138,8 @@ function renderHDLabInterior(scene){
  ];
  scene.zones=[
   {x:480,y:450,r:37,label:'Return to Baio District',to:'district'},
-  {x:145,y:293,r:50,label:'Teleport to Workshop',to:'workshop'},
-  {x:758,y:278,r:68,label:'Explore Experience at Computer',object:'lab'},
+  {x:145,y:278,r:50,label:'Teleport to Workshop',to:'workshop'},
+  {x:758,y:268,r:68,label:'Explore Experience at Computer',object:'lab'},
   {x:480,y:370,r:60,label:'Inspect DNA Research',object:'lab-samples'},
   {x:265,y:389,r:49,label:'Inspect Chemical Samples',object:'lab-samples'}
  ];
