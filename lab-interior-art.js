@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Laboratory HD interior v15.61.
+/* BAIO DISTRICT 2077 — Laboratory HD interior v15.62.
  * The Lab is constructed from the approved transparent high-resolution props.
  * Old procedural laboratory furnishings are not rendered in this scene.
  */
@@ -53,20 +53,15 @@ function renderHDLabInterior(scene){
  }).setOrigin(.5,0).setDepth(1.3);
  // Each image is a real PNG-origin transparent HD art asset, optimized as WebP.
  // Position and display size are isolated in this table for future fine tuning.
- // Upper row: TELEPORT, two chemical coolers, DNA immediately left of COMPUTER.
- // The new DNA notes board is positioned against the wall behind two
- // cooler units: all old science props keep their existing coordinates.
+ // The DNA board, teleport, DNA machine, computer and two chemistry benches
+ // remain. Both chemical refrigerators and glassware racks have been removed.
  const items=[
   {name:'teleport',x:45,y:30,w:177,depth:2.15},
   {name:'dna-research-board',x:260,y:20,w:166,depth:2.06},
-  {name:'chemical-fridge',x:243,y:167,w:108,depth:2.12},
   {name:'dna-machine',x:451,y:10,w:244,depth:2.1},
-  {name:'chemical-fridge',x:355,y:167,w:100,depth:2.12},
   {name:'computer',x:705,y:95,w:213,depth:2.1},
-  {name:'glassware-rack',x:54,y:330,w:170,depth:2.2},
   {name:'chemical-bench',x:229,y:361,w:185,depth:2.23},
-  {name:'chemical-bench',x:591,y:361,w:185,depth:2.23},
-  {name:'glassware-rack',x:783,y:333,w:140,depth:2.2}
+  {name:'chemical-bench',x:591,y:361,w:185,depth:2.23}
  ];
  scene.labAssetLayout=items;
  for(const item of items){
@@ -132,14 +127,10 @@ function renderHDLabInterior(scene){
  // NPCs patrol away from the solid station.
  scene.homeFurniture=[
   {x:48,y:115,w:170,h:115}, // solid teleport body, podium and steps move together
-  {x:245,y:256,w:105,h:40}, // west chemical fridge
   {x:455,y:147,w:236,h:67}, // DNA collision follows 10px left, 5px up
-  {x:357,y:256,w:96,h:40},  // second cooler left of DNA
   {x:711,y:199,w:203,h:48}, // computer collider follows 5px left movement
-  {x:55,y:426,w:164,h:34},  // glass rack left
   {x:230,y:418,w:183,h:43}, // chemistry bench left
-  {x:592,y:418,w:183,h:43}, // chemistry bench right
-  {x:784,y:427,w:136,h:34}  // glass rack right
+  {x:592,y:418,w:183,h:43}  // chemistry bench right
  ];
  scene.zones=[
   {x:480,y:450,r:37,label:'Return to Baio District',to:'district'},
