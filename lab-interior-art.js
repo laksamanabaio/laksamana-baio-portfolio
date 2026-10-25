@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Laboratory HD interior v15.70.
+/* BAIO DISTRICT 2077 — Laboratory HD interior v15.71.
  * The Lab is constructed from the approved transparent high-resolution props.
  * Old procedural laboratory furnishings are not rendered in this scene.
  */
@@ -146,9 +146,10 @@ function renderHDLabInterior(scene){
  ];
  scene.zones=[
   {x:480,y:450,r:37,label:'Return to Baio District',to:'district'},
-  // The new wall occupies the old south approach to teleport. From its
-  // east side, the right edge of the teleport can still be reached.
-  {x:232,y:216,r:53,label:'Teleport to Workshop',to:'workshop'},
+  // The only active teleport trigger is directly in front of its stairway.
+  // Character feet must be over this narrow landing, never beside the machine.
+  // Its center tracks the teleporter's artwork rather than a detached side point.
+  {x:portalCX,y:teleporter.y+214,w:86,h:32,label:'Teleport to Workshop',to:'workshop'},
   {x:753,y:268,r:68,label:'Explore Experience at Computer',object:'lab'},
   {x:563,y:231,r:60,label:'Inspect DNA Research',object:'lab-samples'},
   {x:650,y:389,r:60,label:'Inspect Chemical Samples',object:'lab-samples'}
