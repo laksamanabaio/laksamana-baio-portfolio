@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Workshop HD interior v16.03.
+/* BAIO DISTRICT 2077 — Workshop HD interior v16.04.
  * Six transparent neon-orange Workshop props, with individually tuned scale.
  * Collision shapes and teleport interactions follow the enlarged artwork.
  */
@@ -152,37 +152,89 @@ function renderHDWorkshopInterior(scene){
   {x:747,y:268,r:68,label:'View Project Showcase at Computer',object:'workshop'}
  ];
 
- // Workshop engineer: same existing NPC identity, conversations, and walking
- // frames; patrol positioned in the newly available central aisle.
- // Pak Damar's frame artwork is widened to match the visible NPC footprint.
- // Same 8x4 rows, 136x184 cells, foot alignment and .56 scale as Dr. Nira.
- // His mustache and brown technician outfit stay intact; no runtime recoloring.
+ // Pak Damar: slightly larger than v16.03, keeping all 32 HD frames,
+ // the feet baseline, brown uniform and moustache. As in the Laboratory,
+ // his route spans multiple walkable aisles instead of a tiny square.
  const damarKey='npc-pak-damar-v1603-hd';
  const npcTexture=scene.textures.exists(damarKey)?damarKey:'npc-dimas';
  const shadow=scene.add.graphics();
- shadow.fillStyle(0x071c2b,.25);shadow.fillEllipse(0,3,28,8);
+ shadow.fillStyle(0x071c2b,.25);shadow.fillEllipse(0,3,31,9);
  const avatar=scene.add.sprite(0,0,npcTexture,0)
-  .setOrigin(.5,175/184).setScale(.56);
- const patrol=[[515,375],[544,387],[543,427],[504,426]];
- const container=scene.add.container(patrol[0][0],patrol[0][1],[shadow,avatar])
+  .setOrigin(.5,175/184).setScale(.60);
+ // Entire Workshop tour: upper aisle under the computer and printer, middle
+ // corridor between the tools wall and prototype bench, then the lower
+ // corridor from the west tool racks all the way to the eastern workbench.
+ // All segments stay outside scene.homeFurniture plus player foot margins.
+ const patrol=[
+  [835,263], // upper-right near the project computer
+  [685,263], // northern work aisle
+  [476,263], // upper-center corner
+  [476,451], // turn into lower aisle
+  [110,451], // south-west endpoint below the tool wall
+  [476,451], // return along the southern corridor
+  [523,451], // cross central aisle
+  [850,451]  // south-east endpoint below the prototype bench
+ ];
+ const pauseCorners=new Set([0,2,3,4,7]);
+ // Randomize location and walking direction every time the Workshop opens.
+ // Phaser's game registry survives scene.restart, so do not reuse the prior
+ // starting segment (or the identical reverse section 3/4).
+ const segmentCount=patrol.length-1;
+ const lastSegment=scene.game.registry.get('workshopDamarLastEntrySegment');
+ const segments=Array.from({length:segmentCount},(_,i)=>i)
+  .filter(i=>i!==lastSegment
+   &&!((i===3&&lastSegment===4)||(i===4&&lastSegment===3)));
+ const segment=segments[Math.floor(Math.random()*segments.length)];
+ scene.game.registry.set('workshopDamarLastEntrySegment',segment);
+ const progress=.15+Math.random()*.70;
+ const startX=patrol[segment][0]+
+  (patrol[segment+1][0]-patrol[segment][0])*progress;
+ const startY=patrol[segment][1]+
+  (patrol[segment+1][1]-patrol[segment][1])*progress;
+ const startDirection=Math.random()<.5?1:-1;
+ const startWaypoint=startDirection>0?segment+1:segment;
+ const dx0=patrol[startWaypoint][0]-startX;
+ const dy0=patrol[startWaypoint][1]-startY;
+ const startFacing=Math.abs(dx0)>Math.abs(dy0)
+  ?(dx0<0?'left':'right'):(dy0<0?'up':'down');
+ const container=scene.add.container(startX,startY,[shadow,avatar])
   .setDepth(4.25);
  const actor={name:'Pak Damar',appearance:'dimas',
   pages:[
    'Welcome to the Workshop! I am Damar, the engineer looking after the project bay.',
    'Here we take ideas from sketches to prototypes. Explore the project machine or read Baio’s work on the computer.',
    'Need the science lab? Our portal upstairs links this workshop straight to the Laboratory.'
-  ],sprite:container,avatar,portraitTexture:npcTexture,stepIndex:1,stepTimer:0};
+  ],sprite:container,avatar,portraitTexture:npcTexture,
+  waypoint:startWaypoint,routeDirection:startDirection,waitMs:0,
+  clock:Math.floor(Math.random()*660),facing:startFacing};
  actor.update=delta=>{
-  if(scene.dialogNpc||scene.journalOpen||scene.readerObject){avatar.setFrame(0);return}
-  const end=patrol[actor.stepIndex],dx=end[0]-container.x,dy=end[1]-container.y;
-  const distance=Math.hypot(dx,dy);
-  if(distance<2.5){actor.stepIndex=(actor.stepIndex+1)%patrol.length;return}
-  const speed=Math.min(distance,.034*Math.min(delta,50));
-  container.x+=dx/distance*speed;container.y+=dy/distance*speed;
-  const dir=Math.abs(dx)>Math.abs(dy)?(dx<0?'left':'right'):(dy<0?'up':'down');
-  const row={down:0,up:1,left:2,right:3}[dir];
-  actor.stepTimer+=Math.min(delta,50);
-  avatar.setFrame(row*8+4+(Math.floor(actor.stepTimer/165)%4));
+  const dt=Math.min(delta,50),rows={down:0,up:1,left:2,right:3};
+  // Talking or reading should freeze walking AND the 3-second idle timer.
+  if(scene.dialogNpc||scene.journalOpen||scene.readerObject){
+   avatar.setFrame(rows[actor.facing]*8);return;
+  }
+  if(actor.waitMs>0){
+   actor.waitMs=Math.max(0,actor.waitMs-dt);
+   avatar.setFrame(rows[actor.facing]*8);return;
+  }
+  const goal=patrol[actor.waypoint];
+  const dx=goal[0]-container.x,dy=goal[1]-container.y;
+  const dist=Math.hypot(dx,dy),step=Math.min(dist,dt*.047);
+  if(dist<=step+.01){
+   container.setPosition(goal[0],goal[1]);
+   if(pauseCorners.has(actor.waypoint))actor.waitMs=3000;
+   // Reverse at the route ends, just as Dr. Nira does.
+   if(actor.waypoint===0||actor.waypoint===patrol.length-1)
+    actor.routeDirection*=-1;
+   actor.waypoint+=actor.routeDirection;
+   avatar.setFrame(rows[actor.facing]*8);return;
+  }
+  container.x+=dx/dist*step;
+  container.y+=dy/dist*step;
+  actor.facing=Math.abs(dx)>Math.abs(dy)
+   ?(dx<0?'left':'right'):(dy<0?'up':'down');
+  actor.clock+=dt;
+  avatar.setFrame(rows[actor.facing]*8+4+(Math.floor(actor.clock/165)%4));
  };
  scene.roomGuard=actor;
  return true;
