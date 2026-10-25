@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Laboratory HD interior v15.87.
+/* BAIO DISTRICT 2077 — Laboratory HD interior v15.88.
  * The Lab is constructed from the approved transparent high-resolution props.
  * Old procedural laboratory furnishings are not rendered in this scene.
  */
@@ -82,6 +82,45 @@ function renderHDLabInterior(scene){
   scene.add.image(item.x,item.y,key).setOrigin(0,0)
    .setDisplaySize(item.w,h).setDepth(item.depth);
  }
+ // Match the three pulsing, floating interaction beacons used by HOME.
+ // Visual-only overlays: the teleport stair zone, object interactions,
+ // furniture collisions and walking behaviour are unchanged.
+ const interactionBeacon=(x,y,tint)=>{
+  const marker=scene.add.graphics().setDepth(4.8);
+  const pulse={p:0};
+  const paint=()=>{
+   const wave=pulse.p,dy=-3*Math.sin(wave*Math.PI);
+   const yy=y+dy;
+   marker.clear();
+   marker.fillStyle(tint,.07+.09*wave);
+   marker.fillCircle(x,yy,14+2*wave);
+   marker.lineStyle(2,tint,.60+.30*wave);
+   marker.strokeCircle(x,yy,9+2*wave);
+   marker.fillStyle(0x152b3a,.95);
+   marker.fillCircle(x,yy,7);
+   marker.fillStyle(tint,.95);
+   marker.fillCircle(x,yy,4);
+   marker.fillStyle(0xf1ffff,.88);
+   marker.fillRect(x-1,yy-2,2,3);
+   marker.fillStyle(tint,.85);
+   marker.fillTriangle(x-4,yy-15,x+4,yy-15,x,yy-11);
+  };
+  paint();
+  if(scene.tweens){
+   scene.tweens.add({
+    targets:pulse,p:1,duration:1050,yoyo:true,repeat:-1,
+    ease:'Sine.easeInOut',onUpdate:paint
+   });
+  }
+  return marker;
+ };
+ // Object-relative anchors also follow future furniture repositioning.
+ const portalItem=items.find(item=>item.name==='teleport');
+ const dnaItem=items.find(item=>item.name==='dna-machine');
+ const computerItem=items.find(item=>item.name==='computer');
+ interactionBeacon(portalItem.x+portalItem.w/2,portalItem.y+178,0xa5f27a);
+ interactionBeacon(dnaItem.x+dnaItem.w/2,dnaItem.y+162,0xffc979);
+ interactionBeacon(computerItem.x+computerItem.w/2,computerItem.y+93,0x76e4ee);
  // Energy shimmer only: the transparent TELEPORT asset contains the staircase,
  // lit podium, tube, existing aura and TELEPORT sign. Portal art remains unchanged.
  const energy=scene.add.graphics().setDepth(2.25);
