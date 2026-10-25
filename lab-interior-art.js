@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Laboratory HD interior v15.88.
+/* BAIO DISTRICT 2077 — Laboratory HD interior v15.89.
  * The Lab is constructed from the approved transparent high-resolution props.
  * Old procedural laboratory furnishings are not rendered in this scene.
  */
@@ -213,8 +213,20 @@ function renderHDLabInterior(scene){
  shadow.fillStyle(0x0c2730,.24);shadow.fillEllipse(0,3,29,8);
  const avatar=scene.add.sprite(0,0,npcTexture,0)
   .setOrigin(.5,175/184).setScale(.56);
- const patrol=[[554,377],[573,384],[578,414],[547,416]];
- const actorContainer=scene.add.container(patrol[0][0],patrol[0][1],[shadow,avatar])
+ // Wide, collision-safe patrol across the Lab's actual walkable aisles.
+ // Upper corridor skirts the DNA machine; the vertical path follows the gap
+ // between chemical storage and the workbench; the southern path runs below
+ // the long table. No NPC collision or teleport rules are changed.
+ const patrol=[
+  [680,241], // north-east endpoint: by DNA and computer
+  [470,241], // northern-left corner, outside digital-board collision
+  [470,287], // turn into central aisle
+  [470,438], // southern-left corner, beyond chemical storage
+  [520,438], // south aisle
+  [858,438]  // south-east endpoint, below research bench
+ ];
+ const pauseCorners=new Set([0,1,3,5]);
+ const actorContainer=scene.add.container(554,377,[shadow,avatar])
   .setDepth(4.25);
  const actor={name:'Dr. Nira',appearance:'dr-nira',
   pages:[
@@ -222,18 +234,40 @@ function renderHDLabInterior(scene){
    'Look at the DNA machine, digital research board and chemical refrigerators. The computer opens Baio’s professional experience.',
    'The glowing TELEPORT platform with stairs connects this Lab to the Workshop.'
   ],
-  sprite:actorContainer,avatar,portraitTexture:npcTexture,waypoint:1,clock:0};
+  sprite:actorContainer,avatar,portraitTexture:npcTexture,
+  waypoint:3,routeDirection:1,waitMs:0,clock:0,facing:'down'};
  actor.update=delta=>{
-  if(scene.dialogNpc||scene.journalOpen||scene.readerObject){avatar.setFrame(0);return}
-  const goal=patrol[actor.waypoint],dx=goal[0]-actorContainer.x,
-   dy=goal[1]-actorContainer.y,dist=Math.hypot(dx,dy);
-  if(dist<2.5){actor.waypoint=(actor.waypoint+1)%patrol.length;return}
-  const step=Math.min(dist,Math.min(delta,50)*.033);
-  actorContainer.x+=dx/dist*step;actorContainer.y+=dy/dist*step;
-  const direction=Math.abs(dx)>Math.abs(dy)?(dx<0?'left':'right'):(dy<0?'up':'down');
-  const row={down:0,up:1,left:2,right:3}[direction];
-  actor.clock+=Math.min(delta,50);
-  avatar.setFrame(row*8+4+(Math.floor(actor.clock/165)%4));
+  const dt=Math.min(delta,50);
+  const rows={down:0,up:1,left:2,right:3};
+  // A conversation or open journal pauses both walking and the idle timer.
+  if(scene.dialogNpc||scene.journalOpen||scene.readerObject){
+   avatar.setFrame(rows[actor.facing]*8);return;
+  }
+  if(actor.waitMs>0){
+   actor.waitMs=Math.max(0,actor.waitMs-dt);
+   avatar.setFrame(rows[actor.facing]*8);
+   return;
+  }
+  const goal=patrol[actor.waypoint];
+  const dx=goal[0]-actorContainer.x,dy=goal[1]-actorContainer.y;
+  const dist=Math.hypot(dx,dy),step=Math.min(dist,dt*.047);
+  if(dist<=step+.01){
+   actorContainer.setPosition(goal[0],goal[1]);
+   // Stop for 3 seconds at outer ends and major corners; reverse at ends.
+   if(pauseCorners.has(actor.waypoint))actor.waitMs=3000;
+   if(actor.waypoint===0||actor.waypoint===patrol.length-1){
+    actor.routeDirection*=-1;
+   }
+   actor.waypoint+=actor.routeDirection;
+   avatar.setFrame(rows[actor.facing]*8);
+   return;
+  }
+  actorContainer.x+=dx/dist*step;
+  actorContainer.y+=dy/dist*step;
+  actor.facing=Math.abs(dx)>Math.abs(dy)
+   ?(dx<0?'left':'right'):(dy<0?'up':'down');
+  actor.clock+=dt;
+  avatar.setFrame(rows[actor.facing]*8+4+(Math.floor(actor.clock/165)%4));
  };
  scene.roomGuard=actor;
  return true;
