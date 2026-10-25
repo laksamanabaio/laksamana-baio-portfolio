@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Laboratory HD interior v15.84.
+/* BAIO DISTRICT 2077 — Laboratory HD interior v15.85.
  * The Lab is constructed from the approved transparent high-resolution props.
  * Old procedural laboratory furnishings are not rendered in this scene.
  */
@@ -65,7 +65,7 @@ function renderHDLabInterior(scene){
   {name:'computer',x:705,y:95,w:213,depth:2.1},
   {name:'chemical-storage-wall',x:39,y:256,w:352,h:192,depth:2.6}, // matches HOME kitchen
   // Long drawer-free laboratory research bench, paper studies and glassware.
-  {name:'research-workbench-long',x:605,y:299,w:304,depth:2.62} // lower-right Lab
+  {name:'research-workbench-long',x:550,y:280,w:365,depth:2.62} // 20% larger, lower-right Lab
  ];
  scene.labAssetLayout=items;
  for(const item of items){
@@ -147,9 +147,10 @@ function renderHDLabInterior(scene){
   {x:250,y:30,w:166,h:184}, // DNA digital research board + stand
   {x:445,y:147,w:236,h:67}, // DNA machine, separate from digital board
   {x:711,y:199,w:203,h:48}, // computer collider follows 5px left movement
-  // Reserve the table body, leaving Dr. Nira's x547..578 patrol and
-  // the floor below the workbench free for movement toward the exit.
-  {x:609,y:345,w:296,h:73} // long research table & its legs
+  // Match the enlarged table's body, top apron and raised legs.
+  // The rightmost edge stays within the Lab and the lower path stays open.
+  // Dr. Nira's patrol is left untouched; approach her from the free left aisle.
+  {x:562,y:337,w:346,h:88} // enlarged research workbench
  ];
  scene.zones=[
   {x:480,y:450,r:37,label:'Return to Baio District',to:'district'},
