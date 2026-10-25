@@ -1,4 +1,4 @@
-/* BAIO DISTRICT 2077 — Laboratory HD interior v15.62.
+/* BAIO DISTRICT 2077 — Laboratory HD interior v15.63.
  * The Lab is constructed from the approved transparent high-resolution props.
  * Old procedural laboratory furnishings are not rendered in this scene.
  */
@@ -57,8 +57,8 @@ function renderHDLabInterior(scene){
  // remain. Both chemical refrigerators and glassware racks have been removed.
  const items=[
   {name:'teleport',x:45,y:30,w:177,depth:2.15},
-  {name:'dna-research-board',x:260,y:20,w:166,depth:2.06},
-  {name:'dna-machine',x:451,y:10,w:244,depth:2.1},
+  {name:'dna-research-board',x:250,y:-30,w:166,depth:2.06},
+  {name:'dna-machine',x:441,y:10,w:244,depth:2.1},
   {name:'computer',x:705,y:95,w:213,depth:2.1},
   {name:'chemical-bench',x:229,y:361,w:185,depth:2.23},
   {name:'chemical-bench',x:591,y:361,w:185,depth:2.23}
@@ -127,7 +127,7 @@ function renderHDLabInterior(scene){
  // NPCs patrol away from the solid station.
  scene.homeFurniture=[
   {x:48,y:115,w:170,h:115}, // solid teleport body, podium and steps move together
-  {x:455,y:147,w:236,h:67}, // DNA collision follows 10px left, 5px up
+  {x:445,y:147,w:236,h:67}, // DNA collision follows another 10px left
   {x:711,y:199,w:203,h:48}, // computer collider follows 5px left movement
   {x:230,y:418,w:183,h:43}, // chemistry bench left
   {x:592,y:418,w:183,h:43}  // chemistry bench right
@@ -136,7 +136,7 @@ function renderHDLabInterior(scene){
   {x:480,y:450,r:37,label:'Return to Baio District',to:'district'},
   {x:135,y:243,r:50,label:'Teleport to Workshop',to:'workshop'},
   {x:753,y:268,r:68,label:'Explore Experience at Computer',object:'lab'},
-  {x:573,y:231,r:60,label:'Inspect DNA Research',object:'lab-samples'},
+  {x:563,y:231,r:60,label:'Inspect DNA Research',object:'lab-samples'},
   {x:265,y:389,r:49,label:'Inspect Chemical Samples',object:'lab-samples'}
  ];
  // The same approved 32-frame walking scientist used in v15.48.
