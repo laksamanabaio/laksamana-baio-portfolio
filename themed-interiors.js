@@ -411,9 +411,9 @@ function renderThemedInterior(scene,place){
  shadow.fillStyle(0x071c2b,.25);shadow.fillEllipse(0,3,28,8);
  const avatar=scene.add.sprite(0,0,textureKey,0)
   .setOrigin(.5,175/184).setScale(.56);
- // Mira now stands behind the counter as a receptionist.
+ // Mira stands 10px higher behind the Contact Hub reception counter.
  const patrol=place==='hub'
-  ?[[480,263]]
+  ?[[480,253]]
   :[[387,346],[433,352],[444,387],[365,388]];
  const container=scene.add.container(patrol[0][0],patrol[0][1],[shadow,avatar]).setDepth(4.25);
  const actor={
