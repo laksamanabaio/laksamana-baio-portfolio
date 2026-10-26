@@ -39,7 +39,7 @@ function renderThemedInterior(scene,place){
    title:'CONTACT HUB',subtitle:'CITY POST & COMMUNICATION',
    accent:0xb4a9f4,bright:0xf1e6ff,mid:0x6d6b96,soft:0x9790b4,dark:0x37334f,
    floor:0xb1a8c0,floorLight:0xe6e0ee,wall:0x403955,wallLight:0x625a82,
-   guard:{name:'Mira',appearance:'tara',x:385,y:332,
+   guard:{name:'Mira',appearance:'mira',x:385,y:332,
     pages:[
      'Welcome to the Contact Hub! I’m Mira, your friendly postal and reception officer.',
      'We sort messages and invitations here. Visit the reception counter to learn how to contact Baio.',
@@ -366,9 +366,10 @@ function renderThemedInterior(scene,place){
  // Staff outfits are recolored INSIDE the original 32 walking sprite frames.
  // The former graphics 'uniform' was a separate static rectangle that looked
  // like NPCs were holding their own shirts. Do not use that overlay.
- const staff=p.guard,nativeKey='npc-'+staff.appearance;
+ // The old Tara sheet is only used if Mira's new transparent illustration fails to load.
+ const staff=p.guard,nativeKey='npc-'+(place==='hub'?'tara':staff.appearance);
  const costumeKey=nativeKey+'-interior-'+place+'-v1548';
- if(!scene.textures.exists(costumeKey)){
+ if(place!=='hub'&&!scene.textures.exists(costumeKey)){
   try{
    const source=scene.textures.get(nativeKey).getSourceImage();
    const canvas=document.createElement('canvas');
@@ -406,11 +407,17 @@ function renderThemedInterior(scene,place){
    console.warn('Interior NPC costume recolor unavailable:',error);
   }
  }
- const textureKey=scene.textures.exists(costumeKey)?costumeKey:nativeKey;
+ const textureKey=place==='hub'&&scene.textures.exists('npc-mira-front-v1626')
+  ?'npc-mira-front-v1626'
+  :(scene.textures.exists(costumeKey)?costumeKey:nativeKey);
+ const isMiraFront=place==='hub'&&textureKey==='npc-mira-front-v1626';
  const shadow=scene.add.graphics();
  shadow.fillStyle(0x071c2b,.25);shadow.fillEllipse(0,3,28,8);
- const avatar=scene.add.sprite(0,0,textureKey,0)
-  .setOrigin(.5,175/184).setScale(.56);
+ const avatar=scene.add.sprite(0,0,textureKey,isMiraFront?'__BASE':0)
+  .setOrigin(.5,175/184);
+ // The HD asset uses 4x resolution but occupies the same 136x184 NPC frame.
+ if(isMiraFront)avatar.setDisplaySize(136*.56,184*.56);
+ else avatar.setScale(.56);
  // Mira stands 10px higher behind the Contact Hub reception counter.
  const patrol=place==='hub'
   ?[[480,253]]
@@ -419,10 +426,11 @@ function renderThemedInterior(scene,place){
  const actor={
   name:staff.name,appearance:staff.appearance,pages:staff.pages,
   sprite:container,avatar,portraitTexture:textureKey,
+  portraitFrame:isMiraFront?'__BASE':0,
   stepIndex:1,stepTimer:0
  };
  actor.update=delta=>{
-  if(place==='hub'){avatar.setFrame(0);return}
+  if(place==='hub')return; // Mira is static and always faces the player.
   if(scene.dialogNpc||scene.journalOpen||scene.readerObject){
    avatar.setFrame(0);return;
   }

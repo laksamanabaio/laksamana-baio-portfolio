@@ -579,6 +579,8 @@ if (!window.Phaser) {
     this.load.image('hub-v1619-'+name,
      './assets/contact-hub/v1619/'+name+'.webp?v=16.19');
    }
+   // Mira: a front-facing transparent pixel character, rasterized at 4x for HD detail.
+   this.load.svg('npc-mira-front-v1626','./assets/npc/mira/v1626/mira-front.svg?v=16.26',{width:544,height:736});
    // Front-facing, transparent 16-bit HOME artwork, optimized for the District.
    this.load.image('district-home-exterior-v158','./assets/district/home-exterior-gba-v158.png?v=15.8');
    // Load six garden-friendly exteriors, preserving all four main buildings.
@@ -1297,9 +1299,10 @@ if (!window.Phaser) {
    this.dialogText.setText(npc.pages[this.dialogPage]);
    this.dialogNext.setText(this.dialogPage<npc.pages.length-1?'E / SPACE  NEXT ▸':'E / SPACE  CLOSE ✕');
    // Dialogue portrait is the same new character design as the NPC in-world.
-   this.dialogAvatar.setTexture(npc.portraitTexture||'npc-'+npc.appearance,0);
-   // All NPC portraits now use identical framing and scale.
-   this.dialogAvatar.setScale(.48);
+   this.dialogAvatar.setTexture(npc.portraitTexture||'npc-'+npc.appearance,npc.portraitFrame??0);
+   // Portraits all display at the same logical 136x184 frame size.
+   if(npc.portraitFrame==='__BASE')this.dialogAvatar.setDisplaySize(136*.48,184*.48);
+   else this.dialogAvatar.setScale(.48);
   }
   closeDialog(){
    this.dialogNpc=null;
