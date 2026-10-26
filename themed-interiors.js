@@ -327,24 +327,18 @@ function renderThemedInterior(scene,place){
    collide(78,188,268,112);
   }
  }else{
-  // CONTACT HUB HD v16.17: tall full-width reception desk and locker wall.
-  // Legacy computers, shelves, trays, benches and beacons are all removed.
-  const lockerKey='hub-v1616-lockers',counterKey='hub-v1617-counter';
-  if(scene.textures.exists(lockerKey)){
-   scene.add.image(43,36,lockerKey).setOrigin(0,0)
-    .setDisplaySize(875,220).setDepth(2.35);
-  }
+  // CONTACT HUB v16.18: only the plain HD reception counter remains.
+  // Locker wall and its collision have been removed completely.
+  const counterKey='hub-v1617-counter';
+  const counterW=882,counterH=154*counterW/904;
   if(scene.textures.exists(counterKey)){
-   // The source art formerly had 100+ empty alpha rows above/below.
-   // This tightly trimmed sprite restores a natural full-height counter.
-   // 904px is a subtle width increase over the former 875px.
-   // 4.85 is IN FRONT of Mira (4.25) but BEHIND Baio (5).
-   scene.add.image(28,260,counterKey).setOrigin(0,0)
-    .setDisplaySize(904,154).setDepth(4.85);
+   // Centered horizontally at x=480, resized with its previous proportions.
+   // Counter renders in front of Mira (4.25), but behind Baio (5).
+   scene.add.image(480-counterW/2,260,counterKey).setOrigin(0,0)
+    .setDisplaySize(counterW,counterH).setDepth(4.85);
   }
-  // Both continuous surfaces are solid for walking and Shift sprint.
-  collide(43,45,875,214);
-  collide(29,273,902,104);
+  // Counter-only collision follows the reduced width; Shift sprint is blocked.
+  collide(40,273,880,102);
   // The only Contact Hub interactions are reception and the District exit.
   // Keep their zones separate so E at the counter cannot trigger exit.
   scene.zones[0].r=28;
