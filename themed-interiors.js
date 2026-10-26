@@ -327,7 +327,7 @@ function renderThemedInterior(scene,place){
    collide(78,188,268,112);
   }
  }else{
-  // CONTACT HUB v16.20: three counter sections moved exactly 50px upward.
+  // CONTACT HUB v16.21: enlarge three HD wall shelves; counters stay at y=214.
   // Tall book/archive shelves stay on the upper wall, safely behind Baio.
   const placeHD=(asset,x,y,w,h,depth)=>{
    const key='hub-v1619-'+asset;
@@ -338,9 +338,10 @@ function renderThemedInterior(scene,place){
    return scene.add.image(x,y,key).setOrigin(0,0)
     .setDisplaySize(w,h).setDepth(depth);
   };
-  placeHD('bookshelf',53,53,187,181,2.3);
-  placeHD('awards-bookshelf',260,47,440,143,2.3);
-  placeHD('drawer-rack',728,52,179,187,2.3);
+  // Slightly larger HD shelves, separated by 10px horizontal gaps.
+  placeHD('bookshelf',45,48,200,193,2.3);
+  placeHD('awards-bookshelf',255,43,450,154,2.3);
+  placeHD('drawer-rack',715,47,190,198,2.3);
   // Each counter panel is independently rendered at high resolution.
   // Widths: left 293 + reception 298 + right 293 = 884.
   // Shared y/height keeps the seams and the neon rails aligned.
@@ -349,9 +350,9 @@ function renderThemedInterior(scene,place){
   placeHD('counter-center',331,counterY,298,counterHeight,4.85);
   placeHD('counter-right',629,counterY,293,counterHeight,4.85);
   // Wall shelves: block entry through their visible occupied footprints.
-  collide(55,62,181,171);
-  collide(260,52,440,137);
-  collide(730,60,175,175);
+  collide(47,57,194,182);
+  collide(257,48,446,146);
+  collide(717,55,186,186);
   // Front counter is solid, except the employee entrance on the far-left
   // counter module. Collision is substepped even while Shift-sprinting.
   collide(39,227,35,92);
