@@ -146,7 +146,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.34 — Fountain-Colored Water Currents</span></footer>
+<footer><span></span><span>Prototype 16.35 — Fountain Water and Green Gardens</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -596,7 +596,7 @@ if (!window.Phaser) {
      './assets/district/'+revision+'/'+filename+'.png?v='+(revision==='v1512'?'15.12':'15.11'));
    }
    }
-  init(data){this.place=data.place||'home';minimapHDLayer.hidden=true;this.minimapHDLayoutKey=null;this.spawn=data.spawn||null;this.changing=false;this.roadNeon=null;this.roadRailNight=null;this.ambientShade=null;this.panelDaylight=null;this.poolFeedChannels=null;this.poolFeedCurrent=null;this.poolFeedClock=0;this.homeWindow=null;this.homeFurniture=null;this.roomGuard=null}
+  init(data){this.place=data.place||'home';minimapHDLayer.hidden=true;this.minimapHDLayoutKey=null;this.spawn=data.spawn||null;this.changing=false;this.roadNeon=null;this.roadRailNight=null;this.ambientShade=null;this.panelDaylight=null;this.poolFeedChannels=null;this.poolFeedPlanters=null;this.poolFeedCurrent=null;this.poolFeedClock=0;this.homeWindow=null;this.homeFurniture=null;this.roomGuard=null}
   create(){
    const g=this.add.graphics(),rect=(x,y,w,h,c)=>{g.fillStyle(c);g.fillRect(x,y,w,h)};
    // The District has independent floor layers; only interiors need this flat base.
@@ -627,7 +627,14 @@ if (!window.Phaser) {
       {x:18,y:583,w:412,h:74,dir:1},
       {x:1208,y:583,w:696,h:74,dir:-1}
      ];
+     // Vegetation replaces all aluminium panels immediately above/below the
+     // two feed channels. Bed bounds stop before the grey public roads.
+     const fountainFeedPlanters=fountainFeedChannels.flatMap(({x,w})=>[
+      {x:x-9,y:533,w:w+18,h:45},
+      {x:x-9,y:663,w:w+18,h:45}
+     ]);
      this.poolFeedChannels=fountainFeedChannels;
+     this.poolFeedPlanters=fountainFeedPlanters;
      // Two pixel-patterned aluminium floors, drawn BEHIND streets and fountain.
     // Daytime cream smoothly fades into existing grey metal after sunset.
     const nightMetal=this.add.graphics().setDepth(-2);
@@ -646,21 +653,49 @@ if (!window.Phaser) {
       fill(xx+68,yy+67,3,3,warm?0xb2a89b:0x354c5b);
       if((xx/80+yy/80)%3===0)fill(xx+31,yy+37,18,3,warm?0xd6c4ac:0x66afc3);
      }
-     // Cut ONLY the central strip from each aluminium plot, leaving the
-     // cream metal tile panels intact above and below the recessed pool.
+     // Turn the metal tile strips flanking each stream into dense green
+     // planting beds. Deterministic leaf placement is stable across renders
+     // and follows the same palette when the city gradually darkens.
+     for(const p of fountainFeedPlanters){
+      const {x,y,w,h}=p;
+      fill(x,y,w,h,warm?0x254b32:0x183a2b); // recessed soil
+      fill(x+2,y+2,w-4,h-4,warm?0x31713e:0x235437);
+      fill(x+4,y+5,w-8,h-10,warm?0x448e45:0x306c3d);
+      // Layer rounded foliage clumps to avoid flat, featureless grass strips.
+      for(let gx=x+14,n=0;gx<x+w-10;gx+=22,n++){
+       const centerY=y+22+(n%3-1)*3;
+       layer.fillStyle(warm?0x225f35:0x194d32);
+       layer.fillEllipse(gx,centerY+5,27,25);
+       layer.fillStyle(warm?0x367c3c:0x28663a);
+       layer.fillEllipse(gx-4,centerY-3,23,21);
+       layer.fillStyle(warm?0x55a84c:0x3c8b46);
+       layer.fillEllipse(gx+5,centerY+1,20,17);
+       layer.fillStyle(warm?0x78c765:0x569d57);
+       layer.fillEllipse(gx-6,centerY-5,9,7);
+       layer.fillStyle(warm?0xa0dd84:0x69b86b);
+       layer.fillRect(gx+4,centerY-9,4,3);
+       // A few crisp blades of grass frame the shrubs.
+       fill(gx-10,y+34,3,5,warm?0x479545:0x377a40);
+       fill(gx+9,y+34,2,4,warm?0x69bc55:0x4d9750);
+      }
+      // Dark green raised edges, with no leftover silver tiled surface.
+      fill(x,y,w,3,warm?0x284831:0x1a3729);
+      fill(x,y+h-3,w,3,warm?0x214a31:0x1b3c2d);
+     }
+     // Cut a recessed, light-blue channel between each pair of green beds.
      for(const c of fountainFeedChannels){
       const {x,y,w,h,dir}=c;
       // Thick bevels and inner shadows make the water read as a hole.
       fill(x-5,y-8,w+10,h+16,warm?0x9caeaf:0x3c5968);
       fill(x-3,y-6,w+6,h+12,warm?0x506f7a:0x213f54);
       fill(x,y,w,h,warm?0x153e55:0x0a2539);
-      // Same blue / cyan palette as the central fountain basin.
-      // Keep the basin recessed, but its water matches the fountain day and night.
-      fill(x+4,y+5,w-8,h-10,0x3b98c4);
-      fill(x+7,y+11,w-14,h-22,0x4d9fc4);
-      fill(x+9,y+19,w-18,h-36,0x7bcce5);
-      fill(x+11,y+31,w-22,12,0x8bd9ef);
-      fill(x+7,y+49,w-14,10,0x3b98c4);
+      // Match the fountain: the large center is light cyan (0x8bd9ef),
+      // with only a narrow rim in the slightly deeper fountain blues.
+      fill(x+3,y+4,w-6,h-8,0x3b98c4);
+      fill(x+6,y+7,w-12,h-14,0x4d9fc4);
+      fill(x+8,y+12,w-16,h-24,0x7bcce5);
+      fill(x+10,y+17,w-20,h-34,0x8bd9ef);
+      fill(x+12,y+29,w-24,13,0x8bd9ef);
       // Polished aluminium rim on the top and bottom, with recessed edges.
       fill(x-4,y-8,w+8,4,warm?0xfffbf0:0xa8bdc6);
       fill(x-3,y-4,w+6,3,warm?0xb2c9cd:0x567b8e);
@@ -1440,6 +1475,8 @@ if (!window.Phaser) {
      // The recessed pools are genuine holes, not walkable metal flooring.
      blocked=(px,py)=>this.poolFeedChannels.some(c=>
       px>c.x-4&&px<c.x+c.w+4&&py>c.y-4&&py<c.y+c.h+4
+     )||this.poolFeedPlanters.some(p=>
+      px>p.x-3&&px<p.x+p.w+3&&py>p.y-3&&py<p.y+p.h+3
      )||Math.hypot(px-820,py-620)<125||[...this.buildings,...this.sceneryBuildings].some(b=>{
       const height=b.spriteH||DISTRICT_BUILDING_SIZE.height;
       const width=b.spriteW||b.w;
