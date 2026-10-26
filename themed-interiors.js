@@ -438,8 +438,8 @@ function renderThemedInterior(scene,place){
  // Lift only the artwork within its stationary container so Mira's face
  // remains visible above the counter; the interaction anchor stays at x480,y253.
  avatar.setScale(.56);
- if(isMiraFront)avatar.setPosition(0,-22);
- // Mira stands 10px higher behind the Contact Hub reception counter.
+ if(isMiraFront)avatar.setPosition(0,-12); // Mira moved 10px lower
+ // Mira remains stationary behind the Contact Hub middle reception counter.
  const patrol=place==='hub'
   ?[[480,253]]
   :[[387,346],[433,352],[444,387],[365,388]];
