@@ -42,7 +42,7 @@ function renderThemedInterior(scene,place){
    guard:{name:'Mira',appearance:'tara',x:385,y:332,
     pages:[
      'Welcome to the Contact Hub! I’m Mira, your friendly postal and reception officer.',
-     'We sort messages, invitations, and ideas here. Visit the contact computer to learn how to connect with Baio.',
+     'We sort messages and invitations here. Visit the reception counter to learn how to contact Baio.',
      'Our message counter is always ready for the next creative collaboration.'
     ]}
   }
@@ -110,6 +110,8 @@ function renderThemedInterior(scene,place){
   fill(details,x-2,y-1,w+4,h+2,p.accent,.24);
   fill(details,x,y,w,h,p.accent,.87);
  }
+ // The Contact Hub gets a continuous HD locker wall instead of this monitor.
+ if(place!=='hub'){
  // Unlabeled glowing telemetry and waveform display.
  panel(355,65,250,65,p.dark);
  fill(details,365,74,230,3,p.accent,.68);
@@ -127,6 +129,7 @@ function renderThemedInterior(scene,place){
   fill(details,x,105,23,19,0x193445);
   fill(details,x+3,109,17,3,p.accent,.62);
   fill(details,x+3,116,11,2,0xe1f5e8,.54);
+ }
  }
  // HOME-style woven EXIT doormat, without a floating explanation.
  const mat=scene.add.graphics().setDepth(1.15);
@@ -324,56 +327,25 @@ function renderThemedInterior(scene,place){
    collide(78,188,268,112);
   }
  }else{
-  // CONTACT HUB: a small high-tech post office, sorting and reception.
-  // Package shelves and message trays line the left wall.
-  panel(69,164,158,159,p.wallLight);
-  for(let row=0;row<3;row++){
-   fill(details,81,181+row*40,133,7,p.mid);
-   for(let col=0;col<3;col++){
-    const x=89+col*42,y=188+row*40;
-    fill(details,x,y,31,24,(col+row)%2?0xc7b4a2:0xe3d0b9);
-    fill(details,x+3,y+3,25,2,p.bright,.56);
-    fill(details,x+13,y+6,5,4,p.accent,.72);
-    fill(details,x,y+22,31,3,p.mid,.76);
-   }
+  // CONTACT HUB HD v16.16: two real transparent art assets, full room width.
+  // Legacy computers, shelves, trays, benches and beacons are all removed.
+  const lockerKey='hub-v1616-lockers',counterKey='hub-v1616-counter';
+  if(scene.textures.exists(lockerKey)){
+   scene.add.image(43,36,lockerKey).setOrigin(0,0)
+    .setDisplaySize(875,220).setDepth(2.35);
   }
-  scene.zones.push({x:157,y:348,r:72,label:'Inspect Parcel Sorting Area',object:'hub-mail'});
-  collide(72,166,158,156);
-  // Visitor bench and queue guides, avoiding the center walkway.
-  panel(108,385,169,40,0x7e749a);
-  for(const x of [120,176,232]){
-   fill(details,x,385,3,38,p.bright,.7);
-   fill(details,x+5,394,39,15,0xa69ab9);
+  if(scene.textures.exists(counterKey)){
+   // Front panels conceal the receptionist's lower body.
+   scene.add.image(43,265,counterKey).setOrigin(0,0)
+    .setDisplaySize(875,136).setDepth(4.6);
   }
-  collide(116,394,151,27);
-  // Wide postal counter with lit screen, parcel tray and messaging panel.
-  panel(251,200,365,98,p.soft);
-  fill(details,258,211,351,18,0x332d4e);
-  fill(details,270,216,326,5,p.accent,.82);
-  fill(details,274,235,318,39,0x524b68);
-  for(let x=285;x<580;x+=48){
-   fill(details,x,250,39,4,p.bright,.38);
-   fill(details,x,260,26,3,0xfff0e2,.2);
-  }
-  // Terminal over the counter for stamps and status.
-  fill(details,473,174,99,48,0x102c3d);
-  fill(details,481,181,83,34,0x344d75);
-  fill(details,487,187,71,7,p.accent,.68);
-  fill(details,487,199,53,4,p.bright,.68);
-  fill(details,487,206,63,3,0xe7deff,.46);
-  collide(252,203,365,89);
-  // Directly accessible contact computer (separate from front counter).
-  mount('workstation',642,178,212,112,0xece4ff);
-  animateComputer(691,192);
-  collide(645,194,207,64);
-  fill(details,667,153,162,15,0x2d3652);
-  fill(details,677,159,105,4,p.accent,.9);
-  scene.zones.push({x:749,y:317,r:72,label:'Open Contact Console at Computer',object:'hub'});
-  const beacon=scene.add.graphics().setDepth(4.7);
-  beacon.fillStyle(p.accent,.20);beacon.fillCircle(750,309,14);
-  beacon.lineStyle(2,p.bright,.90);beacon.strokeCircle(750,309,9);
-  beacon.fillStyle(0xf9f7ff);beacon.fillCircle(750,309,3);
-  scene.tweens.add({targets:beacon,alpha:.45,duration:1000,yoyo:true,repeat:-1});
+  // Both continuous surfaces are solid for walking and Shift sprint.
+  collide(43,45,875,214);
+  collide(43,278,875,76);
+  // The only Contact Hub interactions are reception and the District exit.
+  // Keep their zones separate so E at the counter cannot trigger exit.
+  scene.zones[0].r=28;
+  scene.zones.push({x:480,y:389,r:31,label:'View Contact Information',object:'hub'});
  }
  // Staff outfits are recolored INSIDE the original 32 walking sprite frames.
  // The former graphics 'uniform' was a separate static rectangle that looked
@@ -423,10 +395,9 @@ function renderThemedInterior(scene,place){
  shadow.fillStyle(0x071c2b,.25);shadow.fillEllipse(0,3,28,8);
  const avatar=scene.add.sprite(0,0,textureKey,0)
   .setOrigin(.5,175/184).setScale(.56);
- // Four predictable waypoints within unobstructed room floor. Contact Hub
- // guards pace in front of the counter; lab/workshop staff inspect work bays.
+ // Mira now stands behind the counter as a receptionist.
  const patrol=place==='hub'
-  ?[[385,350],[462,354],[494,377],[372,378]]
+  ?[[480,313]]
   :[[387,346],[433,352],[444,387],[365,388]];
  const container=scene.add.container(patrol[0][0],patrol[0][1],[shadow,avatar]).setDepth(4.25);
  const actor={
@@ -435,6 +406,7 @@ function renderThemedInterior(scene,place){
   stepIndex:1,stepTimer:0
  };
  actor.update=delta=>{
+  if(place==='hub'){avatar.setFrame(0);return}
   if(scene.dialogNpc||scene.journalOpen||scene.readerObject){
    avatar.setFrame(0);return;
   }

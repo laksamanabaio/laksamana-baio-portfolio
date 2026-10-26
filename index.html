@@ -146,7 +146,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.15 — Mobile Touch D-Pad Fix</span></footer>
+<footer><span></span><span>Prototype 16.16 — Contact Hub HD Props</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -392,9 +392,9 @@ if (!window.Phaser) {
  },
  "hub": {
   "label": "CONTACT CONSOLE",
-  "verb": "Open Contact Console",
+  "verb": "View Contact Information",
   "title": "LET'S CONNECT",
-  "subtitle": "CONTACT HUB / COMMUNICATION STATION",
+  "subtitle": "CONTACT HUB / RECEPTION COUNTER",
   "accent": 12166378,
   "pages": [
    "LET'S CONNECT\n\nI'm interested in thoughtful digital products, meaningful design challenges, and opportunities to collaborate with international teams.",
@@ -431,7 +431,7 @@ if (!window.Phaser) {
   "accent": 11839988,
   "pages": [
    "EVERY CONNECTION MATTERS\n\nThis futuristic post office collects messages, invitations, and collaboration ideas from across the district.",
-   "LOOKING TO REACH BAIO?\n\nThe contact computer on the right opens the contact information page. Confirmed contact links can be added there later."
+   "LOOKING TO REACH BAIO?\n\nThe long reception counter opens the contact information page. Confirmed contact links can be added there later."
   ]
  },
  "home-notebook": {
@@ -572,6 +572,9 @@ if (!window.Phaser) {
     this.load.image('workshop-v1592-'+name,
      './assets/workshop/v1592/'+name+'.webp?v=15.92');
    }
+   // Two transparent HD Contact Hub props, replacing all legacy furniture.
+   this.load.image('hub-v1616-lockers','./assets/contact-hub/v1616/contact-hub-lockers.webp?v=16.16');
+   this.load.image('hub-v1616-counter','./assets/contact-hub/v1616/contact-hub-counter.webp?v=16.16');
    // Front-facing, transparent 16-bit HOME artwork, optimized for the District.
    this.load.image('district-home-exterior-v158','./assets/district/home-exterior-gba-v158.png?v=15.8');
    // Load six garden-friendly exteriors, preserving all four main buildings.
