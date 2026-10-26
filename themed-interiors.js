@@ -433,12 +433,13 @@ function renderThemedInterior(scene,place){
  shadow.fillStyle(0x071c2b,.25);shadow.fillEllipse(0,3,28,8);
  const avatar=scene.add.sprite(0,0,textureKey,isMiraFront?'__BASE':0)
   .setOrigin(.5,175/184);
- // Mira's front view is standardized to Dr. Nira's 136x184 NPC frame.
- // Both use exactly .56 in-world (no special oversized/undersized scaling).
- // Lift only the artwork within its stationary container so Mira's face
- // remains visible above the counter; the interaction anchor stays at x480,y253.
- avatar.setScale(.56);
- if(isMiraFront)avatar.setPosition(0,-12); // Mira moved 10px lower
+ // Mira uses a 136x184 frame like Dr. Nira. Slightly narrow her front-facing
+ // artwork without changing its height or her existing counter position.
+ // Keep the interaction anchor at x480,y253 and artwork offset at y=-12.
+ if(isMiraFront){
+  avatar.setScale(.53,.56);
+  avatar.setPosition(0,-12);
+ }else avatar.setScale(.56);
  // Mira remains stationary behind the Contact Hub middle reception counter.
  const patrol=place==='hub'
   ?[[480,253]]
