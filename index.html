@@ -146,7 +146,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.38 — Bright Night Riverside Gardens</span></footer>
+<footer><span></span><span>Prototype 16.39 — Tara Expanded Walking Route</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -970,7 +970,11 @@ if (!window.Phaser) {
      {kind:'man',shirt:0x6b9f97,route:'line',ax:1440,ay:1320,bx:1740,by:1320,speed:.2,phase:2.1},
      {kind:'grandma',shirt:0xb78ca4,route:'line',ax:535,ay:170,bx:535,by:310,speed:.15,phase:1.4},
      {kind:'man',shirt:0x9a80bb,route:'line',ax:1100,ay:555,bx:1100,by:690,speed:.23,phase:2.8},
-     {kind:'woman',shirt:0x77a6a0,route:'line',ax:470,ay:1310,bx:470,by:1390,speed:.17,phase:3.5},
+     // Tara: a broad pedestrian loop in the southern street instead of her
+     // former 80px up/down line. All turns remain within road y=1240..1430.
+     {kind:'woman',shirt:0x77a6a0,route:'patrol',
+      waypoints:[[480,1325],[850,1325],[850,1390],[480,1390]],
+      walkSpeed:48,speed:.17,phase:3.5},
      {kind:'grandpa',shirt:0x9c9580,route:'line',ax:960,ay:1310,bx:960,by:1390,speed:.12,phase:1.1},
      {kind:'woman',shirt:0xd9a1aa,route:'line',ax:670,ay:800,bx:970,by:800,speed:.17,phase:2.4},
      {kind:'man',shirt:0x7c9ac4,route:'line',ax:680,ay:437,bx:965,by:437,speed:.19,phase:1.7}
@@ -990,6 +994,16 @@ if (!window.Phaser) {
      npc.pages=npcStories[i].slice(1);
      npc.appearance=npcLookByName[npc.name];
      if(!npc.appearance)throw new Error('Unmapped District NPC: '+npc.name);
+     if(npc.route==='patrol'){
+      // Precompute each patrol leg once; distance-based travel has smooth
+      // motion and correctly changes the facing sprite at all four corners.
+      npc.patrolEdges=npc.waypoints.map((p,j)=>{
+       const next=npc.waypoints[(j+1)%npc.waypoints.length];
+       const dx=next[0]-p[0],dy=next[1]-p[1];
+       return {x:p[0],y:p[1],dx,dy,len:Math.hypot(dx,dy)};
+      });
+      npc.patrolLength=npc.patrolEdges.reduce((sum,edge)=>sum+edge.len,0);
+     }
     });
     for(const npc of this.parkVisitors){
      // Art is aligned on the boots (the same ground-plane anchor as Baio).
@@ -1557,6 +1571,21 @@ if (!window.Phaser) {
       npc.sprite.y=npc.cy+Math.sin(t)*npc.r;
       vx=-Math.sin(t)*npc.r*npc.speed;
       vy=Math.cos(t)*npc.r*npc.speed;
+     }else if(npc.route==='patrol'){
+      // Tara follows the entire four-sided loop, not a tiny two-point line.
+      // Her direction follows the real velocity, including the return legs.
+      let remaining=(this.visitorClock*npc.walkSpeed+npc.phase*24)%npc.patrolLength;
+      for(const edge of npc.patrolEdges){
+       if(remaining<=edge.len){
+        const progress=remaining/edge.len;
+        npc.sprite.x=edge.x+edge.dx*progress;
+        npc.sprite.y=edge.y+edge.dy*progress;
+        vx=edge.dx/edge.len*npc.walkSpeed;
+        vy=edge.dy/edge.len*npc.walkSpeed;
+        break;
+       }
+       remaining-=edge.len;
+      }
      }else{
       const mix=(Math.sin(t)+1)/2;
       npc.sprite.x=npc.ax+(npc.bx-npc.ax)*mix;
