@@ -327,7 +327,7 @@ function renderThemedInterior(scene,place){
    collide(78,188,268,112);
   }
  }else{
-  // CONTACT HUB v16.19: six separate transparent HD assets, no old furniture.
+  // CONTACT HUB v16.20: three counter sections moved exactly 50px upward.
   // Tall book/archive shelves stay on the upper wall, safely behind Baio.
   const placeHD=(asset,x,y,w,h,depth)=>{
    const key='hub-v1619-'+asset;
@@ -344,7 +344,7 @@ function renderThemedInterior(scene,place){
   // Each counter panel is independently rendered at high resolution.
   // Widths: left 293 + reception 298 + right 293 = 884.
   // Shared y/height keeps the seams and the neon rails aligned.
-  const counterY=264,counterHeight=112;
+  const counterY=214,counterHeight=112;
   placeHD('counter-left',38,counterY,293,counterHeight,4.85);
   placeHD('counter-center',331,counterY,298,counterHeight,4.85);
   placeHD('counter-right',629,counterY,293,counterHeight,4.85);
@@ -354,11 +354,11 @@ function renderThemedInterior(scene,place){
   collide(730,60,175,175);
   // Front counter is solid, except the employee entrance on the far-left
   // counter module. Collision is substepped even while Shift-sprinting.
-  collide(39,277,35,92);
-  collide(138,277,784,92);
+  collide(39,227,35,92);
+  collide(138,227,784,92);
   // Existing Contact Hub reader and District exit are still reachable.
   scene.zones[0].r=28;
-  scene.zones.push({x:480,y:389,r:31,label:'View Contact Information',object:'hub'});
+  scene.zones.push({x:480,y:339,r:31,label:'View Contact Information',object:'hub'});
  }
  // Staff outfits are recolored INSIDE the original 32 walking sprite frames.
  // The former graphics 'uniform' was a separate static rectangle that looked
@@ -410,7 +410,7 @@ function renderThemedInterior(scene,place){
   .setOrigin(.5,175/184).setScale(.56);
  // Mira now stands behind the counter as a receptionist.
  const patrol=place==='hub'
-  ?[[480,313]]
+  ?[[480,263]]
   :[[387,346],[433,352],[444,387],[365,388]];
  const container=scene.add.container(patrol[0][0],patrol[0][1],[shadow,avatar]).setDepth(4.25);
  const actor={
