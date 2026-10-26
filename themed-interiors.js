@@ -415,9 +415,16 @@ function renderThemedInterior(scene,place){
  shadow.fillStyle(0x071c2b,.25);shadow.fillEllipse(0,3,28,8);
  const avatar=scene.add.sprite(0,0,textureKey,isMiraFront?'__BASE':0)
   .setOrigin(.5,175/184);
- // Mira's uploaded original is fitted to a transparent 2x 136x184 NPC canvas.
- if(isMiraFront)avatar.setDisplaySize(136*.56,184*.56);
- else avatar.setScale(.56);
+ // Mira's source has more transparent padding and a smaller face than the
+ // animated NPC sheets. Enlarge the *visible* receptionist while keeping the
+ // player's interaction anchor, counter collision and ground position intact.
+ if(isMiraFront){
+  const miraFrontScale=.72; // 29% larger than the shared .56 NPC canvas
+  avatar.setDisplaySize(136*miraFrontScale,184*miraFrontScale);
+  // Offset the drawing inside its container only: center Mira's actual silhouette
+  // and align her shoe line to the shared 175px boot baseline.
+  avatar.setPosition(4,4);
+ }else avatar.setScale(.56);
  // Mira stands 10px higher behind the Contact Hub reception counter.
  const patrol=place==='hub'
   ?[[480,253]]
