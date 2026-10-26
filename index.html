@@ -146,7 +146,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.33 — Fountain Feed Channels</span></footer>
+<footer><span></span><span>Prototype 16.34 — Fountain-Colored Water Currents</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -654,18 +654,20 @@ if (!window.Phaser) {
       fill(x-5,y-8,w+10,h+16,warm?0x9caeaf:0x3c5968);
       fill(x-3,y-6,w+6,h+12,warm?0x506f7a:0x213f54);
       fill(x,y,w,h,warm?0x153e55:0x0a2539);
-      // Dark inner basin, cool reflective surface and layered water depth.
-      fill(x+4,y+5,w-8,h-10,warm?0x1c6686:0x14445f);
-      fill(x+7,y+15,w-14,h-29,warm?0x268eb0:0x1b607d);
-      fill(x+9,y+29,w-18,12,warm?0x329fc1:0x277390);
-      fill(x+7,y+46,w-14,9,warm?0x207b9d:0x164c6b);
+      // Same blue / cyan palette as the central fountain basin.
+      // Keep the basin recessed, but its water matches the fountain day and night.
+      fill(x+4,y+5,w-8,h-10,0x3b98c4);
+      fill(x+7,y+11,w-14,h-22,0x4d9fc4);
+      fill(x+9,y+19,w-18,h-36,0x7bcce5);
+      fill(x+11,y+31,w-22,12,0x8bd9ef);
+      fill(x+7,y+49,w-14,10,0x3b98c4);
       // Polished aluminium rim on the top and bottom, with recessed edges.
       fill(x-4,y-8,w+8,4,warm?0xfffbf0:0xa8bdc6);
       fill(x-3,y-4,w+6,3,warm?0xb2c9cd:0x567b8e);
       fill(x-4,y+h+3,w+8,5,warm?0xfffbf0:0xa8bdc6);
       fill(x-2,y+h,w+4,3,warm?0x9eb4b9:0x4b6879);
-      fill(x+7,y+8,w-14,2,warm?0x6fd3e6:0x3c96ba);
-      fill(x+7,y+h-12,w-14,2,warm?0x10617e:0x143e54);
+      fill(x+7,y+8,w-14,2,0xcaf2f5);
+      fill(x+7,y+h-12,w-14,2,0x4d9fc4);
       // A closed outer end and an open inner end toward the fountain.
       const capX=dir===1?x-4:x+w;
       fill(capX,y-4,4,h+7,warm?0xe3ebec:0x6e909f);
@@ -1513,20 +1515,20 @@ if (!window.Phaser) {
     flow.clear();
     for(const c of this.poolFeedChannels){
      const {x,y,w,h,dir}=c;
-     // Moving arrows and silver-blue ripples flow inward from BOTH sides:
-     //  left channel → fountain, right channel ← fountain.
+     // Horizontal ripple strokes only, no arrowheads or chevrons.
+     // The strokes drift RIGHT from the left basin and LEFT from the right
+     // basin, in both cases toward the fountain monument.
      const count=Math.max(5,Math.floor(w/68));
      for(let k=0;k<count;k++){
       const offset=(k*79+t*55)%(w-76);
       const px=dir===1?x+38+offset:x+w-38-offset;
       const py=y+22+(k%3)*12+Math.sin(t*2.3+k)*3;
-      flow.lineStyle(2,0xd9faff,.50);
-      flow.lineBetween(px-dir*24,py,px-dir*9,py);
-      flow.lineStyle(2,0xe9ffff,.79);
-      flow.lineBetween(px-dir*9,py-5,px,py);
-      flow.lineBetween(px-dir*9,py+5,px,py);
-      flow.fillStyle(0x6cd5f2,.54);
-      flow.fillRect(Math.round(px-dir*30),Math.round(py+7),7,2);
+      flow.lineStyle(2,0xcaf2f5,.46);
+      flow.lineBetween(px-dir*28,py-5,px-dir*9,py-5);
+      flow.lineStyle(2,0xe4fbfa,.72);
+      flow.lineBetween(px-dir*24,py,px,py);
+      flow.lineStyle(2,0x7bcce5,.55);
+      flow.lineBetween(px-dir*31,py+5,px-dir*12,py+5);
      }
     }
    }
