@@ -146,7 +146,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.37 — Fountain Foreground and Bright Night Streams</span></footer>
+<footer><span></span><span>Prototype 16.38 — Bright Night Riverside Gardens</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -596,7 +596,7 @@ if (!window.Phaser) {
      './assets/district/'+revision+'/'+filename+'.png?v='+(revision==='v1512'?'15.12':'15.11'));
    }
    }
-  init(data){this.place=data.place||'home';minimapHDLayer.hidden=true;this.minimapHDLayoutKey=null;this.spawn=data.spawn||null;this.changing=false;this.roadNeon=null;this.roadRailNight=null;this.ambientShade=null;this.panelDaylight=null;this.poolFeedChannels=null;this.poolFeedPlanters=null;this.poolFeedWater=null;this.poolFeedCurrent=null;this.poolFeedClock=0;this.homeWindow=null;this.homeFurniture=null;this.roomGuard=null}
+  init(data){this.place=data.place||'home';minimapHDLayer.hidden=true;this.minimapHDLayoutKey=null;this.spawn=data.spawn||null;this.changing=false;this.roadNeon=null;this.roadRailNight=null;this.ambientShade=null;this.panelDaylight=null;this.poolFeedChannels=null;this.poolFeedPlanters=null;this.poolFeedPlanterArt=null;this.poolFeedWater=null;this.poolFeedCurrent=null;this.poolFeedClock=0;this.homeWindow=null;this.homeFurniture=null;this.roomGuard=null}
   create(){
    const g=this.add.graphics(),rect=(x,y,w,h,c)=>{g.fillStyle(c);g.fillRect(x,y,w,h)};
    // The District has independent floor layers; only interiors need this flat base.
@@ -639,20 +639,11 @@ if (!window.Phaser) {
     // Daytime cream smoothly fades into existing grey metal after sunset.
     const nightMetal=this.add.graphics().setDepth(-2);
     this.panelDaylight=this.add.graphics().setDepth(-1);
-    const renderMetalPanels=(layer,warm)=>{
+    // Unlike pavement, the riverside plantings are full-color scenery.
+    // Render them separately above ambient shade (depth 50), matching the
+    // nighttime treatment of the water and fountain without adding lights.
+    const renderFeedPlanters=(layer,warm)=>{
      const fill=(x,y,w,h,color)=>{layer.fillStyle(color);layer.fillRect(x,y,w,h)};
-     fill(0,0,this.worldW,this.worldH,warm?0xe6dbc8:0x364a58);
-     for(let yy=0;yy<this.worldH;yy+=80)for(let xx=0;xx<this.worldW;xx+=80){
-      const odd=(xx/80+yy/80)%2!==0;
-      const panel=warm?(odd?0xfff8eb:0xf4eddf):(odd?0x94a7b1:0x869ba7);
-      fill(xx+2,yy+2,76,76,panel);
-      fill(xx+4,yy+4,72,3,warm?0xfffef6:0xb5c5cc);
-      fill(xx+4,yy+7,2,65,warm?0xe1d4c1:0x6b818e);
-      fill(xx+9,yy+70,63,2,warm?0xd5c8b6:0x607583);
-      fill(xx+9,yy+10,3,3,warm?0xffffff:0xd7e4e6);
-      fill(xx+68,yy+67,3,3,warm?0xb2a89b:0x354c5b);
-      if((xx/80+yy/80)%3===0)fill(xx+31,yy+37,18,3,warm?0xd6c4ac:0x66afc3);
-     }
      // Turn the metal tile strips flanking each stream into dense green
      // planting beds. Deterministic leaf placement is stable across renders
      // and follows the same palette when the city gradually darkens.
@@ -681,6 +672,21 @@ if (!window.Phaser) {
       // Dark green raised edges, with no leftover silver tiled surface.
       fill(x,y,w,3,warm?0x284831:0x1a3729);
       fill(x,y+h-3,w,3,warm?0x214a31:0x1b3c2d);
+     }
+    };
+    const renderMetalPanels=(layer,warm)=>{
+     const fill=(x,y,w,h,color)=>{layer.fillStyle(color);layer.fillRect(x,y,w,h)};
+     fill(0,0,this.worldW,this.worldH,warm?0xe6dbc8:0x364a58);
+     for(let yy=0;yy<this.worldH;yy+=80)for(let xx=0;xx<this.worldW;xx+=80){
+      const odd=(xx/80+yy/80)%2!==0;
+      const panel=warm?(odd?0xfff8eb:0xf4eddf):(odd?0x94a7b1:0x869ba7);
+      fill(xx+2,yy+2,76,76,panel);
+      fill(xx+4,yy+4,72,3,warm?0xfffef6:0xb5c5cc);
+      fill(xx+4,yy+7,2,65,warm?0xe1d4c1:0x6b818e);
+      fill(xx+9,yy+70,63,2,warm?0xd5c8b6:0x607583);
+      fill(xx+9,yy+10,3,3,warm?0xffffff:0xd7e4e6);
+      fill(xx+68,yy+67,3,3,warm?0xb2a89b:0x354c5b);
+      if((xx/80+yy/80)%3===0)fill(xx+31,yy+37,18,3,warm?0xd6c4ac:0x66afc3);
      }
      // Cut a recessed, light-blue channel between each pair of green beds.
      for(const c of fountainFeedChannels){
@@ -716,6 +722,11 @@ if (!window.Phaser) {
     };
     renderMetalPanels(nightMetal,false);
     renderMetalPanels(this.panelDaylight,true);
+    // Green beds remain crisp and vibrant during both day and night.
+    // They share the fountain's independently lit scene treatment, but
+    // stay behind NPC sprites and preserve their existing collision areas.
+    const planterArt=this.poolFeedPlanterArt=this.add.graphics().setDepth(50.5);
+    renderFeedPlanters(planterArt,true);
     // Bright channel water, intentionally ABOVE the ambient night shade
     // (depth 50), just like the fountain's illuminated water at depth 57.
     // Leave bevels and metal rims below: only the water surface stays bright.
