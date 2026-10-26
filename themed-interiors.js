@@ -327,20 +327,36 @@ function renderThemedInterior(scene,place){
    collide(78,188,268,112);
   }
  }else{
-  // CONTACT HUB v16.18: only the plain HD reception counter remains.
-  // Locker wall and its collision have been removed completely.
-  const counterKey='hub-v1617-counter';
-  const counterW=882,counterH=154*counterW/904;
-  if(scene.textures.exists(counterKey)){
-   // Centered horizontally at x=480, resized with its previous proportions.
-   // Counter renders in front of Mira (4.25), but behind Baio (5).
-   scene.add.image(480-counterW/2,260,counterKey).setOrigin(0,0)
-    .setDisplaySize(counterW,counterH).setDepth(4.85);
-  }
-  // Counter-only collision follows the reduced width; Shift sprint is blocked.
-  collide(40,273,880,102);
-  // The only Contact Hub interactions are reception and the District exit.
-  // Keep their zones separate so E at the counter cannot trigger exit.
+  // CONTACT HUB v16.19: six separate transparent HD assets, no old furniture.
+  // Tall book/archive shelves stay on the upper wall, safely behind Baio.
+  const placeHD=(asset,x,y,w,h,depth)=>{
+   const key='hub-v1619-'+asset;
+   if(!scene.textures.exists(key)){
+    console.error('Contact Hub HD texture missing:',key);
+    return null;
+   }
+   return scene.add.image(x,y,key).setOrigin(0,0)
+    .setDisplaySize(w,h).setDepth(depth);
+  };
+  placeHD('bookshelf',53,53,187,181,2.3);
+  placeHD('awards-bookshelf',260,47,440,143,2.3);
+  placeHD('drawer-rack',728,52,179,187,2.3);
+  // Each counter panel is independently rendered at high resolution.
+  // Widths: left 293 + reception 298 + right 293 = 884.
+  // Shared y/height keeps the seams and the neon rails aligned.
+  const counterY=264,counterHeight=112;
+  placeHD('counter-left',38,counterY,293,counterHeight,4.85);
+  placeHD('counter-center',331,counterY,298,counterHeight,4.85);
+  placeHD('counter-right',629,counterY,293,counterHeight,4.85);
+  // Wall shelves: block entry through their visible occupied footprints.
+  collide(55,62,181,171);
+  collide(260,52,440,137);
+  collide(730,60,175,175);
+  // Front counter is solid, except the employee entrance on the far-left
+  // counter module. Collision is substepped even while Shift-sprinting.
+  collide(39,277,35,92);
+  collide(138,277,784,92);
+  // Existing Contact Hub reader and District exit are still reachable.
   scene.zones[0].r=28;
   scene.zones.push({x:480,y:389,r:31,label:'View Contact Information',object:'hub'});
  }
