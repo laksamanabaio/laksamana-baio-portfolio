@@ -349,6 +349,24 @@ function renderThemedInterior(scene,place){
   placeHD('counter-left',38,counterY,293,counterHeight,4.85);
   placeHD('counter-center',331,counterY,298,counterHeight,4.85);
   placeHD('counter-right',629,counterY-3,293,counterHeight,4.85);
+  // Twin L-shaped neon sofas, supplied by the owner, at the lower room corners.
+  // Keep the center path to EXIT (x=480, y=450) fully unobstructed.
+  // Mirror the same source asset, so both sides retain identical colors and detail.
+  const sofaKey='hub-v1629-l-sofa';
+  if(scene.textures.exists(sofaKey)){
+   const sofaY=367,sofaWidth=300,sofaHeight=93,sofaDepth=3.2;
+   const addSofa=(x,mirrored)=>scene.add.image(x,sofaY,sofaKey)
+    .setOrigin(0,0).setDisplaySize(sofaWidth,sofaHeight)
+    .setFlipX(mirrored).setDepth(sofaDepth);
+   addSofa(48,false);  // Bottom-left: L corner against left edge.
+   addSofa(612,true);  // Bottom-right: mirrored L corner against right edge.
+   // Collisions match each sofa's solid lower footprint while preserving
+   // the central walkway for navigation and the EXIT interaction.
+   collide(52,375,292,83);
+   collide(616,375,292,83);
+  }else{
+   console.error('Contact Hub sofa asset missing:',sofaKey);
+  }
   // Wall shelves: block entry through their visible occupied footprints.
   collide(47,10,194,182);
   collide(257,48,446,146);
