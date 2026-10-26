@@ -327,7 +327,7 @@ function renderThemedInterior(scene,place){
    collide(78,188,268,112);
   }
  }else{
-  // CONTACT HUB v16.23: lower left bookshelf 3px and raise right counter 3px.
+  // CONTACT HUB v16.24: all three counter segments raised another 10px.
   // Tall book/archive shelves stay on the upper wall, safely behind Baio.
   const placeHD=(asset,x,y,w,h,depth)=>{
    const key='hub-v1619-'+asset;
@@ -344,8 +344,8 @@ function renderThemedInterior(scene,place){
   placeHD('drawer-rack',715,-3,190,198,2.3);
   // Each counter panel is independently rendered at high resolution.
   // Widths: left 293 + reception 298 + right 293 = 884.
-  // Shared y/height keeps the seams and the neon rails aligned.
-  const counterY=214,counterHeight=112;
+  // Shared counter baseline preserves the existing 3px offset of the right segment.
+  const counterY=204,counterHeight=112;
   placeHD('counter-left',38,counterY,293,counterHeight,4.85);
   placeHD('counter-center',331,counterY,298,counterHeight,4.85);
   placeHD('counter-right',629,counterY-3,293,counterHeight,4.85);
@@ -355,10 +355,10 @@ function renderThemedInterior(scene,place){
   collide(717,5,186,186);
   // Front counter is solid, except the employee entrance on the far-left
   // counter module. Collision is substepped even while Shift-sprinting.
-  collide(39,227,35,92);
-  // Keep the left+middle counter at y=214; right counter is 3px higher.
-  collide(138,227,491,92);
-  collide(629,224,293,92);
+  collide(39,217,35,92);
+  // Left and middle counters are at y=204; right counter remains 3px higher.
+  collide(138,217,491,92);
+  collide(629,214,293,92);
   // Existing Contact Hub reader and District exit are still reachable.
   scene.zones[0].r=28;
   scene.zones.push({x:480,y:339,r:31,label:'View Contact Information',object:'hub'});
