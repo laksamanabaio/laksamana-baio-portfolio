@@ -425,24 +425,20 @@ function renderThemedInterior(scene,place){
    console.warn('Interior NPC costume recolor unavailable:',error);
   }
  }
- const textureKey=place==='hub'&&scene.textures.exists('npc-mira-front-v1627')
-  ?'npc-mira-front-v1627'
+ const textureKey=place==='hub'&&scene.textures.exists('npc-mira-front-v1630-hd')
+  ?'npc-mira-front-v1630-hd'
   :(scene.textures.exists(costumeKey)?costumeKey:nativeKey);
- const isMiraFront=place==='hub'&&textureKey==='npc-mira-front-v1627';
+ const isMiraFront=place==='hub'&&textureKey==='npc-mira-front-v1630-hd';
  const shadow=scene.add.graphics();
  shadow.fillStyle(0x071c2b,.25);shadow.fillEllipse(0,3,28,8);
  const avatar=scene.add.sprite(0,0,textureKey,isMiraFront?'__BASE':0)
   .setOrigin(.5,175/184);
- // Mira's source has more transparent padding and a smaller face than the
- // animated NPC sheets. Enlarge the *visible* receptionist while keeping the
- // player's interaction anchor, counter collision and ground position intact.
- if(isMiraFront){
-  const miraFrontScale=.72; // 29% larger than the shared .56 NPC canvas
-  avatar.setDisplaySize(136*miraFrontScale,184*miraFrontScale);
-  // Offset the drawing inside its container only: center Mira's actual silhouette
-  // and align her shoe line to the shared 175px boot baseline.
-  avatar.setPosition(4,4);
- }else avatar.setScale(.56);
+ // Mira's front view is standardized to Dr. Nira's 136x184 NPC frame.
+ // Both use exactly .56 in-world (no special oversized/undersized scaling).
+ // Lift only the artwork within its stationary container so Mira's face
+ // remains visible above the counter; the interaction anchor stays at x480,y253.
+ avatar.setScale(.56);
+ if(isMiraFront)avatar.setPosition(0,-22);
  // Mira stands 10px higher behind the Contact Hub reception counter.
  const patrol=place==='hub'
   ?[[480,253]]
