@@ -146,7 +146,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.25 — Mira Raised 10px</span></footer>
+<footer><span></span><span>Prototype 16.27 — Mira HD Receptionist</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -579,8 +579,8 @@ if (!window.Phaser) {
     this.load.image('hub-v1619-'+name,
      './assets/contact-hub/v1619/'+name+'.webp?v=16.19');
    }
-   // Mira: a front-facing transparent pixel character, rasterized at 4x for HD detail.
-   this.load.svg('npc-mira-front-v1626','./assets/npc/mira/v1626/mira-front.svg?v=16.26',{width:544,height:736});
+   // Mira: actual transparent receptionist artwork, 2x the shared 136x184 NPC frame.
+   this.load.image('npc-mira-front-v1627','./assets/npc/mira/v1627/mira-front.webp?v=16.27');
    // Front-facing, transparent 16-bit HOME artwork, optimized for the District.
    this.load.image('district-home-exterior-v158','./assets/district/home-exterior-gba-v158.png?v=15.8');
    // Load six garden-friendly exteriors, preserving all four main buildings.

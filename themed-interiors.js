@@ -407,15 +407,15 @@ function renderThemedInterior(scene,place){
    console.warn('Interior NPC costume recolor unavailable:',error);
   }
  }
- const textureKey=place==='hub'&&scene.textures.exists('npc-mira-front-v1626')
-  ?'npc-mira-front-v1626'
+ const textureKey=place==='hub'&&scene.textures.exists('npc-mira-front-v1627')
+  ?'npc-mira-front-v1627'
   :(scene.textures.exists(costumeKey)?costumeKey:nativeKey);
- const isMiraFront=place==='hub'&&textureKey==='npc-mira-front-v1626';
+ const isMiraFront=place==='hub'&&textureKey==='npc-mira-front-v1627';
  const shadow=scene.add.graphics();
  shadow.fillStyle(0x071c2b,.25);shadow.fillEllipse(0,3,28,8);
  const avatar=scene.add.sprite(0,0,textureKey,isMiraFront?'__BASE':0)
   .setOrigin(.5,175/184);
- // The HD asset uses 4x resolution but occupies the same 136x184 NPC frame.
+ // Mira's uploaded original is fitted to a transparent 2x 136x184 NPC canvas.
  if(isMiraFront)avatar.setDisplaySize(136*.56,184*.56);
  else avatar.setScale(.56);
  // Mira stands 10px higher behind the Contact Hub reception counter.
