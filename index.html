@@ -75,12 +75,61 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 #startGame{cursor:pointer;display:block;width:100%;padding:15px 30px;background:#84c7c5;border:3px solid #cce8d9;box-shadow:6px 6px 0 #173e4c;color:#102c37;font:800 clamp(17px,2vw,24px) monospace;letter-spacing:.2em}
 #startGame:hover,#startGame:focus-visible{background:#e8c99d;outline:3px solid #fff0d4}
 #opening .copyright{margin-top:19px;color:#b8ced0;font-size:12px}
-#loading{position:absolute;inset:0;z-index:21;display:none;place-content:center;text-align:center;background:#091923;color:#d4e8e6}
+/* Rules screen appears after START and before the real asset-loading screen. */
+#rules{position:absolute;inset:0;z-index:21;display:grid;place-items:center;overflow-y:auto;
+ padding:clamp(12px,4vh,38px) 16px;
+ background:radial-gradient(ellipse at 50% 40%,#173a4a 0%,#0d2634 58%,#06121e 100%);
+ color:#e6f5f2}
+#rules[hidden]{display:none}
+#rules .rules-panel{width:min(100%,800px);max-height:calc(100dvh - 24px);overflow-y:auto;
+ padding:clamp(18px,3.6vw,34px);
+ background:linear-gradient(145deg,rgba(15,47,62,.98),rgba(7,24,37,.98));
+ border:2px solid #66b8bd;box-shadow:0 0 0 5px #0b2533,0 15px 60px #030d17}
+#rules .rules-eyebrow{margin:0 0 9px;color:#81dade;font:700 12px monospace;letter-spacing:.24em}
+#rules h2{margin:0;font:900 clamp(24px,4vw,39px) monospace;letter-spacing:.08em;color:#fff4db}
+#rules h2 span{color:#91e0df}
+#rules .rules-intro{margin:10px 0 22px;color:#c5dedd;font:14px/1.5 monospace}
+#rules .rules-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+#rules .rule-item{padding:17px 13px;min-width:0;min-height:158px;
+ background:rgba(24,66,81,.65);border:1px solid #508c9c;box-shadow:inset 0 3px #2b6a79}
+#rules .rule-number{display:block;color:#6dc2ce;font:bold 12px monospace;letter-spacing:.2em}
+#rules h3{margin:8px 0;color:#f3e5c7;font:bold 17px monospace;letter-spacing:.08em}
+#rules .rule-item p{margin:9px 0 0;color:#bed8d6;font:12px/1.45 monospace}
+#rules .rule-keys{display:flex;align-items:center;justify-content:flex-start;flex-wrap:wrap;gap:5px;min-height:35px}
+#rules kbd{display:inline-flex;align-items:center;justify-content:center;min-width:27px;height:29px;
+ padding:3px 7px;background:#102836;border:1px solid #8bd3d2;
+ border-bottom:3px solid #437b8a;color:#f4faf8;font:bold 13px monospace}
+#rules .rule-or{font:bold 10px monospace;letter-spacing:.1em;color:#9fbcc1;padding:0 2px}
+#rules .rules-touch{margin:18px 0;color:#9cd6d0;font:12px/1.5 monospace}
+#rules .rules-actions{display:flex;justify-content:space-between;gap:14px}
+#rules .rules-actions button{cursor:pointer;padding:13px 18px;border:2px solid #7fc9c9;
+ background:#173646;color:#e3f4ed;font:bold 15px monospace;letter-spacing:.1em}
+#rules #rulesContinue{flex:1;max-width:385px;background:#82caca;border-color:#d5f1e5;color:#092733;
+ box-shadow:4px 4px 0 #071c29}
+#rules .rules-actions button:hover,#rules .rules-actions button:focus-visible{
+ outline:3px solid #f4dea3;outline-offset:3px}
+#rules #rulesContinue:hover,#rules #rulesContinue:focus-visible{background:#f3dbaa}
+#loading{position:absolute;inset:0;z-index:22;display:none;place-content:center;text-align:center;background:#091923;color:#d4e8e6}
 #loading.active{display:grid}
 #loading h2{letter-spacing:.2em;font:700 clamp(19px,3vw,34px) monospace}
 #loading .track{width:min(70vw,420px);height:18px;border:2px solid #8ec8c6;background:#142f3d;margin:20px auto}
 #loading .fill{height:100%;width:0;background:#83c5c5;transition:width .12s linear}
 @media(max-width:650px){#opening .profile{top:100px;left:var(--hud-margin);right:auto;text-align:left}#opening .brand{max-width:95%}#opening .scene{top:29%;left:4%;right:4%;bottom:26%}#opening .cta{bottom:40px}}
+@media(max-width:680px){
+ #rules .rules-grid{grid-template-columns:1fr;gap:8px}
+ #rules .rule-item{min-height:0;padding:11px 14px}
+ #rules h3{margin:3px 0 7px;font-size:15px}
+ #rules .rule-item p{margin:7px 0 0}
+ #rules .rules-intro{margin-bottom:14px}
+ #rules .rules-touch{margin:12px 0}
+ #rules .rules-actions button{padding:12px 10px;font-size:12px}
+}
+@media(max-height:600px) and (min-width:681px){
+ #rules .rules-panel{padding:16px 24px}
+ #rules .rule-item{min-height:122px;padding:10px}
+ #rules .rules-intro{margin:7px 0 12px}
+ #rules .rules-touch{margin:10px 0}
+}
 
 /* SVG badges are rendered by the browser at native screen resolution,
    outside Phaser's pixel-art canvas, so they stay crisp at phone DPI. */
@@ -146,12 +195,47 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.39 — Tara Expanded Walking Route</span></footer>
+<footer><span></span><span>Prototype 16.40 — Rules Before Playing Flow</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
  <div class="scene" aria-hidden="true"><div class="desk"></div><div class="avatar"></div></div>
  <div class="cta"><button id="startGame" type="button">▶ START</button><div class="copyright">© Laksamana Baio. All rights reserved.</div></div>
+</section>
+<section id="rules" aria-labelledby="rulesTitle" tabindex="-1" hidden>
+ <div class="rules-panel">
+  <p class="rules-eyebrow">PLAYER GUIDE // SECTOR 2077</p>
+  <h2 id="rulesTitle">RULES <span>BEFORE PLAYING</span></h2>
+  <p class="rules-intro">Pelajari kontrol dasar sebelum menjelajahi Baio's World.</p>
+  <div class="rules-grid">
+   <article class="rule-item">
+    <span class="rule-number">01 / MOVEMENT</span>
+    <h3>BERGERAK</h3>
+    <div class="rule-keys" aria-label="Tombol panah atau W A S D">
+     <kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd>
+     <span class="rule-or">ATAU</span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>
+    </div>
+    <p>Gunakan tombol Arrow atau WASD untuk berjalan.</p>
+   </article>
+   <article class="rule-item">
+    <span class="rule-number">02 / SPRINT</span>
+    <h3>LARI</h3>
+    <div class="rule-keys"><kbd>SHIFT</kbd><span class="rule-or">+</span><kbd>WASD</kbd></div>
+    <p>Tahan SHIFT sambil bergerak untuk berlari lebih cepat.</p>
+   </article>
+   <article class="rule-item">
+    <span class="rule-number">03 / INTERACT</span>
+    <h3>INTERAKSI</h3>
+    <div class="rule-keys"><kbd>E</kbd><span class="rule-or">ATAU</span><kbd>SPACE</kbd></div>
+    <p>Dekati NPC atau objek, lalu tekan E atau Space untuk berinteraksi.</p>
+   </article>
+  </div>
+  <p class="rules-touch">Di perangkat sentuh, gunakan kontrol virtual yang tersedia di layar.</p>
+  <div class="rules-actions">
+   <button id="rulesBack" type="button">← KEMBALI</button>
+   <button id="rulesContinue" type="button">▶ MULAI BERMAIN</button>
+  </div>
+ </div>
 </section>
 <section id="loading" role="status" aria-live="polite"><div><h2>INITIALIZING BAIO WORLD</h2><p>CONNECTING TO HOME // 2077</p><div class="track"><div class="fill" id="loadFill"></div></div><p id="loadText">Preparing your journey...</p></div></section>
 </main>
@@ -281,7 +365,7 @@ if (!window.Phaser) {
    return {name:'SORE',neon:k,shade:.49*k,color:'#ffc48d'};
   };
   // Preload all sprites and room art while visitors see the opening.
-  const portfolioLoadState={progress:0,ready:false,started:false,errors:[]};
+  const portfolioLoadState={progress:0,ready:false,started:false,errors:[],loadingShownAt:0};
   const updateAssetProgress=progress=>{
    portfolioLoadState.progress=Math.max(0,Math.min(1,progress));
    document.getElementById('loadFill').style.width=Math.round(portfolioLoadState.progress*100)+'%';
@@ -293,13 +377,16 @@ if (!window.Phaser) {
    }
   };
   const revealLoadedWorld=()=>{
-   if(!portfolioLoadState.ready||!portfolioLoadState.started)return;
-   requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    if(portfolioLoadState.ready){
-     document.getElementById('loading').classList.remove('active');
-     showGameControls();
-    }
-   }));
+   if(!portfolioLoadState.ready||!portfolioLoadState.started||portfolioLoadState.errors.length)return;
+   // Always show the actual loading screen after Rules, even when Phaser
+   // has already preloaded everything behind the landing screen.
+   // Progress remains real; this brief hold only makes the transition legible.
+   const remaining=Math.max(0,650-(performance.now()-portfolioLoadState.loadingShownAt));
+   window.setTimeout(()=>requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    if(!portfolioLoadState.ready||!portfolioLoadState.started||portfolioLoadState.errors.length)return;
+    document.getElementById('loading').classList.remove('active');
+    showGameControls();
+   })),remaining);
   };
  const touchPad=document.querySelector('.touch');
  // Avoid iOS text callouts and Android long-press context menus.
@@ -1769,6 +1856,7 @@ if (!window.Phaser) {
  // ENVELOP previously cropped the game on short-height / narrow viewports.
  const game=new Phaser.Game({type:Phaser.AUTO,parent:'game',width:W,height:H,backgroundColor:'#142733',pixelArt:true,render:{pixelArt:true,antialias:false},scene:[World],scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH}});
  const opening=document.getElementById('opening');
+ const rules=document.getElementById('rules');
  const loading=document.getElementById('loading');
  const main=document.querySelector('main');
  const fullscreenToggle=document.getElementById('fullscreenToggle');
@@ -1804,24 +1892,39 @@ if (!window.Phaser) {
    if(pending&&pending.catch)pending.catch(()=>updateFullscreenButton());
   }else requestGameFullscreen();
  });
+ // LANDING -> RULES -> LOADING -> GAME.
  document.getElementById('startGame').addEventListener('click',()=>{
   if(portfolioLoadState.started)return;
-  portfolioLoadState.started=true;
-  requestGameFullscreen();
-  // START is a user gesture, so Web Audio may begin without autoplay blocking.
-  if(window.CyberpopMusic)window.CyberpopMusic.begin();
   opening.hidden=true;
+  rules.hidden=false;
+  rules.focus({preventScroll:true});
+ });
+ document.getElementById('rulesBack').addEventListener('click',()=>{
+  if(portfolioLoadState.started)return;
+  rules.hidden=true;
+  opening.hidden=false;
+  document.getElementById('startGame').focus({preventScroll:true});
+ });
+ document.getElementById('rulesContinue').addEventListener('click',()=>{
+  if(portfolioLoadState.started)return;
+  portfolioLoadState.started=true;
+  portfolioLoadState.loadingShownAt=performance.now();
+  rules.hidden=true;
+  opening.hidden=true;
+  loading.classList.add('active');
+  // Request fullscreen and start sound on an explicit user gesture.
+  requestGameFullscreen();
+  if(window.CyberpopMusic)window.CyberpopMusic.begin();
   if(portfolioLoadState.errors.length){
-   loading.classList.add('active');
    document.getElementById('loadText').textContent='Some assets failed to load. Refresh to retry.';
-  }else if(portfolioLoadState.ready){
-   // Display controls only once the visitor actually starts gameplay.
-   loading.classList.remove('active');
-   showGameControls();
-  }else{
-   // Show actual Phaser loader progress instead of a fabricated timer.
-   loading.classList.add('active');
-   updateAssetProgress(portfolioLoadState.progress);
+   return;
+  }
+  // Use real Phaser progress. If assets are already loaded, show the
+  // completed bar before revealing the game rather than skipping Loading.
+  updateAssetProgress(portfolioLoadState.progress);
+  if(portfolioLoadState.ready){
+   document.getElementById('loadText').textContent='World ready. Starting game...';
+   revealLoadedWorld();
   }
  });
 }
