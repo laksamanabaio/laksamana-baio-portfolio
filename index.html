@@ -146,7 +146,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.36 — Fountain Circular Garden</span></footer>
+<footer><span></span><span>Prototype 16.37 — Fountain Foreground and Bright Night Streams</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -596,7 +596,7 @@ if (!window.Phaser) {
      './assets/district/'+revision+'/'+filename+'.png?v='+(revision==='v1512'?'15.12':'15.11'));
    }
    }
-  init(data){this.place=data.place||'home';minimapHDLayer.hidden=true;this.minimapHDLayoutKey=null;this.spawn=data.spawn||null;this.changing=false;this.roadNeon=null;this.roadRailNight=null;this.ambientShade=null;this.panelDaylight=null;this.poolFeedChannels=null;this.poolFeedPlanters=null;this.poolFeedCurrent=null;this.poolFeedClock=0;this.homeWindow=null;this.homeFurniture=null;this.roomGuard=null}
+  init(data){this.place=data.place||'home';minimapHDLayer.hidden=true;this.minimapHDLayoutKey=null;this.spawn=data.spawn||null;this.changing=false;this.roadNeon=null;this.roadRailNight=null;this.ambientShade=null;this.panelDaylight=null;this.poolFeedChannels=null;this.poolFeedPlanters=null;this.poolFeedWater=null;this.poolFeedCurrent=null;this.poolFeedClock=0;this.homeWindow=null;this.homeFurniture=null;this.roomGuard=null}
   create(){
    const g=this.add.graphics(),rect=(x,y,w,h,c)=>{g.fillStyle(c);g.fillRect(x,y,w,h)};
    // The District has independent floor layers; only interiors need this flat base.
@@ -716,9 +716,23 @@ if (!window.Phaser) {
     };
     renderMetalPanels(nightMetal,false);
     renderMetalPanels(this.panelDaylight,true);
-    // Directional ripples are drawn over the water, below the ambient shade
-    // and characters. This preserves both day and night metal transitions.
-    this.poolFeedCurrent=this.add.graphics().setDepth(1.1);
+    // Bright channel water, intentionally ABOVE the ambient night shade
+    // (depth 50), just like the fountain's illuminated water at depth 57.
+    // Leave bevels and metal rims below: only the water surface stays bright.
+    const poolFeedWater=this.poolFeedWater=this.add.graphics().setDepth(51);
+    for(const c of fountainFeedChannels){
+     const {x,y,w,h}=c;
+     poolFeedWater.fillStyle(0x3b98c4);poolFeedWater.fillRect(x+4,y+5,w-8,h-10);
+     poolFeedWater.fillStyle(0x4d9fc4);poolFeedWater.fillRect(x+7,y+11,w-14,h-22);
+     poolFeedWater.fillStyle(0x7bcce5);poolFeedWater.fillRect(x+9,y+16,w-18,h-30);
+     poolFeedWater.fillStyle(0x8bd9ef);poolFeedWater.fillRect(x+11,y+21,w-22,h-40);
+     // A few subtle reflections, matching the main fountain at night.
+     poolFeedWater.fillStyle(0xcaf2f5,.78);poolFeedWater.fillRect(x+12,y+9,w-24,2);
+     poolFeedWater.fillStyle(0x4d9fc4,.72);poolFeedWater.fillRect(x+10,y+h-12,w-20,2);
+    }
+    // The moving ripple lines also stay above the darkness and continue
+    // travelling towards the monument from both directions.
+    this.poolFeedCurrent=this.add.graphics().setDepth(52);
     // Plain, uninterrupted grey streets: no painted dashes, tile seams,
     // dark spots, bolts, or contrasting curb strips. Neon edges stay intact.
     const road=0x626a70;
@@ -822,27 +836,29 @@ if (!window.Phaser) {
     fountainArt.fillStyle(0xa1ddeb);fountainArt.fillRect(fx-7,fy-103,14,23);
     fountainArt.fillStyle(0xe4fbfa);fountainArt.fillRect(fx-3,fy-127,6,26);
     fountainArt.fillStyle(0xbaf4fb);fountainArt.fillCircle(fx,fy-124,11);
-    // Circular garden: replace all four brown benches with a continuous
-    // low, leafy hedge following the fountain's curved stone rim.
+    // Circular garden: foliage sits on a SEPARATE layer behind the
+    // fountain water and monument, so no leaves cover the fountain's details.
+    const fountainHedgeArt=this.add.graphics().setDepth(DISTRICT_FOUNTAIN_DEPTH-0.5);
+    // A continuous low hedge follows the fountain's curved stone rim.
     // The foliage stays just outside the stone (radius 124) and entirely
     // inside the visitors' nearest strolling loop (radius 158).
     const fountainHedgeRadius=138,fountainHedgeCount=48;
-    fountainArt.lineStyle(15,0x234a32,1);
-    fountainArt.strokeCircle(fx,fy,fountainHedgeRadius);
+    fountainHedgeArt.lineStyle(15,0x234a32,1);
+    fountainHedgeArt.strokeCircle(fx,fy,fountainHedgeRadius);
     for(let i=0;i<fountainHedgeCount;i++){
      const angle=(i+.5)*Math.PI*2/fountainHedgeCount;
      const radius=fountainHedgeRadius+Math.sin(i*2.39)*1.4;
      const hx=fx+Math.cos(angle)*radius;
      const hy=fy+Math.sin(angle)*radius;
      // Deep green soil shadow, rounded pixel-art leaves and tiny highlights.
-     fountainArt.fillStyle(0x193b2a,1);
-     fountainArt.fillEllipse(hx,hy+3,23,15);
-     fountainArt.fillStyle(i%3===0?0x2d6f3b:0x347d40,1);
-     fountainArt.fillEllipse(hx-3,hy-2,19,15);
-     fountainArt.fillStyle(i%4===0?0x5eb95e:0x4fa34f,1);
-     fountainArt.fillEllipse(hx+4,hy-3,15,11);
-     fountainArt.fillStyle(i%5===0?0xa0df83:0x7bcf69,.9);
-     fountainArt.fillRect(Math.round(hx-4),Math.round(hy-7),4,3);
+     fountainHedgeArt.fillStyle(0x193b2a,1);
+     fountainHedgeArt.fillEllipse(hx,hy+3,23,15);
+     fountainHedgeArt.fillStyle(i%3===0?0x2d6f3b:0x347d40,1);
+     fountainHedgeArt.fillEllipse(hx-3,hy-2,19,15);
+     fountainHedgeArt.fillStyle(i%4===0?0x5eb95e:0x4fa34f,1);
+     fountainHedgeArt.fillEllipse(hx+4,hy-3,15,11);
+     fountainHedgeArt.fillStyle(i%5===0?0xa0df83:0x7bcf69,.9);
+     fountainHedgeArt.fillRect(Math.round(hx-4),Math.round(hy-7),4,3);
     }
     // Street lamps occupy the grey streets only, NOT the aluminium plots.
     // Each intersection-side plot corner receives a matching lamp; the four
