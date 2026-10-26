@@ -146,7 +146,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.32 — Mira Width Refinement</span></footer>
+<footer><span></span><span>Prototype 16.33 — Fountain Feed Channels</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -596,7 +596,7 @@ if (!window.Phaser) {
      './assets/district/'+revision+'/'+filename+'.png?v='+(revision==='v1512'?'15.12':'15.11'));
    }
    }
-  init(data){this.place=data.place||'home';minimapHDLayer.hidden=true;this.minimapHDLayoutKey=null;this.spawn=data.spawn||null;this.changing=false;this.roadNeon=null;this.roadRailNight=null;this.ambientShade=null;this.panelDaylight=null;this.homeWindow=null;this.homeFurniture=null;this.roomGuard=null}
+  init(data){this.place=data.place||'home';minimapHDLayer.hidden=true;this.minimapHDLayoutKey=null;this.spawn=data.spawn||null;this.changing=false;this.roadNeon=null;this.roadRailNight=null;this.ambientShade=null;this.panelDaylight=null;this.poolFeedChannels=null;this.poolFeedCurrent=null;this.poolFeedClock=0;this.homeWindow=null;this.homeFurniture=null;this.roomGuard=null}
   create(){
    const g=this.add.graphics(),rect=(x,y,w,h,c)=>{g.fillStyle(c);g.fillRect(x,y,w,h)};
    // The District has independent floor layers; only interiors need this flat base.
@@ -619,6 +619,15 @@ if (!window.Phaser) {
        {id:'hub',x:0,y:1018,w:392,h:200,displayW:423}
       ];
      // Evenly sized sprite footprints leave pedestrian gaps between facades.
+     // Recessed water openings in the aluminium plots on either side of the
+     // fountain. Their centers line up with the monument (world y=620).
+     // Left water moves right (+1); right water moves left (-1).
+     // Their footprints stay strictly within aluminium plots, away from roads.
+     const fountainFeedChannels=[
+      {x:18,y:583,w:412,h:74,dir:1},
+      {x:1208,y:583,w:696,h:74,dir:-1}
+     ];
+     this.poolFeedChannels=fountainFeedChannels;
      // Two pixel-patterned aluminium floors, drawn BEHIND streets and fountain.
     // Daytime cream smoothly fades into existing grey metal after sunset.
     const nightMetal=this.add.graphics().setDepth(-2);
@@ -637,9 +646,42 @@ if (!window.Phaser) {
       fill(xx+68,yy+67,3,3,warm?0xb2a89b:0x354c5b);
       if((xx/80+yy/80)%3===0)fill(xx+31,yy+37,18,3,warm?0xd6c4ac:0x66afc3);
      }
+     // Cut ONLY the central strip from each aluminium plot, leaving the
+     // cream metal tile panels intact above and below the recessed pool.
+     for(const c of fountainFeedChannels){
+      const {x,y,w,h,dir}=c;
+      // Thick bevels and inner shadows make the water read as a hole.
+      fill(x-5,y-8,w+10,h+16,warm?0x9caeaf:0x3c5968);
+      fill(x-3,y-6,w+6,h+12,warm?0x506f7a:0x213f54);
+      fill(x,y,w,h,warm?0x153e55:0x0a2539);
+      // Dark inner basin, cool reflective surface and layered water depth.
+      fill(x+4,y+5,w-8,h-10,warm?0x1c6686:0x14445f);
+      fill(x+7,y+15,w-14,h-29,warm?0x268eb0:0x1b607d);
+      fill(x+9,y+29,w-18,12,warm?0x329fc1:0x277390);
+      fill(x+7,y+46,w-14,9,warm?0x207b9d:0x164c6b);
+      // Polished aluminium rim on the top and bottom, with recessed edges.
+      fill(x-4,y-8,w+8,4,warm?0xfffbf0:0xa8bdc6);
+      fill(x-3,y-4,w+6,3,warm?0xb2c9cd:0x567b8e);
+      fill(x-4,y+h+3,w+8,5,warm?0xfffbf0:0xa8bdc6);
+      fill(x-2,y+h,w+4,3,warm?0x9eb4b9:0x4b6879);
+      fill(x+7,y+8,w-14,2,warm?0x6fd3e6:0x3c96ba);
+      fill(x+7,y+h-12,w-14,2,warm?0x10617e:0x143e54);
+      // A closed outer end and an open inner end toward the fountain.
+      const capX=dir===1?x-4:x+w;
+      fill(capX,y-4,4,h+7,warm?0xe3ebec:0x6e909f);
+      fill(capX+(dir===1?4:-3),y+2,3,h-4,warm?0x3a7389:0x22465a);
+      // Tiny recessed fasteners in the bordering aluminium (not the water).
+      for(let k=x+29;k<x+w-12;k+=76){
+       fill(k,y-4,4,2,warm?0x7d9ba4:0x4b6b80);
+       fill(k,y+h+4,4,2,warm?0x7d9ba4:0x4b6b80);
+      }
+     }
     };
     renderMetalPanels(nightMetal,false);
     renderMetalPanels(this.panelDaylight,true);
+    // Directional ripples are drawn over the water, below the ambient shade
+    // and characters. This preserves both day and night metal transitions.
+    this.poolFeedCurrent=this.add.graphics().setDepth(1.1);
     // Plain, uninterrupted grey streets: no painted dashes, tile seams,
     // dark spots, bolts, or contrasting curb strips. Neon edges stay intact.
     const road=0x626a70;
@@ -1393,7 +1435,10 @@ if (!window.Phaser) {
     let blocked;
     if(this.place==='district'){
      // Collision footprint: character feet cannot enter building walls/roofs.
-     blocked=(px,py)=>Math.hypot(px-820,py-620)<125||[...this.buildings,...this.sceneryBuildings].some(b=>{
+     // The recessed pools are genuine holes, not walkable metal flooring.
+     blocked=(px,py)=>this.poolFeedChannels.some(c=>
+      px>c.x-4&&px<c.x+c.w+4&&py>c.y-4&&py<c.y+c.h+4
+     )||Math.hypot(px-820,py-620)<125||[...this.buildings,...this.sceneryBuildings].some(b=>{
       const height=b.spriteH||DISTRICT_BUILDING_SIZE.height;
       const width=b.spriteW||b.w;
       const left=b.x+(b.w-width)/2;
@@ -1461,6 +1506,29 @@ if (!window.Phaser) {
     }
     const pulse=2+Math.round((Math.sin(t*3)+1)*2);
     fg.lineStyle(2,0xe0fbf7,0.55);fg.strokeCircle(820,620,87+pulse);
+   }
+   if(this.place==='district'&&this.poolFeedCurrent){
+    this.poolFeedClock+=Math.min(delta,50)/1000;
+    const flow=this.poolFeedCurrent,t=this.poolFeedClock;
+    flow.clear();
+    for(const c of this.poolFeedChannels){
+     const {x,y,w,h,dir}=c;
+     // Moving arrows and silver-blue ripples flow inward from BOTH sides:
+     //  left channel → fountain, right channel ← fountain.
+     const count=Math.max(5,Math.floor(w/68));
+     for(let k=0;k<count;k++){
+      const offset=(k*79+t*55)%(w-76);
+      const px=dir===1?x+38+offset:x+w-38-offset;
+      const py=y+22+(k%3)*12+Math.sin(t*2.3+k)*3;
+      flow.lineStyle(2,0xd9faff,.50);
+      flow.lineBetween(px-dir*24,py,px-dir*9,py);
+      flow.lineStyle(2,0xe9ffff,.79);
+      flow.lineBetween(px-dir*9,py-5,px,py);
+      flow.lineBetween(px-dir*9,py+5,px,py);
+      flow.fillStyle(0x6cd5f2,.54);
+      flow.fillRect(Math.round(px-dir*30),Math.round(py+7),7,2);
+     }
+    }
    }
    // Room keepers walk around without colliding with the workspaces,
    // and stop their walking animation during dialogue.
