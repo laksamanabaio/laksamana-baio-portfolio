@@ -195,7 +195,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.42 — Contact Hub Trim Cleanup</span></footer>
+<footer><span></span><span>Prototype 16.43 — Lab Workshop Teleport Spawn Fix</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -683,7 +683,7 @@ if (!window.Phaser) {
      './assets/district/'+revision+'/'+filename+'.png?v='+(revision==='v1512'?'15.12':'15.11'));
    }
    }
-  init(data){this.place=data.place||'home';minimapHDLayer.hidden=true;this.minimapHDLayoutKey=null;this.spawn=data.spawn||null;this.changing=false;this.roadNeon=null;this.roadRailNight=null;this.ambientShade=null;this.panelDaylight=null;this.poolFeedChannels=null;this.poolFeedPlanters=null;this.poolFeedPlanterArt=null;this.poolFeedWater=null;this.poolFeedCurrent=null;this.poolFeedClock=0;this.homeWindow=null;this.homeFurniture=null;this.roomGuard=null}
+  init(data){this.place=data.place||'home';minimapHDLayer.hidden=true;this.minimapHDLayoutKey=null;this.spawn=data.spawn||null;this.teleportArrivalLocked=this.spawn?.at==='teleport-front';this.changing=false;this.roadNeon=null;this.roadRailNight=null;this.ambientShade=null;this.panelDaylight=null;this.poolFeedChannels=null;this.poolFeedPlanters=null;this.poolFeedPlanterArt=null;this.poolFeedWater=null;this.poolFeedCurrent=null;this.poolFeedClock=0;this.homeWindow=null;this.homeFurniture=null;this.roomGuard=null}
   create(){
    const g=this.add.graphics(),rect=(x,y,w,h,c)=>{g.fillStyle(c);g.fillRect(x,y,w,h)};
    // The District has independent floor layers; only interiors need this flat base.
@@ -1264,7 +1264,20 @@ if (!window.Phaser) {
     this.avatarSprite.setFrame(frame);
    };
    this.drawAvatar('down',0);
-   const pos=this.spawn||(this.place==='district'?{x:196,y:406}:{x:480,y:340});
+   // Portal arrivals use the DESTINATION teleporter's current asset layout,
+   // not the shared (480,340) room entrance spawn. Align the player's feet
+   // with the bottom of the destination stairs; both spots leave the central
+   // steps unblocked and a narrow escape aisle open to the right.
+   const portalArrival=this.spawn?.at==='teleport-front';
+   const portalAsset=portalArrival
+    ?(this.place==='lab'?this.labAssetLayout
+      :this.place==='workshop'?this.workshopAssetLayout:null)
+      ?.find(item=>item.name==='teleport')
+    :null;
+   const pos=portalAsset
+    ?{x:portalAsset.x+portalAsset.w/2,
+      y:portalAsset.y+(this.place==='lab'?220:229)}
+    :(this.spawn||(this.place==='district'?{x:196,y:406}:{x:480,y:340}));
    this.player=this.add.container(pos.x,pos.y,[avatarShadow,this.avatarSprite]);
    // Baio stays in front of every NPC, neon glow, lamp post and night tint.
    // Only UI and dialogue overlays may cover the player.
@@ -1539,6 +1552,11 @@ if (!window.Phaser) {
   }
   interact(){
    if(this.changing||this.journalOpen)return;
+   // A held E/Space after arrival must not teleport straight back.
+   // Moving/interacting normally is unchanged once those keys are released.
+   if(this.teleportArrivalLocked&&this.near?.to&&
+      ((this.place==='lab'&&this.near.to==='workshop')||
+       (this.place==='workshop'&&this.near.to==='lab')))return;
    if(this.readerObject){this.advanceReader();return}
    if(this.dialogNpc){
     if(this.dialogPage+1<this.dialogNpc.pages.length){this.dialogPage++;this.showDialogPage()}
@@ -1562,7 +1580,10 @@ if (!window.Phaser) {
     ? (exits[this.place]||exits.home)
     : this.place==='district'
       ? {x:480,y:388}
-      : {x:480,y:340};
+      : ((this.place==='lab'&&to==='workshop')||
+         (this.place==='workshop'&&to==='lab'))
+        ? {at:'teleport-front'}
+        : {x:480,y:340};
    this.cameras.main.fadeOut(240,0,0,0);
    this.cameras.main.once('camerafadeoutcomplete',()=>{
     this.scene.restart({place:to,spawn});
@@ -1733,6 +1754,10 @@ if (!window.Phaser) {
    if(this.roomGuard&&this.roomGuard.update)this.roomGuard.update(delta);
    // LAB teleport: use the stair rectangle for the player's FEET, including
    // the upper steps. No side interaction or circular fallback is allowed.
+   // On a teleporter arrival, wait for E/Space to be released before
+   // enabling the return portal. This avoids immediate key-repeat bounce.
+   if(this.teleportArrivalLocked&&!this.keys.E.isDown&&!this.keys.SPACE.isDown)
+    this.teleportArrivalLocked=false;
    const door=this.zones.find(z=>{
     if(this.place==='lab'&&z.to==='workshop'){
      const teleport=this.labAssetLayout?.find(item=>item.name==='teleport');
