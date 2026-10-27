@@ -81,14 +81,39 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  background:radial-gradient(ellipse at 50% 40%,#173a4a 0%,#0d2634 58%,#06121e 100%);
  color:#e6f5f2}
 #rules[hidden]{display:none}
-#rules .rules-panel{width:min(100%,800px);max-height:calc(100dvh - 24px);overflow-y:auto;
+#rules .rules-panel{width:min(100%,850px);max-height:calc(100dvh - 24px);overflow-y:auto;
  padding:clamp(18px,3.6vw,34px);
  background:linear-gradient(145deg,rgba(15,47,62,.98),rgba(7,24,37,.98));
  border:2px solid #66b8bd;box-shadow:0 0 0 5px #0b2533,0 15px 60px #030d17}
-#rules .rules-eyebrow{margin:0 0 9px;color:#81dade;font:700 12px monospace;letter-spacing:.24em}
-#rules h2{margin:0;font:900 clamp(24px,4vw,39px) monospace;letter-spacing:.08em;color:#fff4db}
-#rules h2 span{color:#91e0df}
-#rules .rules-intro{margin:10px 0 22px;color:#c5dedd;font:14px/1.5 monospace}
+#rules .rules-eyebrow{margin:0 0 8px;color:#81dade;font:700 12px monospace;letter-spacing:.24em}
+ /* Two-level futuristic HUD title: much larger than the old single-line heading.
+    The frame is decorative CSS so the title stays selectable and accessible. */
+#rules .rules-title-panel{position:relative;isolation:isolate;overflow:hidden;
+ padding:14px 24px 13px;margin-bottom:13px;
+ clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px));
+ border:1px solid #489da9;
+ background:linear-gradient(110deg,#071c2c 0%,#124254 53%,#071e30 100%);
+ box-shadow:inset 0 0 0 3px rgba(13,73,91,.75),0 0 19px rgba(56,222,234,.15)}
+#rules .rules-title-panel::before{content:"";position:absolute;top:0;left:22px;
+ width:40%;height:3px;background:#83faff;box-shadow:0 0 14px #3ce8f5}
+#rules .rules-title-panel::after{content:"";position:absolute;bottom:0;right:17px;
+ width:26%;height:3px;background:linear-gradient(90deg,transparent,#7be8ec);
+ box-shadow:0 0 11px rgba(123,232,236,.6)}
+#rules .rules-title-panel h2{display:flex;flex-direction:column;align-items:flex-start;gap:1px;
+ margin:0;font-family:monospace;font-weight:900;line-height:1.04;text-transform:uppercase}
+#rules .rules-title-primary{display:block;color:#f5feff;
+ font-size:clamp(43px,6.4vw,66px);letter-spacing:.12em;
+ text-shadow:3px 3px 0 #235068,0 0 15px rgba(119,243,249,.26)}
+#rules .rules-title-secondary{display:block;color:#86eef5;
+ font-size:clamp(29px,4.5vw,46px);letter-spacing:.047em;
+ text-shadow:2px 2px 0 #133b52,0 0 13px rgba(70,228,241,.29)}
+#rules .rules-title-status{display:flex;align-items:center;gap:10px;margin-top:10px;
+ padding-top:8px;border-top:1px solid rgba(119,235,245,.35);
+ font:700 10px monospace;letter-spacing:.13em;color:#7cd8e2}
+#rules .rules-title-status::before{content:"";display:block;width:32px;height:3px;
+ background:repeating-linear-gradient(90deg,#79f0fa 0 6px,transparent 6px 10px)}
+#rules .rules-title-status span:last-child{margin-left:auto;color:#c8eaea}
+#rules .rules-intro{margin:0 0 19px;color:#c5dedd;font:14px/1.5 monospace}
 #rules .rules-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 #rules .rule-item{padding:17px 13px;min-width:0;min-height:158px;
  background:rgba(24,66,81,.65);border:1px solid #508c9c;box-shadow:inset 0 3px #2b6a79}
@@ -116,6 +141,10 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 #loading .fill{height:100%;width:0;background:#83c5c5;transition:width .12s linear}
 @media(max-width:650px){#opening .profile{top:100px;left:var(--hud-margin);right:auto;text-align:left}#opening .brand{max-width:95%}#opening .scene{top:29%;left:4%;right:4%;bottom:26%}#opening .cta{bottom:40px}}
 @media(max-width:680px){
+ #rules .rules-title-panel{padding:12px 16px 11px;margin-bottom:11px}
+ #rules .rules-title-primary{font-size:clamp(34px,9vw,52px);letter-spacing:.07em}
+ #rules .rules-title-secondary{font-size:clamp(22px,6.3vw,36px);letter-spacing:.015em}
+ #rules .rules-title-status{margin-top:7px;font-size:9px}
  #rules .rules-grid{grid-template-columns:1fr;gap:8px}
  #rules .rule-item{min-height:0;padding:11px 14px}
  #rules h3{margin:3px 0 7px;font-size:15px}
@@ -126,6 +155,10 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 }
 @media(max-height:600px) and (min-width:681px){
  #rules .rules-panel{padding:16px 24px}
+ #rules .rules-title-panel{padding:8px 18px 8px;margin-bottom:8px}
+ #rules .rules-title-primary{font-size:clamp(40px,5vw,49px)}
+ #rules .rules-title-secondary{font-size:clamp(29px,3.7vw,36px)}
+ #rules .rules-title-status{margin-top:5px;padding-top:5px}
  #rules .rule-item{min-height:122px;padding:10px}
  #rules .rules-intro{margin:7px 0 12px}
  #rules .rules-touch{margin:10px 0}
@@ -195,7 +228,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.47 — TALK Portrait Corner Symmetry</span></footer>
+<footer><span></span><span>Prototype 16.48 — Futuristic Rules HUD Title</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -205,7 +238,10 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 <section id="rules" aria-labelledby="rulesTitle" tabindex="-1" hidden>
  <div class="rules-panel">
   <p class="rules-eyebrow">PLAYER GUIDE // SECTOR 2077</p>
-  <h2 id="rulesTitle">RULES <span>BEFORE PLAYING</span></h2>
+  <div class="rules-title-panel">
+   <h2 id="rulesTitle"><span class="rules-title-primary">RULES</span><span class="rules-title-secondary">BEFORE PLAYING</span></h2>
+   <div class="rules-title-status" aria-hidden="true"><span>CONTROL SYSTEM</span><span>READY / 2077</span></div>
+  </div>
   <p class="rules-intro">Learn the basic controls before exploring Baio's World.</p>
   <div class="rules-grid">
    <article class="rule-item">
