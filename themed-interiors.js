@@ -104,8 +104,18 @@ function renderThemedInterior(scene,place){
  fill(shell,918,39,14,455,0x132638);
  fill(shell,26,483,907,26,0x142a3c);
  fill(shell,43,488,875,9,0x375264);
- // Lit girders and consistent futuristic accent strips.
- for(const [x,y,w,h] of [[63,62,136,4],[747,61,145,4],[48,180,3,72],[910,180,3,72],[66,489,60,3],[839,489,60,3]]){
+ // Lit girders and futuristic accent strips.
+ // Contact Hub uses finished HD furniture textures: three old procedural
+ // strips were still showing ON TOP of them (one across the left bookshelf,
+ // two vertical bars beside the left/right counters). Omit only those three
+ // overlays here; keep them intact in the other interiors.
+ const trimStrips=[[63,62,136,4],[747,61,145,4],[48,180,3,72],[910,180,3,72],[66,489,60,3],[839,489,60,3]];
+ for(const [x,y,w,h] of trimStrips){
+  if(place==='hub'&&(
+   (x===63&&y===62) || // bookshelf: horizontal stripe
+   (x===48&&y===180) || // left counter: vertical stripe
+   (x===910&&y===180)   // right counter: vertical stripe
+  ))continue;
   fill(details,x-4,y-3,w+8,h+6,p.accent,.10);
   fill(details,x-2,y-1,w+4,h+2,p.accent,.24);
   fill(details,x,y,w,h,p.accent,.87);
