@@ -110,22 +110,10 @@ function renderHomeWithAssets(scene){
   {x:643,y:314,w:219,h:69},  // sofa frame (rug is walkable)
   {x:690,y:390,w:144,h:50}   // lounge coffee table moved southeast
  ];
- // 5. Low-profile EXIT doormat, laid on the floor just inside the door.
- // It is not neon signage, has no collision, and leaves the exit zone intact.
- const floorSign=scene.add.graphics().setDepth(1.15);
- floorSign.fillStyle(0x101b25,.25);floorSign.fillRoundedRect(433,450,96,26,3);
- floorSign.fillStyle(0x34434b,.96);floorSign.fillRoundedRect(433,445,94,27,3);
- floorSign.fillStyle(0x1a2934,.95);floorSign.fillRoundedRect(436,448,88,21,2);
- floorSign.lineStyle(1,0x71818a,.55);floorSign.strokeRoundedRect(434,446,92,25,3);
- // Tiny woven texture along both edges makes it read as a mat, not a UI panel.
- for(let xx=440;xx<520;xx+=7){
-  floorSign.fillStyle(0x72818a,.32);floorSign.fillRect(xx,450,3,1);
-  floorSign.fillRect(xx,466,3,1);
- }
- scene.add.text(480,452,'EXIT',{
-  fontFamily:'monospace',fontSize:'12px',fontStyle:'bold',
-  color:'#d9e4e2',stroke:'#172630',strokeThickness:1
- }).setOrigin(.5,0).setDepth(1.2);
+ // New transparent futuristic HOME EXIT mat (navy, blue and amber accents).
+ // The existing exit interaction zone is unchanged.
+ scene.add.image(480,444,'exit-pad-home-v1644')
+  .setOrigin(.5,0).setDisplaySize(110,35).setDepth(1.2);
  // Animated, non-text interaction beacons: cyan for the computer chair,
  // amber for Blueprint, and lime green for Design Notes on the coffee table.
  // Position is anchored to each object; the existing E / SPACE / tap gameplay

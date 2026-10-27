@@ -141,20 +141,10 @@ function renderThemedInterior(scene,place){
   fill(details,x+3,116,11,2,0xe1f5e8,.54);
  }
  }
- // HOME-style woven EXIT doormat, without a floating explanation.
- const mat=scene.add.graphics().setDepth(1.15);
- mat.fillStyle(0x101b25,.25);mat.fillRoundedRect(433,450,96,26,3);
- mat.fillStyle(0x34434b,.96);mat.fillRoundedRect(433,445,94,27,3);
- mat.fillStyle(0x1a2934,.95);mat.fillRoundedRect(436,448,88,21,2);
- mat.lineStyle(1,0x71818a,.55);mat.strokeRoundedRect(434,446,92,25,3);
- for(let xx=440;xx<520;xx+=7){
-  mat.fillStyle(0x72818a,.32);mat.fillRect(xx,450,3,1);
-  mat.fillRect(xx,466,3,1);
- }
- scene.add.text(480,452,'EXIT',{
-  fontFamily:'monospace',fontSize:'12px',fontStyle:'bold',
-  color:'#d9e4e2',stroke:'#172630',strokeThickness:1
- }).setOrigin(.5,0).setDepth(1.2);
+ // Contact Hub-specific futuristic EXIT floor mat with violet-magenta neon.
+ // Other room shell/furniture and the District EXIT zone are unchanged.
+ scene.add.image(480,444,'exit-pad-hub-v1644')
+  .setOrigin(.5,0).setDisplaySize(110,35).setDepth(1.2);
  scene.zones=[
   {x:480,y:450,r:48,label:'Return to Baio District',to:'district'}
  ];

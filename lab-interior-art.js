@@ -41,16 +41,10 @@ function renderHDLabInterior(scene){
   rect(detail,x,489,50,3,0x4de1e8,.18);
   rect(detail,x+9,489,35,2,0x8dfcff,.88);
  }
- // Exit is a physical doormat as in HOME, not explanatory wall text.
- const mat=scene.add.graphics().setDepth(1.2);
- mat.fillStyle(0x0c202e,.32);mat.fillRoundedRect(431,449,98,28,3);
- mat.fillStyle(0x384d55,.97);mat.fillRoundedRect(432,444,96,29,3);
- mat.fillStyle(0x172d3b,.99);mat.fillRoundedRect(436,448,88,21,2);
- mat.lineStyle(1,0x85bfc0,.7);mat.strokeRoundedRect(434,446,92,25,2);
- scene.add.text(480,452,'EXIT',{
-  fontFamily:'monospace',fontSize:'12px',fontStyle:'bold',color:'#ebffff',
-  stroke:'#112938',strokeThickness:1
- }).setOrigin(.5,0).setDepth(1.3);
+ // Futuristic aqua/cyan EXIT mat, rendered above the Lab floor.
+ // This is decorative only; the existing exit zone and collision are preserved.
+ scene.add.image(480,444,'exit-pad-lab-v1644')
+  .setOrigin(.5,0).setDisplaySize(110,35).setDepth(1.2);
  // Each image is a real PNG-origin transparent HD art asset, optimized as WebP.
  // Position and display size are isolated in this table for future fine tuning.
  // Chemical refrigerator and shelving stay 352x192 at X=39.

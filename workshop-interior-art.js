@@ -39,16 +39,10 @@ function renderHDWorkshopInterior(scene){
   rect(detail,x,489,50,3,0xff9e36,.18);
   rect(detail,x+9,489,35,2,0xffb967,.91);
  }
- // Same visible EXIT mat as Lab/Home, with orange accents.
- const mat=scene.add.graphics().setDepth(1.2);
- mat.fillStyle(0x0c202e,.32);mat.fillRoundedRect(431,449,98,28,3);
- mat.fillStyle(0x514943,.97);mat.fillRoundedRect(432,444,96,29,3);
- mat.fillStyle(0x24303b,.99);mat.fillRoundedRect(436,448,88,21,2);
- mat.lineStyle(1,0xffb068,.68);mat.strokeRoundedRect(434,446,92,25,2);
- scene.add.text(480,452,'EXIT',{
-  fontFamily:'monospace',fontSize:'12px',fontStyle:'bold',
-  color:'#fff0d9',stroke:'#111e2c',strokeThickness:1
- }).setOrigin(.5,0).setDepth(1.3);
+ // Futuristic industrial EXIT mat with workshop orange/amber neon.
+ // Keep the functional EXIT interaction zone and furniture collision untouched.
+ scene.add.image(480,444,'exit-pad-workshop-v1644')
+  .setOrigin(.5,0).setDisplaySize(126,35).setDepth(1.2);
 
  // Workshop-specific display sizes. Preserve each HD image's proportions;
  // the tool wall has a transparent top margin that is NOT solid collision.

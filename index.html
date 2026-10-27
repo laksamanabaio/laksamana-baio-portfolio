@@ -195,7 +195,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.43 — Lab Workshop Teleport Spawn Fix</span></footer>
+<footer><span></span><span>Prototype 16.44 — Futuristic Room-Themed EXIT Pads</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -240,11 +240,11 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 <section id="loading" role="status" aria-live="polite"><div><h2>INITIALIZING BAIO WORLD</h2><p>CONNECTING TO HOME // 2077</p><div class="track"><div class="fill" id="loadFill"></div></div><p id="loadText">Preparing your journey...</p></div></section>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
-<script src="./home-interior.js?v=11.8"></script>
-<script src="./home-interior-art.js?v=13.5"></script>
-<script src="./themed-interiors.js?v=16.42"></script>
-<script src="./lab-interior-art.js?v=15.91"></script>
-<script src="./workshop-interior-art.js?v=16.06"></script>
+<script src="./home-interior.js?v=16.44"></script>
+<script src="./home-interior-art.js?v=16.44"></script>
+<script src="./themed-interiors.js?v=16.44"></script>
+<script src="./lab-interior-art.js?v=16.44"></script>
+<script src="./workshop-interior-art.js?v=16.44"></script>
 <script src="./cyberpop-music.js?v=15.42"></script>
 <script>
 if (!window.Phaser) {
@@ -562,6 +562,12 @@ if (!window.Phaser) {
      portfolioLoadState.errors.push(file.key);
      document.getElementById('loadText').textContent='Some assets failed to load. Refresh to retry.';
     });
+   }
+   // Four owner-approved, room-themed transparent futuristic EXIT floor pads.
+   // Visual-only floor decals: existing EXIT zones and collision stay untouched.
+   for(const room of ['home','lab','workshop','hub']){
+    this.load.image('exit-pad-'+room+'-v1644',
+     './assets/exit/v1644/'+room+'.webp?v=16.44');
    }
    // 32 transparent frames extracted directly from the latest approved artwork:
    // down / up / left / right, with four idle poses and four walking poses each.
