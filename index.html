@@ -195,7 +195,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.45 — Futuristic Talk Interface</span></footer>
+<footer><span></span><span>Prototype 16.46 — Full-Width TALK Over HUD</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -297,6 +297,9 @@ if (!window.Phaser) {
     .map(el=>[el.dataset.building,el])
   );
   const syncHDMinimapIcons=scene=>{
+   // This SVG overlay sits above the Phaser canvas in the DOM; hide it
+   // during TALK so it cannot pierce through the full-width dialogue.
+   if(scene.dialogNpc){minimapHDLayer.hidden=true;return;}
    const canvas=scene.game.canvas,layout=scene.minimapLayout;
    if(!canvas||!layout||!scene.buildings)return;
    const screen=canvas.getBoundingClientRect();
@@ -1334,11 +1337,15 @@ if (!window.Phaser) {
     this.readerObject=null;this.readerPage=0;this.readerJustCompleted=false;
    if(this.place!=='district')this.createContentReader();
    if(this.place==='district'||this.roomGuard){
-    // Shared, fully dynamic NPC dialogue HUD: cyberpunk teal/blue metal
-    // rather than a screenshot, so portraits, names and text stay live.
+    // Shared responsive TALK HUD: the left edge equals the minimap bezel,
+    // right edge equals the TIME bezel and the bottom covers both HUDs.
+    // Minimap bottom is 7px below TIME, so the dialogue follows that edge
+    // to prevent any portion of the minimap from peeking out.
+    const dl=HUD_EDGE-4,dr=W-HUD_EDGE,dt=351,db=H-HUD_EDGE+7;
+    const dw=dr-dl,dh=db-dt;
+    const portraitX=dl+11,portraitY=dt+14,portraitW=117,portraitH=dh-27;
+    const textX=portraitX+portraitW+18;
     const frame=this.add.graphics().setScrollFactor(0).setDepth(210);
-    const dialogOutline=[[254,354],[925,354],[943,370],[943,493],
-     [929,507],[254,507],[241,494],[241,369]];
     const dialogPoly=(points,color,alpha=1,stroke=null,width=1)=>{
      const pts=points.map(([x,y])=>({x,y}));
      frame.fillStyle(color,alpha);frame.fillPoints(pts,true);
@@ -1346,73 +1353,90 @@ if (!window.Phaser) {
       frame.lineStyle(width,stroke,1);frame.strokePoints(pts,true);
      }
     };
-    // Dark translucent shadow, double neon outer frame and angled corners.
-    frame.fillStyle(0x020c16,.56);frame.fillRoundedRect(247,365,700,146,11);
-    frame.lineStyle(7,0x13c5ea,.14);frame.strokeRoundedRect(242,354,700,153,12);
-    dialogPoly(dialogOutline,0x071b2a,.985,0x41d9ee,2);
-    dialogPoly([[259,360],[919,360],[936,375],[936,489],[925,500],
-     [260,500],[249,490],[249,372]],0x0b2c42,.95,0x1f708a,1);
-    // High contrast conversation surface with understated scanlines.
-    frame.fillStyle(0x071f32,.97);frame.fillRoundedRect(366,403,560,73,3);
-    for(let yy=409;yy<472;yy+=7){
-     frame.fillStyle(0x4eb9cf,.045);frame.fillRect(372,yy,547,1);
+    // Single continuous, opaque sci-fi panel hides the mini map and TIME
+    // instead of sitting between them. The entire box is above HUD depth 117.
+    const outline=[[dl+12,dt],[dr-12,dt],[dr,dt+14],
+     [dr,db-14],[dr-14,db],[dl+12,db],[dl,db-13],[dl,dt+15]];
+    frame.fillStyle(0x010a14,.75);frame.fillRoundedRect(dl+2,dt+3,dw-4,dh-3,10);
+    frame.lineStyle(7,0x12b9e6,.14);frame.strokeRoundedRect(dl+3,dt+2,dw-6,dh-3,10);
+    dialogPoly(outline,0x071a2b,.995,0x54def5,2);
+    dialogPoly([[dl+16,dt+7],[dr-16,dt+7],[dr-7,dt+17],
+     [dr-7,db-17],[dr-18,db-8],[dl+17,db-8],
+     [dl+8,db-17],[dl+8,dt+18]],0x0b2b3e,.98,0x246a85,1);
+    // Legible dark dialogue surface with restrained cyberpunk scan lines.
+    frame.fillStyle(0x061c2e,1);
+    frame.fillRoundedRect(textX-8,dt+56,dr-textX-6,78,4);
+    for(let y=dt+63;y<dt+129;y+=7){
+     frame.fillStyle(0x66d5e7,.045);frame.fillRect(textX-2,y,dr-textX-19,1);
     }
-    frame.lineStyle(2,0x64eaff,.77);frame.lineBetween(367,404,925,404);
-    frame.lineStyle(1,0x3b97ac,.52);frame.lineBetween(371,475,919,475);
-    // Portrait inset with illuminated corners and a lower metallic lip.
-    frame.fillStyle(0x021421,.94);frame.fillRoundedRect(254,367,109,132,6);
-    frame.lineStyle(2,0x4beaff,.96);frame.strokeRoundedRect(257,371,101,124,5);
-    frame.fillStyle(0x143c50,.9);frame.fillRect(262,376,91,111);
-    frame.fillStyle(0x0a2437,.93);frame.fillRect(265,380,85,103);
-    frame.lineStyle(1,0x89f1f9,.48);frame.strokeRect(263,377,89,109);
-    frame.fillStyle(0x55e8f5,.95);
-    for(const [px,py] of [[259,373],[346,373],[259,487],[346,487]]){
-     frame.fillRect(px,py,10,3);frame.fillRect(px,py,3,9);
+    frame.lineStyle(2,0x6ae9f6,.80);
+    frame.lineBetween(textX-7,dt+56,dr-14,dt+56);
+    frame.lineStyle(1,0x359ab4,.55);
+    frame.lineBetween(textX-4,dt+134,dr-16,dt+134);
+    // NPC portrait window, shifted to the far-left end of the dialogue.
+    frame.fillStyle(0x02111e,1);frame.fillRoundedRect(portraitX-4,portraitY-4,portraitW+8,portraitH+8,6);
+    frame.lineStyle(2,0x5cefff,.98);frame.strokeRoundedRect(portraitX,portraitY,portraitW,portraitH,5);
+    frame.fillStyle(0x0b2b40,.98);frame.fillRect(portraitX+5,portraitY+5,portraitW-10,portraitH-10);
+    frame.lineStyle(1,0x9af7ff,.5);frame.strokeRect(portraitX+6,portraitY+6,portraitW-12,portraitH-12);
+    frame.fillStyle(0x5ee8f7,.95);
+    for(const [px,py] of [[portraitX+2,portraitY+2],
+     [portraitX+portraitW-12,portraitY+2],
+     [portraitX+2,portraitY+portraitH-5],
+     [portraitX+portraitW-12,portraitY+portraitH-5]]){
+     frame.fillRect(px,py,10,3);frame.fillRect(px,py,3,8);
     }
-    // Chamfered speaker-name tab, HUD status pips, and energy accents.
-    dialogPoly([[369,366],[582,366],[600,381],[585,397],[369,397],
-     [361,388],[361,376]],0x0a344a,.98,0x44e7f4,2);
-    frame.fillStyle(0x70f1f8,.85);frame.fillRect(373,368,155,2);
+    // Nameplate has room for longer NPC names, without crowding the text.
+    dialogPoly([[textX-9,dt+14],[textX+221,dt+14],
+     [textX+238,dt+30],[textX+221,dt+47],
+     [textX-9,dt+47],[textX-17,dt+38],[textX-17,dt+24]],
+     0x0a3549,.99,0x4ceaf6,2);
+    frame.fillStyle(0x75f2fc,.9);frame.fillRect(textX-3,dt+16,154,2);
     for(let k=0;k<4;k++){
-     dialogPoly([[607+k*17,381],[616+k*17,381],[624+k*17,389],
-      [615+k*17,389]],k===3?0x356578:0x65ddec,.8);
+     dialogPoly([[textX+248+k*17,dt+30],[textX+258+k*17,dt+30],
+      [textX+267+k*17,dt+38],[textX+257+k*17,dt+38]],
+      k===3?0x31627a:0x6ddce9,.82);
     }
-    frame.lineStyle(2,0x36c8e3,.76);frame.lineBetween(681,390,923,390);
+    frame.lineStyle(2,0x4dd8e9,.72);
+    frame.lineBetween(textX+340,dt+38,dr-15,dt+38);
     for(let k=0;k<3;k++){
-     frame.fillStyle(0x79eff9,k===0?1:.72);
-     frame.fillCircle(828+k*10,373,2.2);
+     frame.fillStyle(0x76f3fb,k===0?1:.7);
+     frame.fillCircle(dr-105+k*10,dt+19,2.2);
     }
-    // Gamepad-style button legends, kept below the readable dialogue lines.
-    dialogPoly([[732,477],[837,477],[846,486],[837,497],[732,497],
-     [723,487]],0x083750,.97,0x3eddf0,1.3);
-    frame.fillStyle(0x105070,.68);frame.fillRect(733,479,102,2);
-    dialogPoly([[858,477],[912,477],[922,485],[922,491],[912,498],
-     [858,498],[851,490],[851,485]],0x0d3145,.97,0x45cada,1.1);
-    frame.fillStyle(0x70eaff,.92);frame.fillRect(251,500,36,2);
-    frame.fillStyle(0x70eaff,.92);frame.fillRect(896,500,32,2);
+    // Wide key legend/action controls stay below the dialogue surface.
+    const hintLeft=dr-219,hintRight=dr-115,actionLeft=dr-107;
+    dialogPoly([[hintLeft+8,db-37],[hintRight-8,db-37],[hintRight,db-27],
+     [hintRight-8,db-12],[hintLeft+8,db-12],[hintLeft,db-25]],
+     0x08394f,.98,0x4be4f4,1.5);
+    frame.fillStyle(0x185773,.72);frame.fillRect(hintLeft+14,db-35,73,2);
+    dialogPoly([[actionLeft+7,db-37],[dr-19,db-37],[dr-10,db-27],
+     [dr-10,db-19],[dr-19,db-12],[actionLeft+7,db-12],
+     [actionLeft,db-22],[actionLeft,db-28]],0x0b3548,.98,0x4ee0f1,1.4);
+    frame.fillStyle(0x72eeff,.9);frame.fillRect(dl+12,db-9,32,2);
+    frame.fillStyle(0x72eeff,.9);frame.fillRect(dr-47,db-9,32,2);
     frame.setVisible(false);
     this.dialogFrame=frame;
-    // Preserve the existing in-world NPC sprite as the portrait.
-    this.dialogAvatar=this.add.sprite(307,433,'npc-young-man',0)
-     .setOrigin(.5,.52).setScale(.48).setScrollFactor(0).setDepth(211).setVisible(false);
-    this.dialogName=this.add.text(375,372,'',{
+    // Preserve the actual NPC portrait, not a static screenshot.
+    this.dialogAvatar=this.add.sprite(portraitX+portraitW/2,portraitY+portraitH/2,
+     'npc-young-man',0).setOrigin(.5,.52).setScale(.48)
+     .setScrollFactor(0).setDepth(211).setVisible(false);
+    this.dialogName=this.add.text(textX+1,dt+20,'',{
      fontFamily:'monospace',fontSize:'20px',fontStyle:'bold',
-     color:'#e8ffff',stroke:'#08394b',strokeThickness:2
+     color:'#ecffff',stroke:'#08394b',strokeThickness:2
     }).setScrollFactor(0).setDepth(212).setVisible(false);
-    this.dialogText=this.add.text(374,413,'',{
+    this.dialogText=this.add.text(textX,dt+64,'',{
      fontFamily:'monospace',fontSize:'19px',fontStyle:'bold',
-     color:'#f2fbff',lineSpacing:5,wordWrap:{width:533,useAdvancedWrap:true},
+     color:'#f3fcff',lineSpacing:5,
+     wordWrap:{width:dr-textX-22,useAdvancedWrap:true},
      stroke:'#092538',strokeThickness:1
     }).setScrollFactor(0).setDepth(212).setVisible(false);
-    // The keyboard hint and NEXT/CLOSE action remain live across pages.
-    this.dialogNext=this.add.text(785,487,'E / SPACE',{
-     fontFamily:'monospace',fontSize:'13px',fontStyle:'bold',color:'#d6faff'
+    this.dialogNext=this.add.text((hintLeft+hintRight)/2,db-25,'E / SPACE',{
+     fontFamily:'monospace',fontSize:'13px',fontStyle:'bold',color:'#d9faff'
     }).setOrigin(.5).setScrollFactor(0).setDepth(212).setVisible(false);
-    this.dialogAction=this.add.text(886,487,'CLOSE  ×',{
+    this.dialogAction=this.add.text((actionLeft+dr-10)/2,db-25,'CLOSE ×',{
      fontFamily:'monospace',fontSize:'12px',fontStyle:'bold',color:'#edfaff'
     }).setOrigin(.5).setScrollFactor(0).setDepth(212).setVisible(false);
-    this.dialogPageIndicator=this.add.text(920,369,'',{
-     fontFamily:'monospace',fontSize:'11px',color:'#8cdeea',fontStyle:'bold'
+    this.dialogPageIndicator=this.add.text(dr-18,dt+15,'',{
+     fontFamily:'monospace',fontSize:'11px',fontStyle:'bold',color:'#a2e5ef'
     }).setOrigin(1,0).setScrollFactor(0).setDepth(212).setVisible(false);
     // Place the lower edge of the hint ABOVE the entire head silhouette:
     // NPCs use 0.56 scale and share Baio's boot-level anchor. Keep the hint
@@ -1627,6 +1651,8 @@ if (!window.Phaser) {
   closeDialog(){
    this.dialogNpc=null;
    this.dialogPage=0;
+   // The next minimap redraw restores browser-rendered landmark icons.
+   if(this.place==='district')this.minimapHDLayoutKey=null;
    for(const obj of [this.dialogFrame,this.dialogAvatar,this.dialogName,this.dialogText,this.dialogNext,this.dialogAction,this.dialogPageIndicator])if(obj)obj.setVisible(false);
   }
   interact(){
@@ -1646,6 +1672,7 @@ if (!window.Phaser) {
    if(this.near.object){this.openReader(this.near.object);return}
    if(this.near.npc){
     this.dialogNpc=this.near.npc;
+    if(this.place==='district')minimapHDLayer.hidden=true;
     this.dialogPage=0;
     for(const obj of [this.dialogFrame,this.dialogAvatar,this.dialogName,this.dialogText,this.dialogNext,this.dialogAction,this.dialogPageIndicator])obj.setVisible(true);
     if(this.npcHint)this.npcHint.setVisible(false);
