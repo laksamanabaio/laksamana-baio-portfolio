@@ -228,7 +228,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.54 — Seven Quest Missions & Futuristic Journal</span></footer>
+<footer><span></span><span>Prototype 16.55 — Clean HD Futuristic Quest Journal</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -1541,7 +1541,9 @@ if (!window.Phaser) {
    g.fillStyle(0xfad58c,.92);g.fillRect(last,yy,seg,2);
   }
   createJourneyHUD(newDiscovery=false){
-   // Quest HUD and modal rebuild from the same seven real-object flags.
+   // Seven original quests and their persistent flags are unchanged.
+   // Rebuild the HUD after each completed interaction without covering
+   // the game with overlapping quest labels or miniature type.
    if(this.journeyUIObjects)for(const obj of this.journeyUIObjects)if(obj&&obj.active)obj.destroy();
    const startIndex=this.children.list.length;
    const completed=visitedStops.size,total=JOURNEY_STOPS.length;
@@ -1552,10 +1554,10 @@ if (!window.Phaser) {
    this.add.text(x+chipW/2,y+6,'QUEST',{
     fontFamily:'monospace',fontSize:'12px',fontStyle:'bold',color:'#ffffff'
    }).setOrigin(.5,0).setScrollFactor(0).setDepth(105);
-   // Seven discrete indicators fit inside the existing 204px quest widget.
+   // Keep the compact existing quest widget, now with 7 real progress pips.
    for(let i=0;i<total;i++){
     const bx=x+16+i*25,done=visitedStops.has(JOURNEY_STOPS[i].id);
-    g.fillStyle(done?0x8de9c9:0x365d6a,1);
+    g.fillStyle(done?0x8de9c9:0x365d6a);
     g.fillRoundedRect(bx,y+31,18,6,2);
     if(done){g.fillStyle(0xe0fff4,.85);g.fillRect(bx+3,y+32,12,1);}
    }
@@ -1567,87 +1569,92 @@ if (!window.Phaser) {
    }).setOrigin(1,0).setScrollFactor(0).setDepth(105);
    this.journeyBounds={x,y,w:chipW,h:chipH};
 
-   // Wide neon HUD modal; missions are grouped by building for fast scanning.
+   // Simple high-resolution quest modal. Clear spacing, full-size labels,
+   // restrained neon accents and a one-line help note.
    const objects=[],add=obj=>{objects.push(obj);return obj};
    const frame=add(this.add.graphics().setScrollFactor(0).setDepth(301));
-   const write=(tx,ty,body,size,color,bold=false,originX=0)=>{
-    return add(this.add.text(tx,ty,body,{
-     fontFamily:'monospace',fontSize:size+'px',fontStyle:bold?'bold':'normal',
-     color,stroke:bold?'#071928':undefined,strokeThickness:bold?1:0
-    }).setOrigin(originX,0).setScrollFactor(0).setDepth(302));
+   const write=(tx,ty,body,size,color,bold=false,originX=0,mono=false)=>{
+    const label=this.add.text(tx,ty,body,{
+     fontFamily:mono?'monospace':'Arial, sans-serif',
+     fontSize:size+'px',fontStyle:bold?'bold':'normal',color
+    }).setResolution(2).setOrigin(originX,0).setScrollFactor(0).setDepth(302);
+    return add(label);
    };
-   const rect=(rx,ry,rw,rh,color,alpha=1)=>{
-    frame.fillStyle(color,alpha);frame.fillRoundedRect(rx,ry,rw,rh,5);
+   const fill=(rx,ry,rw,rh,color,radius=6)=>{
+    frame.fillStyle(color);frame.fillRoundedRect(rx,ry,rw,rh,radius);
    };
-   const border=(rx,ry,rw,rh,color,width=1,alpha=1)=>{
-    frame.lineStyle(width,color,alpha);frame.strokeRoundedRect(rx,ry,rw,rh,5);
+   const line=(rx,ry,rw,rh,color,opacity=.75)=>{
+    frame.lineStyle(1,color,opacity);frame.strokeRoundedRect(rx,ry,rw,rh,6);
    };
-   // Dim the world, then draw a double-bordered polygonal command center.
-   frame.fillStyle(0x020b15,.83);frame.fillRect(0,0,W,H);
-   frame.fillStyle(0x0c2636,1);frame.fillRoundedRect(72,37,816,472,12);
-   frame.lineStyle(3,0x2aaec7,.8);frame.strokeRoundedRect(72,37,816,472,12);
-   frame.lineStyle(1,0x83f6ff,.7);frame.strokeRoundedRect(78,43,804,460,9);
-   frame.fillStyle(0x143f52,.70);frame.fillRoundedRect(84,49,792,77,7);
-   frame.fillStyle(0x5aeaff,.92);frame.fillRect(103,49,154,3);
-   frame.fillStyle(0x5aeaff,.72);frame.fillRect(731,49,126,3);
-   for(let k=0;k<4;k++){
-    frame.fillStyle(k===0?0xb9fcff:0x3b9ab3,.86);
-    frame.fillRect(825+k*9,67,5,3);
-   }
-   write(105,59,'DISTRICT QUEST LOG',27,'#effaff',true);
-   write(107,99,'MISSION CONTROL   //   4 LOCATIONS   //   7 INTERACTIONS',12,'#9ed6df');
-   write(855,102,String(completed).padStart(2,'0')+' / 07 COMPLETE',12,
-    earned?'#f7d68e':'#b7f9eb',true,1);
-   rect(103,137,754,9,0x123b4d);
-   rect(103,137,754*completed/total,9,earned?0xf5d18a:0x67e7da);
-   frame.fillStyle(0xe9ffff,.65);frame.fillRect(103,137,754*completed/total,2);
+   // Opaque navy surface avoids underlying HUDs bleeding through.
+   frame.fillStyle(0x020a13,.84);frame.fillRect(0,0,W,H);
+   fill(71,34,818,472,0x071c2a,12);
+   frame.lineStyle(2,0x409aaf,.95);frame.strokeRoundedRect(71,34,818,472,12);
+   frame.lineStyle(1,0x294c61,.84);frame.strokeRoundedRect(77,40,806,460,9);
+   frame.fillStyle(0x65dce8,.90);frame.fillRect(104,43,64,3);
+   // Header: title, short explanation, count and close hint have their
+   // own horizontal regions; no overlapping accents or status indicators.
+   write(105,55,'QUEST JOURNAL',27,'#f0fbff',true);
+   write(106,96,'7 missions across 4 locations',14,'#a4cad4');
+   write(852,56,String(completed).padStart(2,'0')+' / 07',22,
+    earned?'#f4d293':'#9deee0',true,1,true);
+   write(852,98,'Q / ESC / TAP TO CLOSE',11,'#b4d5de',true,1,true);
+   fill(104,129,752,8,0x15374a,4);
+   if(completed>0)fill(104,129,752*completed/total,8,earned?0xf0c986:0x6cdec9,4);
 
-   // 2 × 2 dashboard: three Home tasks, two Laboratory tasks and
-   // one task each for Workshop and Contact Hub.
-   const renderGroup=(group,x0,y0,w,h,number)=>{
-    const tasks=JOURNEY_STOPS.filter(task=>task.room===group.id);
-    const done=tasks.filter(task=>visitedStops.has(task.id)).length;
-    rect(x0,y0,w,h,0x102e40,1);
-    border(x0,y0,w,h,group.accent,1,.76);
-    frame.fillStyle(group.accent,.85);frame.fillRect(x0+2,y0+2,5,h-4);
-    frame.fillStyle(group.accent,.17);frame.fillRect(x0+9,y0+8,w-18,25);
-    write(x0+18,y0+12,String(number).padStart(2,'0')+' / '+group.name,
-     16,'#f0faff',true);
-    write(x0+w-15,y0+15,done+' / '+tasks.length,12,done===tasks.length?'#9df8cd':'#b4d9df',true,1);
-    tasks.forEach((task,i)=>{
-     const rowY=y0+(tasks.length===1?34:39)+i*38,finished=visitedStops.has(task.id);
-     rect(x0+15,rowY,w-30,35,finished?0x194a48:0x0a2434);
-     border(x0+15,rowY,w-30,35,finished?0x66caa6:0x37697d,1,.6);
-     frame.fillStyle(finished?0x69dfb0:0x24485b,.95);
-     frame.fillRoundedRect(x0+23,rowY+9,20,18,4);
-     write(x0+33,rowY+8,finished?'✓':'·',15,
-      finished?'#082c30':'#b7e3e7',true,.5);
-     write(x0+53,rowY+3,task.name,14,'#f3faff',true);
-     write(x0+53,rowY+20,finished?'COMPLETED':task.hint,10,
-      finished?'#9bdfc5':'#a5ced8');
+   // Exactly four calm room cards. All mission rows share a fixed 40px
+   // height; nothing floats over the card headings or neighbouring cards.
+   const renderRoom=(group,left,top,width,height,number)=>{
+    const quests=JOURNEY_STOPS.filter(task=>task.room===group.id);
+    const doneCount=quests.filter(task=>visitedStops.has(task.id)).length;
+    fill(left,top,width,height,0x102a3b,7);
+    line(left,top,width,height,0x3d7384,.74);
+    frame.fillStyle(group.accent,.92);frame.fillRoundedRect(left+1,top+12,4,height-24,2);
+    write(left+17,top+11,String(number).padStart(2,'0')+'  '+group.name,17,'#edfaff',true);
+    write(left+width-15,top+14,doneCount+' / '+quests.length,13,
+     doneCount===quests.length?'#9decc9':'#bdd7df',true,1,true);
+    frame.lineStyle(1,0x356075,.78);
+    frame.lineBetween(left+17,top+37,left+width-17,top+37);
+    quests.forEach((task,i)=>{
+     const compact=quests.length===1;
+     const rowY=top+(compact?42:45)+i*44,rowH=compact?32:40;
+     const finished=visitedStops.has(task.id);
+     fill(left+13,rowY,width-26,rowH,finished?0x19433e:0x0c2332,4);
+     const dotX=left+28,dotY=rowY+rowH/2;
      if(finished){
-      frame.fillStyle(0x70e8ba,.85);
-      frame.fillRect(x0+w-32,rowY+6,8,2);
+      frame.fillStyle(0x82dfb4);frame.fillCircle(dotX,dotY,8);
+      frame.lineStyle(2,0x0b3434);
+      frame.lineBetween(dotX-4,dotY,dotX-1,dotY+3);
+      frame.lineBetween(dotX-1,dotY+3,dotX+5,dotY-4);
+     }else{
+      frame.lineStyle(1.5,0x779faf,.9);
+      frame.strokeCircle(dotX,dotY,6);
      }
+     write(left+44,rowY+(compact?6:4),task.name,16,'#f2fbff',true);
+     // No tiny supporting text in single-mission cards; keep space for
+     // an unambiguous, right-aligned completion label.
+     if(!compact)write(left+44,rowY+23,finished?'Mission complete':task.hint,
+      12,finished?'#a8dfc8':'#b1cbd3');
+     write(left+width-23,rowY+(compact?9:13),finished?'DONE':'TO DO',
+      12,finished?'#96e5bc':'#aacbd4',true,1,true);
     });
    };
-   renderGroup(JOURNEY_GROUPS[0],103,160,368,176,1);
-   renderGroup(JOURNEY_GROUPS[1],489,160,368,176,2);
-   renderGroup(JOURNEY_GROUPS[2],103,345,368,72,3);
-   renderGroup(JOURNEY_GROUPS[3],489,345,368,72,4);
+   renderRoom(JOURNEY_GROUPS[0],104,155,367,194,1);
+   renderRoom(JOURNEY_GROUPS[1],489,155,367,194,2);
+   renderRoom(JOURNEY_GROUPS[2],104,360,367,80,3);
+   renderRoom(JOURNEY_GROUPS[3],489,360,367,80,4);
 
-   // Helpful note: players can speak with nearby NPCs for guidance.
-   rect(103,427,754,56,0x163747,.98);
-   border(103,427,754,56,0x5ecbda,1,.77);
-   frame.fillStyle(0x69ecf2,.85);frame.fillRect(104,428,5,54);
-   write(119,434,'NOTES  /  NEED HELP?',14,'#c5fbff',true);
-   write(119,452,'Forgot what to do? Ask nearby NPCs for hints. Press E / SPACE to talk.',12,'#e0f2f3');
-   write(479,490,earned?'✦ BAIO DISTRICT EXPLORER UNLOCKED ✦':'Q / ESC / TAP ANYWHERE TO CLOSE',
-    12,earned?'#f5d98e':'#9dd3d9',true,.5);
+   // Compact single-line note; no overlapping footer under the cards.
+   fill(104,451,752,40,0x123545,5);
+   line(104,451,752,40,0x366f83,.78);
+   frame.fillStyle(0x5adce6);frame.fillRoundedRect(104,459,4,24,2);
+   write(119,462,'TIP',14,'#85eaf0',true);
+   write(162,463,'Need help? Talk to nearby NPCs with E / Space.',14,'#e4f3f7');
+
+   // Journal can always close with Q, Escape or a screen tap.
    this.journalObjects=objects;
    for(const obj of objects)obj.setVisible(false);
    this.journeyUIObjects=this.children.list.slice(startIndex);
-   // Show only the newly completed task, even if multiple tasks share a room.
    if(newDiscovery){
     const stop=JOURNEY_STOPS.find(task=>task.id===newDiscovery);
     const msg=earned?'✦ BADGE UNLOCKED: BAIO DISTRICT EXPLORER':
@@ -1655,7 +1662,7 @@ if (!window.Phaser) {
     const toast=this.add.text(W/2,127,msg,{
      fontFamily:'monospace',fontSize:'16px',fontStyle:'bold',color:'#e4f7e8',
      backgroundColor:'#1b5654',padding:{x:16,y:10}
-    }).setOrigin(.5).setScrollFactor(0).setDepth(150);
+    }).setResolution(2).setOrigin(.5).setScrollFactor(0).setDepth(150);
     this.tweens.add({targets:toast,alpha:0,delay:1850,duration:500,onComplete:()=>toast.destroy()});
    }
   }
