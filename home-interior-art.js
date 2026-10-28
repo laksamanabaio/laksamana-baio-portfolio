@@ -113,7 +113,7 @@ function renderHomeWithAssets(scene){
  // New transparent futuristic HOME EXIT mat (navy, blue and amber accents).
  // The existing exit interaction zone is unchanged.
  scene.add.image(480,444,'exit-pad-home-v1644')
-  .setOrigin(.5,0).setDisplaySize(110,35).setDepth(1.2);
+  .setOrigin(.5,0).setDisplaySize(120,38).setDepth(1.2);
  // Animated, non-text interaction beacons: cyan for the computer chair,
  // amber for Blueprint, and lime green for Design Notes on the coffee table.
  // Position is anchored to each object; the existing E / SPACE / tap gameplay

@@ -296,7 +296,7 @@ function renderHomeInterior(scene){
  GL(419,481,3,19,0xf9ad61);GL(538,481,3,19,0xf9ad61);
  // Match the approved futuristic HOME EXIT mat even in the fallback renderer.
  scene.add.image(480,444,'exit-pad-home-v1644')
-  .setOrigin(.5,0).setDisplaySize(110,35).setDepth(1.2);
+  .setOrigin(.5,0).setDisplaySize(120,38).setDepth(1.2);
  // 10. Interaction radii are based on the new furniture positions.
  // Home computer completes its quest; book and blueprint are optional reading.
  scene.zones=[
