@@ -41,8 +41,8 @@ function renderHDWorkshopInterior(scene){
  }
  // Futuristic industrial EXIT mat with workshop orange/amber neon.
  // Keep the functional EXIT interaction zone and furniture collision untouched.
- scene.add.image(480,444,'exit-pad-workshop-v1644')
-  .setOrigin(.5,0).setDisplaySize(126,35).setDepth(1.2);
+ scene.add.image(480,440,'exit-pad-workshop-v1644')
+  .setOrigin(.5,0).setDisplaySize(152,43).setDepth(1.2);
 
  // Workshop-specific display sizes. Preserve each HD image's proportions;
  // the tool wall has a transparent top margin that is NOT solid collision.
