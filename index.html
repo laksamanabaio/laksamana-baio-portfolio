@@ -1794,8 +1794,7 @@ if (!window.Phaser) {
     [245,347,'W',12,'#d9faff'],
     [165,381,'NOT TO SCALE',9,'#7dcbdf'],
     [326,178,'FIELD NOTES   /   INTERACTIVE PORTFOLIO',10,'#8fcadf'],
-    [141,437,'B-2077  /  SITE SCHEMATIC 01',11,'#b0edff'],
-    [820,437,'DESIGN RECORD  //  2077',11,'#b0edff']
+    [141,437,'B-2077  /  SITE SCHEMATIC 01',11,'#b0edff']
    ].map(([xx,yy,label,size,color])=>add(this.add.text(xx,yy,label,{
     fontFamily:'monospace',fontSize:size+'px',color,
     fontStyle:size>=12?'bold':'normal'
@@ -1877,6 +1876,10 @@ if (!window.Phaser) {
    this.readerTitle.setColor(isBlueprint?'#edfcff':'#f4e8d5');
    this.readerSubtitle.setColor(isBlueprint?'#99dcf7':'#a8dad2');
    this.readerBody.setColor(isBlueprint?'#edfaff':'#e8efe6');
+   // The blueprint's small field-notes caption is above the body;
+   // move text below it to preserve a generous visual separation.
+   this.readerBody.setY(isBlueprint?207:189);
+   this.readerBody.setLineSpacing(isBlueprint?8:10);
    this.syncReaderControlLabels();
    gameControls.classList.add('reader-open');
   }
