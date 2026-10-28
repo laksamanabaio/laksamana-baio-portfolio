@@ -17,6 +17,9 @@ main:fullscreen{width:100%;height:100%;background:#091923}
 #gameControls{position:absolute;top:0;left:0;transform-origin:top left;
  z-index:30;display:flex;align-items:center;gap:10px}
 #gameControls[hidden]{display:none}
+/* The reader draws its own actionable music/fullscreen buttons into the
+   Phaser canvas. Hide the duplicate DOM bar only while the reader is open. */
+#gameControls.reader-open{visibility:hidden}
 #gameControls button{height:38px;display:inline-flex;align-items:center;
  justify-content:center;gap:7px;padding:7px 11px;white-space:nowrap;
  cursor:pointer;border:2px solid #6e9daa;border-radius:6px;
@@ -228,7 +231,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.57 — Aligned Quest HUD Margins</span></footer>
+<footer><span></span><span>Prototype 16.58 — Interactive Blueprint Reader & Popup Controls</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -1509,7 +1512,23 @@ if (!window.Phaser) {
    this.input.keyboard.on('keydown-Q',()=>this.toggleJourney());
    this.input.keyboard.on('keydown-ESC',()=>{if(this.readerObject)this.closeReader();else if(this.journalOpen)this.toggleJourney(false)});
    this.input.on('pointerdown',pointer=>{
-    if(this.readerObject){this.advanceReader();return}
+    if(this.readerObject){
+     // These are true buttons, not decorative text. Handle taps separately
+     // so they do not turn pages in the content reader.
+     if(pointer.y>=97&&pointer.y<=129){
+      if(pointer.x>=550&&pointer.x<=667){
+       if(window.CyberpopMusic)window.CyberpopMusic.toggle();
+       this.syncReaderControlLabels();
+       return;
+      }
+      if(pointer.x>=676&&pointer.x<=822){
+       document.getElementById('fullscreenToggle').click();
+       this.syncReaderControlLabels();
+       return;
+      }
+     }
+     this.advanceReader();return;
+    }
     if(this.journalOpen){this.toggleJourney(false);return}
     const b=this.journeyBounds;
     if(pointer.x>=b.x&&pointer.x<=b.x+b.w&&pointer.y>=b.y&&pointer.y<=b.y+b.h){
@@ -1680,6 +1699,7 @@ if (!window.Phaser) {
   createContentReader(){
    const station=PORTFOLIO_STATIONS[this.place];
    const elements=[],add=obj=>{elements.push(obj);return obj};
+   // Generic readable archive panel for ordinary portfolio interactions.
    const g=add(this.add.graphics().setScrollFactor(0).setDepth(250));
    g.fillStyle(0x071824,.95);g.fillRect(0,0,W,H);
    g.fillStyle(0x133342);g.fillRoundedRect(104,70,752,406,12);
@@ -1694,27 +1714,143 @@ if (!window.Phaser) {
    g.fillStyle(0xd9f1e7);g.fillRect(161,285,42,5);
    g.fillStyle(0x5d7883);g.fillRect(204,316,18,24);
    g.fillStyle(0x9cb7b3);g.fillRect(178,340,70,8);
+   this.readerGenericBackground=g;
+
+   // Blueprint interaction uses a genuinely distinct technical drawing.
+   // No screenshot overlays: the schematic is drawn as crisp Phaser vectors
+   // so content, page navigation, and resolution scaling still work.
+   const blueprint=add(this.add.graphics().setScrollFactor(0).setDepth(251));
+   const cyan=0x86eeff,blue=0x3f8ab6,deep=0x082743;
+   blueprint.fillStyle(0x03101f,.93);blueprint.fillRect(0,0,W,H);
+   blueprint.fillStyle(deep);blueprint.fillRoundedRect(104,70,752,406,6);
+   blueprint.lineStyle(2,cyan,.9);blueprint.strokeRoundedRect(104,70,752,406,6);
+   blueprint.lineStyle(1,0x29668b,.7);blueprint.strokeRoundedRect(112,78,736,390,4);
+   // Grid at 24px, with major structural lines every four cells.
+   for(let x=128,i=0;x<=833;x+=24,i++){
+    blueprint.lineStyle(i%4===0?1.2:.6,blue,i%4===0?.27:.12);
+    blueprint.lineBetween(x,82,x,463);
+   }
+   for(let y=84,i=0;y<=464;y+=24,i++){
+    blueprint.lineStyle(i%4===0?1.2:.6,blue,i%4===0?.27:.12);
+    blueprint.lineBetween(116,y,843,y);
+   }
+   blueprint.fillStyle(0x0d3e60,.86);blueprint.fillRect(125,90,710,67);
+   blueprint.lineStyle(1,cyan,.75);blueprint.lineBetween(125,159,835,159);
+   blueprint.fillStyle(0x082238,.91);blueprint.fillRect(126,173,174,233);
+   blueprint.lineStyle(1,cyan,.72);blueprint.strokeRect(126,173,174,233);
+   blueprint.fillStyle(0x072a48,.94);blueprint.fillRect(310,173,526,233);
+   blueprint.lineStyle(1,0x66bad6,.6);blueprint.strokeRect(310,173,526,233);
+   // A precise district site diagram, including an outlined fountain
+   // and four simple building footprints connected by walkways.
+   for(let col=1;col<6;col++){
+    blueprint.lineStyle(1,blue,.17);
+    blueprint.lineBetween(126+col*28,177,126+col*28,403);
+   }
+   for(let row=1;row<8;row++){
+    blueprint.lineStyle(1,blue,.17);
+    blueprint.lineBetween(129,178+row*27,297,178+row*27);
+   }
+   blueprint.lineStyle(3,0x80e6f5,.53);
+   blueprint.lineBetween(172,248,257,248);
+   blueprint.lineBetween(172,323,257,323);
+   blueprint.lineBetween(211,230,211,343);
+   blueprint.lineStyle(1,0xbaf5ff,.85);
+   blueprint.strokeCircle(211,286,25);
+   blueprint.strokeCircle(211,286,17);
+   blueprint.fillStyle(0x5eb9dc,.34);blueprint.fillCircle(211,286,14);
+   blueprint.lineStyle(1,cyan,.74);
+   blueprint.lineBetween(185,286,237,286);
+   blueprint.lineBetween(211,259,211,313);
+   const footprint=(x,y,w,h)=>{
+    blueprint.fillStyle(0x154463,.94);blueprint.fillRect(x,y,w,h);
+    blueprint.lineStyle(1.5,cyan,.88);blueprint.strokeRect(x,y,w,h);
+    blueprint.lineStyle(1,0x6fbfe0,.58);
+    blueprint.lineBetween(x+5,y+5,x+w-5,y+5);
+    blueprint.lineBetween(x+5,y+h-5,x+w-5,y+h-5);
+   };
+   footprint(143,202,49,32);
+   footprint(230,202,49,32);
+   footprint(143,339,49,32);
+   footprint(230,339,49,32);
+   blueprint.fillStyle(cyan,.84);blueprint.fillCircle(211,286,3);
+   blueprint.lineStyle(1,cyan,.84);
+   for(const [xx,yy] of [[132,179],[294,179],[132,400],[294,400]]){
+    blueprint.lineBetween(xx-4,yy,xx+4,yy);
+    blueprint.lineBetween(xx,yy-4,xx,yy+4);
+   }
+   blueprint.lineStyle(1,0x8be2f4,.58);
+   blueprint.lineBetween(126,419,836,419);
+   blueprint.fillStyle(0x0b3451,.92);blueprint.fillRect(126,425,710,40);
+   blueprint.lineStyle(1,0x4088ac,.84);blueprint.strokeRect(126,425,710,40);
+   blueprint.fillStyle(cyan,.8);blueprint.fillRect(127,425,55,2);
+   blueprint.fillRect(780,463,55,2);
+   this.readerBlueprintBackground=blueprint;
+
+   const blueprintLabels=[
+    [137,178,'SITE PLAN / 2077',11,'#c6f4ff'],
+    [157,210,'H',12,'#d9faff'],
+    [245,210,'L',12,'#d9faff'],
+    [156,347,'C',12,'#d9faff'],
+    [245,347,'W',12,'#d9faff'],
+    [165,381,'NOT TO SCALE',9,'#7dcbdf'],
+    [326,178,'FIELD NOTES   /   INTERACTIVE PORTFOLIO',10,'#8fcadf'],
+    [141,437,'B-2077  /  SITE SCHEMATIC 01',11,'#b0edff'],
+    [820,437,'DESIGN RECORD  //  2077',11,'#b0edff']
+   ].map(([xx,yy,label,size,color])=>add(this.add.text(xx,yy,label,{
+    fontFamily:'monospace',fontSize:size+'px',color,
+    fontStyle:size>=12?'bold':'normal'
+   }).setResolution(2).setOrigin(xx===820?1:0,0)
+    .setScrollFactor(0).setDepth(252)));
+   this.readerBlueprintLabels=blueprintLabels;
+
    this.readerTitle=add(this.add.text(138,97,station.title,{
     fontFamily:'monospace',fontSize:'26px',fontStyle:'bold',color:'#f4e8d5'
-   }).setScrollFactor(0).setDepth(252));
+   }).setResolution(2).setScrollFactor(0).setDepth(252));
    this.readerSubtitle=add(this.add.text(138,138,station.subtitle,{
     fontFamily:'monospace',fontSize:'13px',color:'#a8dad2'
-   }).setScrollFactor(0).setDepth(252));
+   }).setResolution(2).setScrollFactor(0).setDepth(252));
    this.readerBody=add(this.add.text(321,189,'',{
     fontFamily:'monospace',fontSize:'19px',color:'#e8efe6',lineSpacing:10,
     wordWrap:{width:492,useAdvancedWrap:true}
-   }).setScrollFactor(0).setDepth(252));
+   }).setResolution(2).setScrollFactor(0).setDepth(252));
    this.readerCount=add(this.add.text(817,145,'',{
     fontFamily:'monospace',fontSize:'14px',color:'#b6dcd7'
-   }).setOrigin(1,0).setScrollFactor(0).setDepth(252));
-   add(this.add.text(145,377,'PORTFOLIO ARCHIVE',{
+   }).setResolution(2).setOrigin(1,0).setScrollFactor(0).setDepth(252));
+   this.readerArchiveLabel=add(this.add.text(145,377,'PORTFOLIO ARCHIVE',{
     fontFamily:'monospace',fontSize:'11px',color:'#d7ece5'
    }).setScrollFactor(0).setDepth(252));
    this.readerNext=add(this.add.text(821,443,'',{
     fontFamily:'monospace',fontSize:'14px',color:'#f5dcaa'
-   }).setOrigin(1,.5).setScrollFactor(0).setDepth(252));
+   }).setResolution(2).setOrigin(1,.5).setScrollFactor(0).setDepth(252));
+
+   // Functional in-canvas audio/fullscreen buttons visible on EVERY reader,
+   // including screenshots of the Phaser canvas. The existing DOM controls
+   // are temporarily hidden only to prevent duplicated controls.
+   const controls=add(this.add.graphics().setScrollFactor(0).setDepth(253));
+   const controlBtn=(x,y,w,h)=>{
+    controls.fillStyle(0x0c3148,.98);controls.fillRoundedRect(x,y,w,h,5);
+    controls.lineStyle(1.5,0x6dddeb,.94);
+    controls.strokeRoundedRect(x,y,w,h,5);
+    controls.fillStyle(0x82f1ff,.55);controls.fillRect(x+9,y+4,w-18,2);
+   };
+   controlBtn(550,97,117,32);
+   controlBtn(676,97,146,32);
+   this.readerMusicLabel=add(this.add.text(608.5,104,'',{
+    fontFamily:'monospace',fontSize:'12px',fontStyle:'bold',color:'#e6faff'
+   }).setResolution(2).setOrigin(.5,0).setScrollFactor(0).setDepth(254));
+   this.readerFullscreenLabel=add(this.add.text(749,104,'',{
+    fontFamily:'monospace',fontSize:'12px',fontStyle:'bold',color:'#e6faff'
+   }).setResolution(2).setOrigin(.5,0).setScrollFactor(0).setDepth(254));
    this.readerElements=elements;
    for(const obj of elements)obj.setVisible(false);
+  }
+  syncReaderControlLabels(){
+   if(!this.readerMusicLabel)return;
+   const music=window.CyberpopMusic;
+   const musicLabel=music?(music.enabled?'♫ MUSIC ON':'♫ MUSIC OFF'):'MUSIC N/A';
+   const fsLabel=document.fullscreenElement?'EXIT FULLSCREEN':'FULLSCREEN';
+   if(this.readerMusicLabel.text!==musicLabel)this.readerMusicLabel.setText(musicLabel);
+   if(this.readerFullscreenLabel.text!==fsLabel)this.readerFullscreenLabel.setText(fsLabel);
   }
   updateReaderPage(){
    const station=PORTFOLIO_STATIONS[this.readerObject];
@@ -1733,6 +1869,16 @@ if (!window.Phaser) {
    this.lastJourneyDiscovery=this.readerJustCompleted?id:null;
    this.updateReaderPage();
    for(const obj of this.readerElements)obj.setVisible(true);
+   const isBlueprint=id==='home-blueprint';
+   this.readerGenericBackground.setVisible(!isBlueprint);
+   this.readerBlueprintBackground.setVisible(isBlueprint);
+   this.readerArchiveLabel.setVisible(!isBlueprint);
+   for(const label of this.readerBlueprintLabels)label.setVisible(isBlueprint);
+   this.readerTitle.setColor(isBlueprint?'#edfcff':'#f4e8d5');
+   this.readerSubtitle.setColor(isBlueprint?'#99dcf7':'#a8dad2');
+   this.readerBody.setColor(isBlueprint?'#edfaff':'#e8efe6');
+   this.syncReaderControlLabels();
+   gameControls.classList.add('reader-open');
   }
   advanceReader(){
    if(!this.readerObject)return;
@@ -1743,6 +1889,7 @@ if (!window.Phaser) {
   closeReader(){
    if(!this.readerObject)return;
    for(const obj of this.readerElements)obj.setVisible(false);
+   gameControls.classList.remove('reader-open');
    this.readerObject=null;this.readerPage=0;
    if(this.readerJustCompleted)this.createJourneyHUD(this.lastJourneyDiscovery);
    this.readerJustCompleted=false;this.lastJourneyDiscovery=null;
@@ -1844,6 +1991,7 @@ if (!window.Phaser) {
    }
    update(_,delta){
     this.updateWorldLighting(delta);
+    if(this.readerObject)this.syncReaderControlLabels();
    const k=this.keys;let x=0,y=0;
    if(k.A.isDown||k.LEFT.isDown||pressed.has('left'))x--;
    if(k.D.isDown||k.RIGHT.isDown||pressed.has('right'))x++;
