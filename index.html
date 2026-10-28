@@ -228,7 +228,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.55 — Clean HD Futuristic Quest Journal</span></footer>
+<footer><span></span><span>Prototype 16.56 — Taller Quest HUD Spacing</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -1548,7 +1548,7 @@ if (!window.Phaser) {
    const startIndex=this.children.list.length;
    const completed=visitedStops.size,total=JOURNEY_STOPS.length;
    const earned=completed===total;
-   const chipW=204,chipH=58,x=W-HUD_EDGE-chipW,y=HUD_EDGE;
+   const chipW=204,chipH=76,x=W-HUD_EDGE-chipW,y=HUD_EDGE;
    const g=this.add.graphics().setScrollFactor(0).setDepth(104);
    this.drawHudChassis(g,x,y,chipW,chipH,24);
    this.add.text(x+chipW/2,y+6,'QUEST',{
@@ -1561,10 +1561,10 @@ if (!window.Phaser) {
     g.fillRoundedRect(bx,y+31,18,6,2);
     if(done){g.fillStyle(0xe0fff4,.85);g.fillRect(bx+3,y+32,12,1);}
    }
-   this.add.text(x+17,y+43,completed+' / '+total,{
+   this.add.text(x+17,y+47,completed+' / '+total,{
     fontFamily:'monospace',fontSize:'10px',fontStyle:'bold',color:'#b7e7e6'
    }).setScrollFactor(0).setDepth(105);
-   this.add.text(x+chipW-14,y+43,'Q · OPEN',{
+   this.add.text(x+chipW-14,y+47,'Q · OPEN',{
     fontFamily:'monospace',fontSize:'10px',color:'#b7e7e6'
    }).setOrigin(1,0).setScrollFactor(0).setDepth(105);
    this.journeyBounds={x,y,w:chipW,h:chipH};
