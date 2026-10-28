@@ -1615,7 +1615,7 @@ if (!window.Phaser) {
      16,'#f0faff',true);
     write(x0+w-15,y0+15,done+' / '+tasks.length,12,done===tasks.length?'#9df8cd':'#b4d9df',true,1);
     tasks.forEach((task,i)=>{
-     const rowY=y0+39+i*38,finished=visitedStops.has(task.id);
+     const rowY=y0+(tasks.length===1?34:39)+i*38,finished=visitedStops.has(task.id);
      rect(x0+15,rowY,w-30,35,finished?0x194a48:0x0a2434);
      border(x0+15,rowY,w-30,35,finished?0x66caa6:0x37697d,1,.6);
      frame.fillStyle(finished?0x69dfb0:0x24485b,.95);
