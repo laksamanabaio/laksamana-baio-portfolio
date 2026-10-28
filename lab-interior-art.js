@@ -43,8 +43,8 @@ function renderHDLabInterior(scene){
  }
  // Futuristic aqua/cyan EXIT mat, rendered above the Lab floor.
  // This is decorative only; the existing exit zone and collision are preserved.
- scene.add.image(480,444,'exit-pad-lab-v1644')
-  .setOrigin(.5,0).setDisplaySize(132,39).setDepth(1.2);
+ scene.add.image(480,437,'exit-pad-lab-v1644')
+  .setOrigin(.5,0).setDisplaySize(132,46).setDepth(1.2);
  // Each image is a real PNG-origin transparent HD art asset, optimized as WebP.
  // Position and display size are isolated in this table for future fine tuning.
  // Chemical refrigerator and shelving stay 352x192 at X=39.
