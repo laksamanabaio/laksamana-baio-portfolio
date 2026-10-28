@@ -17,9 +17,6 @@ main:fullscreen{width:100%;height:100%;background:#091923}
 #gameControls{position:absolute;top:0;left:0;transform-origin:top left;
  z-index:30;display:flex;align-items:center;gap:10px}
 #gameControls[hidden]{display:none}
-/* The reader draws its own actionable music/fullscreen buttons into the
-   Phaser canvas. Hide the duplicate DOM bar only while the reader is open. */
-#gameControls.reader-open{visibility:hidden}
 #gameControls button{height:38px;display:inline-flex;align-items:center;
  justify-content:center;gap:7px;padding:7px 11px;white-space:nowrap;
  cursor:pointer;border:2px solid #6e9daa;border-radius:6px;
@@ -231,7 +228,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.58 — Interactive Blueprint Reader & Popup Controls</span></footer>
+<footer><span></span><span>Prototype 16.59 — Popup Controls Back Outside Reader</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -1512,23 +1509,7 @@ if (!window.Phaser) {
    this.input.keyboard.on('keydown-Q',()=>this.toggleJourney());
    this.input.keyboard.on('keydown-ESC',()=>{if(this.readerObject)this.closeReader();else if(this.journalOpen)this.toggleJourney(false)});
    this.input.on('pointerdown',pointer=>{
-    if(this.readerObject){
-     // These are true buttons, not decorative text. Handle taps separately
-     // so they do not turn pages in the content reader.
-     if(pointer.y>=97&&pointer.y<=129){
-      if(pointer.x>=550&&pointer.x<=667){
-       if(window.CyberpopMusic)window.CyberpopMusic.toggle();
-       this.syncReaderControlLabels();
-       return;
-      }
-      if(pointer.x>=676&&pointer.x<=822){
-       document.getElementById('fullscreenToggle').click();
-       this.syncReaderControlLabels();
-       return;
-      }
-     }
-     this.advanceReader();return;
-    }
+    if(this.readerObject){this.advanceReader();return;}
     if(this.journalOpen){this.toggleJourney(false);return}
     const b=this.journeyBounds;
     if(pointer.x>=b.x&&pointer.x<=b.x+b.w&&pointer.y>=b.y&&pointer.y<=b.y+b.h){
@@ -1822,34 +1803,8 @@ if (!window.Phaser) {
     fontFamily:'monospace',fontSize:'14px',color:'#f5dcaa'
    }).setResolution(2).setOrigin(1,.5).setScrollFactor(0).setDepth(252));
 
-   // Functional in-canvas audio/fullscreen buttons visible on EVERY reader,
-   // including screenshots of the Phaser canvas. The existing DOM controls
-   // are temporarily hidden only to prevent duplicated controls.
-   const controls=add(this.add.graphics().setScrollFactor(0).setDepth(253));
-   const controlBtn=(x,y,w,h)=>{
-    controls.fillStyle(0x0c3148,.98);controls.fillRoundedRect(x,y,w,h,5);
-    controls.lineStyle(1.5,0x6dddeb,.94);
-    controls.strokeRoundedRect(x,y,w,h,5);
-    controls.fillStyle(0x82f1ff,.55);controls.fillRect(x+9,y+4,w-18,2);
-   };
-   controlBtn(550,97,117,32);
-   controlBtn(676,97,146,32);
-   this.readerMusicLabel=add(this.add.text(608.5,104,'',{
-    fontFamily:'monospace',fontSize:'12px',fontStyle:'bold',color:'#e6faff'
-   }).setResolution(2).setOrigin(.5,0).setScrollFactor(0).setDepth(254));
-   this.readerFullscreenLabel=add(this.add.text(749,104,'',{
-    fontFamily:'monospace',fontSize:'12px',fontStyle:'bold',color:'#e6faff'
-   }).setResolution(2).setOrigin(.5,0).setScrollFactor(0).setDepth(254));
    this.readerElements=elements;
    for(const obj of elements)obj.setVisible(false);
-  }
-  syncReaderControlLabels(){
-   if(!this.readerMusicLabel)return;
-   const music=window.CyberpopMusic;
-   const musicLabel=music?(music.enabled?'♫ MUSIC ON':'♫ MUSIC OFF'):'MUSIC N/A';
-   const fsLabel=document.fullscreenElement?'EXIT FULLSCREEN':'FULLSCREEN';
-   if(this.readerMusicLabel.text!==musicLabel)this.readerMusicLabel.setText(musicLabel);
-   if(this.readerFullscreenLabel.text!==fsLabel)this.readerFullscreenLabel.setText(fsLabel);
   }
   updateReaderPage(){
    const station=PORTFOLIO_STATIONS[this.readerObject];
@@ -1880,8 +1835,6 @@ if (!window.Phaser) {
    // move text below it to preserve a generous visual separation.
    this.readerBody.setY(isBlueprint?207:189);
    this.readerBody.setLineSpacing(isBlueprint?8:10);
-   this.syncReaderControlLabels();
-   gameControls.classList.add('reader-open');
   }
   advanceReader(){
    if(!this.readerObject)return;
@@ -1892,7 +1845,6 @@ if (!window.Phaser) {
   closeReader(){
    if(!this.readerObject)return;
    for(const obj of this.readerElements)obj.setVisible(false);
-   gameControls.classList.remove('reader-open');
    this.readerObject=null;this.readerPage=0;
    if(this.readerJustCompleted)this.createJourneyHUD(this.lastJourneyDiscovery);
    this.readerJustCompleted=false;this.lastJourneyDiscovery=null;
@@ -1994,7 +1946,6 @@ if (!window.Phaser) {
    }
    update(_,delta){
     this.updateWorldLighting(delta);
-    if(this.readerObject)this.syncReaderControlLabels();
    const k=this.keys;let x=0,y=0;
    if(k.A.isDown||k.LEFT.isDown||pressed.has('left'))x--;
    if(k.D.isDown||k.RIGHT.isDown||pressed.has('right'))x++;
