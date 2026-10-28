@@ -231,7 +231,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.69 — Desktop Header Separator & Home Icon</span></footer>
+<footer><span></span><span>Prototype 16.70 — Equal Header Control Margins</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -1955,49 +1955,46 @@ if (!window.Phaser) {
    for(const [xx,color] of [[145,0xff947a],[160,0xf6d58e],[175,0x92e4be]]){
     desktop.fillStyle(color,.94);desktop.fillCircle(xx,107,4);
    }
-   // Subtle vertical divider separates the three window-control dots
-   // from the room identity icon and document title in every desktop.
-   // The separator has 5px clear space before the first glyph stroke.
+   // Equal header spacing: title-bar left 127 → first dot edge 141,
+   // last dot edge 179 → divider 193, divider 193 → icon edge 207.
+   // Each group uses a 14px visual margin, as requested.
    desktop.lineStyle(1,pcTheme.border,.65);
-   desktop.lineBetween(183,96,183,118);
-   // Miniature room glyph sits between the window dots and live title.
-   // HOME: house / LAB: connected research atoms / WORKSHOP: gear /
-   // HUB: message envelope. All are high-resolution Phaser vectors.
+   desktop.lineBetween(193,96,193,118);
+   // Icons shift right with the divider; keep their proportional contours
+   // and give the title enough room after each icon.
    desktop.lineStyle(1.8,pcTheme.accent2,.96);
    if(this.place==='home'){
-    // Redrawn at an even 17 x 18px footprint so the Home icon doesn't
-    // look compressed. Centre it between the divider and live title.
+    // Balanced house silhouette: 17px roof width, 18px total height.
     desktop.lineStyle(2,pcTheme.accent2,.98);
-    desktop.lineBetween(188,106,196.5,98);
-    desktop.lineBetween(196.5,98,205,106);
-    desktop.lineBetween(191,105,191,116);
-    desktop.lineBetween(191,116,202,116);
-    desktop.lineBetween(202,116,202,105);
-    // Clearly proportioned central door, with a small negative-space pane.
-    desktop.lineBetween(195,116,195,110);
-    desktop.lineBetween(195,110,198,110);
-    desktop.lineBetween(198,110,198,116);
+    desktop.lineBetween(208,106,216.5,98);
+    desktop.lineBetween(216.5,98,225,106);
+    desktop.lineBetween(211,105,211,116);
+    desktop.lineBetween(211,116,222,116);
+    desktop.lineBetween(222,116,222,105);
+    desktop.lineBetween(215,116,215,110);
+    desktop.lineBetween(215,110,218,110);
+    desktop.lineBetween(218,110,218,116);
    }else if(this.place==='lab'){
-    desktop.lineBetween(191,102,201,107);
-    desktop.lineBetween(191,112,201,107);
-    desktop.lineBetween(191,102,191,112);
-    desktop.strokeCircle(191,102,2.5);
-    desktop.strokeCircle(191,112,2.5);
-    desktop.strokeCircle(201,107,2.5);
+    desktop.lineBetween(211,102,221,107);
+    desktop.lineBetween(211,112,221,107);
+    desktop.lineBetween(211,102,211,112);
+    desktop.strokeCircle(211,102,2.5);
+    desktop.strokeCircle(211,112,2.5);
+    desktop.strokeCircle(221,107,2.5);
    }else if(this.place==='workshop'){
-    desktop.strokeCircle(196,107,6);
-    desktop.strokeCircle(196,107,2);
+    desktop.strokeCircle(217,107,6);
+    desktop.strokeCircle(217,107,2);
     for(let k=0;k<8;k++){
      const a=k*Math.PI/4;
-     desktop.lineBetween(196+7*Math.cos(a),107+7*Math.sin(a),
-      196+9*Math.cos(a),107+9*Math.sin(a));
+     desktop.lineBetween(217+7*Math.cos(a),107+7*Math.sin(a),
+      217+9*Math.cos(a),107+9*Math.sin(a));
     }
    }else if(this.place==='hub'){
-    desktop.strokeRect(188,102,16,11);
-    desktop.lineBetween(188,102,196,108);
-    desktop.lineBetween(196,108,204,102);
-    desktop.lineBetween(188,113,193,109);
-    desktop.lineBetween(204,113,199,109);
+    desktop.strokeRect(208,102,16,11);
+    desktop.lineBetween(208,102,216,108);
+    desktop.lineBetween(216,108,224,102);
+    desktop.lineBetween(208,113,213,109);
+    desktop.lineBetween(224,113,219,109);
    }
    desktop.lineStyle(1,pcTheme.border,.47);
    desktop.lineBetween(128,165,832,165);
@@ -2103,7 +2100,7 @@ if (!window.Phaser) {
    for(const label of this.readerDnaLabels)label.setVisible(isDna);
    for(const label of this.readerComputerLabels)label.setVisible(isComputer);
    // Each reader mode resets every shared text layout and color.
-   this.readerTitle.setPosition(isNotes?153:isComputer?219:138,isNotes?108:isComputer?94:97);
+   this.readerTitle.setPosition(isNotes?153:isComputer?240:138,isNotes?108:isComputer?94:97);
    this.readerTitle.setFontFamily(isNotes?'Arial, sans-serif':'monospace');
    this.readerTitle.setFontSize(isComputer?22:26);
    this.readerTitle.setColor(isNotes?'#103c53':isComputer?this.readerComputerTheme.text:isDna?'#e9feff':isBlueprint?'#edfcff':'#f4e8d5');
