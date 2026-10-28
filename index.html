@@ -17,6 +17,9 @@ main:fullscreen{width:100%;height:100%;background:#091923}
 #gameControls{position:absolute;top:0;left:0;transform-origin:top left;
  z-index:30;display:flex;align-items:center;gap:10px}
 #gameControls[hidden]{display:none}
+/* Like the in-canvas minimap, QUEST and TIME, the external settings HUD
+   stays behind an open dialogue, reader or quest journal. */
+#gameControls.popup-open{visibility:hidden}
 #gameControls button{height:38px;display:inline-flex;align-items:center;
  justify-content:center;gap:7px;padding:7px 11px;white-space:nowrap;
  cursor:pointer;border:2px solid #6e9daa;border-radius:6px;
@@ -228,7 +231,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.59 — Popup Controls Back Outside Reader</span></footer>
+<footer><span></span><span>Prototype 16.60 — Hide Settings HUD During Popups</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -315,6 +318,12 @@ if (!window.Phaser) {
  const showGameControls=()=>{
   gameControls.hidden=false;
   syncGameControlsPosition();
+ };
+ // These two external DOM buttons must behave like the in-game HUD:
+ // visible during exploration, hidden whenever a modal interaction is open.
+ const syncPopupControls=scene=>{
+  gameControls.classList.toggle('popup-open',
+   !!(scene&&(scene.readerObject||scene.dialogNpc||scene.journalOpen)));
  };
 
   // Baio stays at 0.60; NPCs are a little smaller at 0.56 and keep their original frame proportions.
@@ -1369,6 +1378,7 @@ if (!window.Phaser) {
    this.dialogNpc=null;
    this.dialogPage=0;
    this.journalOpen=false;
+   syncPopupControls(this); // clear modal state after room transitions
    this.createJourneyHUD(freshVisit);
     // The clock uses the same navy/cyan steel chassis as the minimap.
     this.clockHudFrame=this.add.graphics().setScrollFactor(0).setDepth(115);
@@ -1674,6 +1684,7 @@ if (!window.Phaser) {
   toggleJourney(force){
    if(this.dialogNpc||this.readerObject)return;
    this.journalOpen=typeof force==='boolean'?force:!this.journalOpen;
+   syncPopupControls(this);
    for(const obj of this.journalObjects)obj.setVisible(this.journalOpen);
    if(this.journalOpen&&this.npcHint)this.npcHint.setVisible(false);
   }
@@ -1818,6 +1829,7 @@ if (!window.Phaser) {
   openReader(id){
    if(!this.readerElements||!PORTFOLIO_STATIONS[id])return;
    this.readerObject=id;this.readerPage=0;
+   syncPopupControls(this);
    // Content discovery—not just room entry—earns quest progress.
    this.readerJustCompleted=visitPortfolioLocation(id);
    this.lastJourneyDiscovery=this.readerJustCompleted?id:null;
@@ -1846,6 +1858,7 @@ if (!window.Phaser) {
    if(!this.readerObject)return;
    for(const obj of this.readerElements)obj.setVisible(false);
    this.readerObject=null;this.readerPage=0;
+   syncPopupControls(this);
    if(this.readerJustCompleted)this.createJourneyHUD(this.lastJourneyDiscovery);
    this.readerJustCompleted=false;this.lastJourneyDiscovery=null;
   }
@@ -1873,6 +1886,7 @@ if (!window.Phaser) {
   closeDialog(){
    this.dialogNpc=null;
    this.dialogPage=0;
+   syncPopupControls(this);
    // The next minimap redraw restores browser-rendered landmark icons.
    if(this.place==='district')this.minimapHDLayoutKey=null;
    for(const obj of [this.dialogFrame,this.dialogAvatar,this.dialogName,this.dialogText,this.dialogNext,this.dialogAction,this.dialogPageIndicator])if(obj)obj.setVisible(false);
@@ -1894,6 +1908,7 @@ if (!window.Phaser) {
    if(this.near.object){this.openReader(this.near.object);return}
    if(this.near.npc){
     this.dialogNpc=this.near.npc;
+    syncPopupControls(this);
     if(this.place==='district')minimapHDLayer.hidden=true;
     this.dialogPage=0;
     for(const obj of [this.dialogFrame,this.dialogAvatar,this.dialogName,this.dialogText,this.dialogNext,this.dialogAction,this.dialogPageIndicator])obj.setVisible(true);
