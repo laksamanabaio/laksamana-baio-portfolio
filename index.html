@@ -231,7 +231,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.67 — Clean Full-Width Computer Reader</span></footer>
+<footer><span></span><span>Prototype 16.68 — Building-Themed Computer and Reception Readers</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -507,7 +507,40 @@ if (!window.Phaser) {
  }
  // The three primary computer terminals share one desktop UI.
  // Their IDs are the room IDs, not home-computer/lab-computer/etc.
- const COMPUTER_READER_IDS=new Set(['home','lab','workshop']);
+ // Main computer readers plus Contact Hub's receptionist console.
+ const COMPUTER_READER_IDS=new Set(['home','lab','workshop','hub']);
+ // One tidy desktop shell with a distinct palette and workstation identity
+ // for every building. Keep content and navigation independent of color.
+ const COMPUTER_READER_THEMES={
+  home:{
+   backdrop:0x041525,frame:0x091f32,border:0x4dbfe9,titleBar:0x153a54,
+   panel:0x0b293d,footer:0x102d40,accent:0x62dfff,accent2:0xffbb6b,
+   text:'#f0fcff',muted:'#b7dce8',heading:'#a3eaff',action:'#ffcb83',
+   section:'PROFILE  /  PERSONAL STORY',
+   footerLabel:'HOME OS  /  PERSONAL DESKTOP'
+  },
+  lab:{
+   backdrop:0x031a21,frame:0x092b33,border:0x6ee8e8,titleBar:0x124451,
+   panel:0x092d39,footer:0x123c43,accent:0x7cf0f1,accent2:0xa6f5bb,
+   text:'#efffff',muted:'#b6e9ec',heading:'#affbf1',action:'#a8f7cb',
+   section:'RESEARCH  /  EXPERIENCE RECORDS',
+   footerLabel:'LAB OS  /  RESEARCH TERMINAL'
+  },
+  workshop:{
+   backdrop:0x171019,frame:0x221820,border:0xf3a556,titleBar:0x422821,
+   panel:0x291e24,footer:0x342521,accent:0xffb862,accent2:0xff874d,
+   text:'#fff8ef',muted:'#f0d3bc',heading:'#ffd5a0',action:'#ffcf84',
+   section:'PROJECTS  /  FABRICATION LOG',
+   footerLabel:'WORKSHOP OS  /  PROJECT DISPLAY'
+  },
+  hub:{
+   backdrop:0x110d20,frame:0x201532,border:0xb477f5,titleBar:0x342149,
+   panel:0x211936,footer:0x2b1d42,accent:0xd394ff,accent2:0xff7ccc,
+   text:'#fbf4ff',muted:'#dec4ed',heading:'#edc9ff',action:'#ffa4e0',
+   section:'CONTACT  /  RECEPTION CONSOLE',
+   footerLabel:'CONTACT HUB  /  RECEPTION TERMINAL'
+  }
+ };
  const PORTFOLIO_STATIONS={
  "home": {
   "label": "PERSONAL COMPUTER",
@@ -1896,56 +1929,90 @@ if (!window.Phaser) {
     fontFamily:'monospace',fontSize:'18px',fontStyle:'bold',
     color:'#c7fff2'
    }).setResolution(2).setScrollFactor(0).setDepth(252));
-   // Futuristic desktop workstation, exclusive to the three computer
-   // interactions. Its simplified single reading area uses generous 16px
-   // inner margins, with 10 / 16 / 26px golden-ratio-inspired spacing.
+   // Building-specific modern desktop, shared by Home, Lab, Workshop and
+   // reception. Identical margins and typography; per-room tones + a tiny
+   // identifiable glyph ensure the window belongs to its environment.
+   const pcTheme=COMPUTER_READER_THEMES[this.place]||COMPUTER_READER_THEMES.home;
+   this.readerComputerTheme=pcTheme;
    const desktop=add(this.add.graphics().setScrollFactor(0).setDepth(251));
-   const pcAccent=this.place==='workshop'?0xffbc75:
-    this.place==='lab'?0x90e6bf:0x70dbf1;
-   const deskText=(xx,yy,label,size,color='#bce6ed',bold=false)=>{
+   const deskText=(xx,yy,label,size,color=pcTheme.muted,bold=false)=>{
     return add(this.add.text(xx,yy,label,{
      fontFamily:'monospace',fontSize:size+'px',color,
      fontStyle:bold?'bold':'normal'
     }).setResolution(2).setScrollFactor(0).setDepth(252));
    };
-   desktop.fillStyle(0x02101c,.96);desktop.fillRect(0,0,W,H);
-   desktop.fillStyle(0x081c2d,1);
-   desktop.fillRoundedRect(104,70,752,406,10);
-   desktop.lineStyle(2,0x65d9ef,.93);
+   // Opaque screen backdrop: the outdoor/interior scene remains dimmed.
+   desktop.fillStyle(pcTheme.backdrop,.97);desktop.fillRect(0,0,W,H);
+   desktop.fillStyle(pcTheme.frame,1);desktop.fillRoundedRect(104,70,752,406,10);
+   desktop.lineStyle(2,pcTheme.border,.95);
    desktop.strokeRoundedRect(104,70,752,406,10);
-   desktop.lineStyle(1,0x28556e,.88);
+   desktop.lineStyle(1,pcTheme.accent,.36);
    desktop.strokeRoundedRect(111,77,738,392,7);
-   // Familiar desktop window chrome, modern but integrated with Baio's HUD.
-   desktop.fillStyle(0x123b50,.98);
+   desktop.fillStyle(pcTheme.titleBar,1);
    desktop.fillRoundedRect(127,87,706,40,5);
-   // Keep the recognizable window buttons without decorative lines
-   // above its title, page indicator, or along the top of the title bar.
+   // Keep the quiet macOS-style status dots and avoid the upper decorative
+   // lines intentionally removed from the earlier desktop design.
    for(const [xx,color] of [[145,0xff947a],[160,0xf6d58e],[175,0x92e4be]]){
     desktop.fillStyle(color,.94);desktop.fillCircle(xx,107,4);
    }
-   desktop.lineStyle(1,0x3b8ca4,.67);desktop.lineBetween(128,165,832,165);
-   // The former System / Workspace sidebar and its three nested cards
-   // are removed. Use the full 704px reading pane instead.
-   desktop.fillStyle(0x081f30,1);
-   desktop.fillRoundedRect(128,175,704,232,6);
-   desktop.lineStyle(1,0x448ba4,.82);
+   // Miniature room glyph sits between the window dots and live title.
+   // HOME: house / LAB: connected research atoms / WORKSHOP: gear /
+   // HUB: message envelope. All are high-resolution Phaser vectors.
+   desktop.lineStyle(1.8,pcTheme.accent2,.96);
+   if(this.place==='home'){
+    desktop.lineBetween(188,106,196,99);
+    desktop.lineBetween(196,99,204,106);
+    desktop.lineBetween(191,105,191,115);
+    desktop.lineBetween(191,115,201,115);
+    desktop.lineBetween(201,115,201,105);
+    desktop.lineBetween(195,115,195,109);
+    desktop.lineBetween(195,109,198,109);
+    desktop.lineBetween(198,109,198,115);
+   }else if(this.place==='lab'){
+    desktop.lineBetween(191,102,201,107);
+    desktop.lineBetween(191,112,201,107);
+    desktop.lineBetween(191,102,191,112);
+    desktop.strokeCircle(191,102,2.5);
+    desktop.strokeCircle(191,112,2.5);
+    desktop.strokeCircle(201,107,2.5);
+   }else if(this.place==='workshop'){
+    desktop.strokeCircle(196,107,6);
+    desktop.strokeCircle(196,107,2);
+    for(let k=0;k<8;k++){
+     const a=k*Math.PI/4;
+     desktop.lineBetween(196+7*Math.cos(a),107+7*Math.sin(a),
+      196+9*Math.cos(a),107+9*Math.sin(a));
+    }
+   }else if(this.place==='hub'){
+    desktop.strokeRect(188,102,16,11);
+    desktop.lineBetween(188,102,196,108);
+    desktop.lineBetween(196,108,204,102);
+    desktop.lineBetween(188,113,193,109);
+    desktop.lineBetween(204,113,199,109);
+   }
+   desktop.lineStyle(1,pcTheme.border,.47);
+   desktop.lineBetween(128,165,832,165);
+   // Full-width reading area with a restrained colored left-side stripe.
+   desktop.fillStyle(pcTheme.panel,1);desktop.fillRoundedRect(128,175,704,232,6);
+   desktop.lineStyle(1,pcTheme.border,.68);
    desktop.strokeRoundedRect(128,175,704,232,6);
-   desktop.fillStyle(pcAccent,.88);desktop.fillRoundedRect(129,187,3,208,2);
-   desktop.lineStyle(1,0x3c8098,.68);
+   desktop.fillStyle(pcTheme.accent,.91);
+   desktop.fillRoundedRect(129,187,3,208,2);
+   desktop.lineStyle(1,pcTheme.border,.42);
    desktop.lineBetween(153,210,807,210);
-   // Bottom status rail remains outside both panels for navigation clarity.
-   desktop.fillStyle(0x0d3043,1);
+   // Distinct color footer keeps a shared navigation hotspot.
+   desktop.fillStyle(pcTheme.footer,1);
    desktop.fillRoundedRect(128,420,704,42,5);
-   desktop.lineStyle(1,0x3d7f98,.82);
+   desktop.lineStyle(1,pcTheme.border,.66);
    desktop.strokeRoundedRect(128,420,704,42,5);
    this.readerComputerBackground=desktop;
    this.readerComputerLabels=[
-    deskText(154,188,'DOCUMENT  /  PORTFOLIO CONTENT',11,'#b7e7ee',true),
-    deskText(145,434,'BAIO OS   /   SECURE READER',11,'#b9eff4',true)
+    deskText(154,188,pcTheme.section,11,pcTheme.muted,true),
+    deskText(145,434,pcTheme.footerLabel,11,pcTheme.muted,true)
    ];
    this.readerComputerHeading=add(this.add.text(154,224,'',{
     fontFamily:'monospace',fontSize:'18px',fontStyle:'bold',
-    color:'#e8ffff',wordWrap:{width:655,useAdvancedWrap:true}
+    color:pcTheme.heading,wordWrap:{width:655,useAdvancedWrap:true}
    }).setResolution(2).setScrollFactor(0).setDepth(252));
    this.readerTitle=add(this.add.text(138,97,station.title,{
     fontFamily:'monospace',fontSize:'26px',fontStyle:'bold',color:'#f4e8d5'
@@ -2030,21 +2097,21 @@ if (!window.Phaser) {
    this.readerTitle.setPosition(isNotes?153:isComputer?219:138,isNotes?108:isComputer?94:97);
    this.readerTitle.setFontFamily(isNotes?'Arial, sans-serif':'monospace');
    this.readerTitle.setFontSize(isComputer?22:26);
-   this.readerTitle.setColor(isNotes?'#103c53':isComputer?'#effdff':isDna?'#e9feff':isBlueprint?'#edfcff':'#f4e8d5');
+   this.readerTitle.setColor(isNotes?'#103c53':isComputer?this.readerComputerTheme.text:isDna?'#e9feff':isBlueprint?'#edfcff':'#f4e8d5');
    this.readerSubtitle.setPosition(isNotes?153:isComputer?145:138,isNotes?144:isComputer?144:138);
-   this.readerSubtitle.setColor(isNotes?'#487387':isComputer?'#b4e5ed':isDna?'#a4e0eb':isBlueprint?'#99dcf7':'#a8dad2');
+   this.readerSubtitle.setColor(isNotes?'#487387':isComputer?this.readerComputerTheme.muted:isDna?'#a4e0eb':isBlueprint?'#99dcf7':'#a8dad2');
    this.readerBody.setPosition(isNotes?153:isDna?339:isComputer?154:321,
     isNotes?245:isDna?255:isComputer?264:isBlueprint?207:189);
    this.readerBody.setFontFamily(isNotes?'Arial, sans-serif':'monospace');
    this.readerBody.setFontSize(isNotes?21:isComputer?18:isDna?18:19);
    this.readerBody.setWordWrapWidth(isNotes?650:isDna?462:isComputer?652:492,true);
    this.readerBody.setLineSpacing(isNotes?9:isComputer?5:isDna?9:isBlueprint?8:10);
-   this.readerBody.setColor(isNotes?'#143c4c':isComputer?'#f0fbff':isDna?'#effcff':isBlueprint?'#edfaff':'#e8efe6');
+   this.readerBody.setColor(isNotes?'#143c4c':isComputer?this.readerComputerTheme.text:isDna?'#effcff':isBlueprint?'#edfaff':'#e8efe6');
    this.readerCount.setPosition(isNotes?807:isComputer?813:817,
     isNotes?135:isComputer?144:isDna?138:isBlueprint?138:145);
-   this.readerCount.setColor(isNotes?'#315a6b':isComputer?'#c6f3ee':isDna?'#c2f7fa':'#b6dcd7');
+   this.readerCount.setColor(isNotes?'#315a6b':isComputer?this.readerComputerTheme.muted:isDna?'#c2f7fa':'#b6dcd7');
    this.readerNext.setPosition(isNotes?815:isComputer?815:821,isNotes?437:isComputer?440:443);
-   this.readerNext.setColor(isNotes?'#24556a':isComputer?'#e5eefa':isDna?'#d0f9e6':'#f5dcaa');
+   this.readerNext.setColor(isNotes?'#24556a':isComputer?this.readerComputerTheme.action:isDna?'#d0f9e6':'#f5dcaa');
    // Apply selected reader measurements before page word-wrap/auto-fit.
    this.updateReaderPage();
   }
