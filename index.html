@@ -231,7 +231,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.66 — Golden Ratio Computer Desktop Popups</span></footer>
+<footer><span></span><span>Prototype 16.67 — Clean Full-Width Computer Reader</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -1897,9 +1897,8 @@ if (!window.Phaser) {
     color:'#c7fff2'
    }).setResolution(2).setScrollFactor(0).setDepth(252));
    // Futuristic desktop workstation, exclusive to the three computer
-   // interactions. Usable inner width = 704 - 14 gap = 690;
-   // 264px navigation + 426px reading = 38.26% / 61.74%.
-   // Spacing follows a 10 / 16 / 26px golden-ratio-inspired scale.
+   // interactions. Its simplified single reading area uses generous 16px
+   // inner margins, with 10 / 16 / 26px golden-ratio-inspired spacing.
    const desktop=add(this.add.graphics().setScrollFactor(0).setDepth(251));
    const pcAccent=this.place==='workshop'?0xffbc75:
     this.place==='lab'?0x90e6bf:0x70dbf1;
@@ -1919,35 +1918,21 @@ if (!window.Phaser) {
    // Familiar desktop window chrome, modern but integrated with Baio's HUD.
    desktop.fillStyle(0x123b50,.98);
    desktop.fillRoundedRect(127,87,706,40,5);
-   desktop.fillStyle(0x3d839a,.38);desktop.fillRect(137,89,686,1);
+   // Keep the recognizable window buttons without decorative lines
+   // above its title, page indicator, or along the top of the title bar.
    for(const [xx,color] of [[145,0xff947a],[160,0xf6d58e],[175,0x92e4be]]){
     desktop.fillStyle(color,.94);desktop.fillCircle(xx,107,4);
    }
-   desktop.fillStyle(pcAccent,.86);desktop.fillRect(206,88,82,3);
-   desktop.fillStyle(pcAccent,.67);desktop.fillRect(770,123,49,2);
    desktop.lineStyle(1,0x3b8ca4,.67);desktop.lineBetween(128,165,832,165);
-   // Golden ratio content columns: sidebar 264, gap 14, reader 426.
-   const pcLeft=128,pcTop=175,pcSidebarW=264,pcGap=14;
-   const pcMainX=pcLeft+pcSidebarW+pcGap,pcMainW=426;
-   desktop.fillStyle(0x0b293c,1);
-   desktop.fillRoundedRect(pcLeft,pcTop,pcSidebarW,232,6);
-   desktop.lineStyle(1,0x39819a,.75);
-   desktop.strokeRoundedRect(pcLeft,pcTop,pcSidebarW,232,6);
+   // The former System / Workspace sidebar and its three nested cards
+   // are removed. Use the full 704px reading pane instead.
    desktop.fillStyle(0x081f30,1);
-   desktop.fillRoundedRect(pcMainX,pcTop,pcMainW,232,6);
+   desktop.fillRoundedRect(128,175,704,232,6);
    desktop.lineStyle(1,0x448ba4,.82);
-   desktop.strokeRoundedRect(pcMainX,pcTop,pcMainW,232,6);
-   desktop.fillStyle(pcAccent,.9);desktop.fillRoundedRect(129,186,3,208,2);
-   // Calm sidebar information cards; actual values are bound to the room,
-   // rather than hard-coded placeholder capabilities or fake system data.
-   for(const [yy,hh] of [[215,52],[277,64],[353,42]]){
-    desktop.fillStyle(0x10374b,.97);desktop.fillRoundedRect(144,yy,232,hh,4);
-    desktop.lineStyle(1,0x346f84,.56);
-    desktop.strokeRoundedRect(144,yy,232,hh,4);
-   }
-   desktop.fillStyle(pcAccent,.67);desktop.fillRect(155,216,54,2);
+   desktop.strokeRoundedRect(128,175,704,232,6);
+   desktop.fillStyle(pcAccent,.88);desktop.fillRoundedRect(129,187,3,208,2);
    desktop.lineStyle(1,0x3c8098,.68);
-   desktop.lineBetween(422,211,814,211);
+   desktop.lineBetween(153,210,807,210);
    // Bottom status rail remains outside both panels for navigation clarity.
    desktop.fillStyle(0x0d3043,1);
    desktop.fillRoundedRect(128,420,704,42,5);
@@ -1955,22 +1940,12 @@ if (!window.Phaser) {
    desktop.strokeRoundedRect(128,420,704,42,5);
    this.readerComputerBackground=desktop;
    this.readerComputerLabels=[
-    deskText(145,190,'SYSTEM / WORKSPACE',11,'#b5dce7',true),
-    deskText(155,224,'LOCATION',10,'#97c4d0',true),
-    deskText(155,286,'OPEN APPLICATION',10,'#97c4d0',true),
-    deskText(155,361,'CONTROLS',10,'#97c4d0',true),
-    deskText(155,378,'E / SPACE   NEXT',11,'#e2faff',true),
-    deskText(423,188,'DOCUMENT  /  PORTFOLIO CONTENT',11,'#b7e7ee',true),
+    deskText(154,188,'DOCUMENT  /  PORTFOLIO CONTENT',11,'#b7e7ee',true),
     deskText(145,434,'BAIO OS   /   SECURE READER',11,'#b9eff4',true)
    ];
-   this.readerComputerLocation=deskText(155,242,
-    this.place==='home'?'HOME':this.place==='lab'?'LABORATORY':'WORKSHOP',
-    16,'#edfdff',true);
-   this.readerComputerModule=deskText(155,304,station.title,14,
-    '#e8faff',true);
-   this.readerComputerHeading=add(this.add.text(423,225,'',{
+   this.readerComputerHeading=add(this.add.text(154,224,'',{
     fontFamily:'monospace',fontSize:'18px',fontStyle:'bold',
-    color:'#e8ffff',wordWrap:{width:388,useAdvancedWrap:true}
+    color:'#e8ffff',wordWrap:{width:655,useAdvancedWrap:true}
    }).setResolution(2).setScrollFactor(0).setDepth(252));
    this.readerTitle=add(this.add.text(138,97,station.title,{
     fontFamily:'monospace',fontSize:'26px',fontStyle:'bold',color:'#f4e8d5'
@@ -2051,8 +2026,6 @@ if (!window.Phaser) {
    for(const label of this.readerNotesLabels)label.setVisible(isNotes);
    for(const label of this.readerDnaLabels)label.setVisible(isDna);
    for(const label of this.readerComputerLabels)label.setVisible(isComputer);
-   this.readerComputerLocation.setVisible(isComputer);
-   this.readerComputerModule.setVisible(isComputer);
    // Each reader mode resets every shared text layout and color.
    this.readerTitle.setPosition(isNotes?153:isComputer?219:138,isNotes?108:isComputer?94:97);
    this.readerTitle.setFontFamily(isNotes?'Arial, sans-serif':'monospace');
@@ -2060,11 +2033,11 @@ if (!window.Phaser) {
    this.readerTitle.setColor(isNotes?'#103c53':isComputer?'#effdff':isDna?'#e9feff':isBlueprint?'#edfcff':'#f4e8d5');
    this.readerSubtitle.setPosition(isNotes?153:isComputer?145:138,isNotes?144:isComputer?144:138);
    this.readerSubtitle.setColor(isNotes?'#487387':isComputer?'#b4e5ed':isDna?'#a4e0eb':isBlueprint?'#99dcf7':'#a8dad2');
-   this.readerBody.setPosition(isNotes?153:isDna?339:isComputer?423:321,
+   this.readerBody.setPosition(isNotes?153:isDna?339:isComputer?154:321,
     isNotes?245:isDna?255:isComputer?264:isBlueprint?207:189);
    this.readerBody.setFontFamily(isNotes?'Arial, sans-serif':'monospace');
    this.readerBody.setFontSize(isNotes?21:isComputer?18:isDna?18:19);
-   this.readerBody.setWordWrapWidth(isNotes?650:isDna?462:isComputer?389:492,true);
+   this.readerBody.setWordWrapWidth(isNotes?650:isDna?462:isComputer?652:492,true);
    this.readerBody.setLineSpacing(isNotes?9:isComputer?5:isDna?9:isBlueprint?8:10);
    this.readerBody.setColor(isNotes?'#143c4c':isComputer?'#f0fbff':isDna?'#effcff':isBlueprint?'#edfaff':'#e8efe6');
    this.readerCount.setPosition(isNotes?807:isComputer?813:817,
