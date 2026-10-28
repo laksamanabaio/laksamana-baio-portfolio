@@ -231,7 +231,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.62 — Blueprint Page Indicator Alignment</span></footer>
+<footer><span></span><span>Prototype 16.63 — Futuristic DNA Research Terminal</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -1827,6 +1827,81 @@ if (!window.Phaser) {
      fontFamily:'monospace',fontSize:'11px',fontStyle:'bold',color:'#466d80'
     }).setResolution(2).setScrollFactor(0).setDepth(252))
    ];
+   // Dedicated DNA MACHINE / DESIGN RESEARCH laboratory monitor.
+   // Crisp vector HUD, never an image covering text; display only for lab-samples.
+   const dna=add(this.add.graphics().setScrollFactor(0).setDepth(251));
+   const dnaCyan=0x75eaf5,dnaLime=0x9cf4b9;
+   dna.fillStyle(0x02101c,.97);dna.fillRect(0,0,W,H);
+   dna.fillStyle(0x081e30,1);dna.fillRoundedRect(104,70,752,406,10);
+   dna.lineStyle(2,dnaCyan,.94);dna.strokeRoundedRect(104,70,752,406,10);
+   dna.lineStyle(1,0x36819a,.78);dna.strokeRoundedRect(111,77,738,392,7);
+   // Emissive top display rail and subtle, low-contrast instrument grid.
+   dna.fillStyle(0x103548,.97);dna.fillRoundedRect(121,86,718,74,4);
+   dna.fillStyle(dnaCyan,.86);dna.fillRect(135,87,86,3);
+   dna.fillStyle(dnaLime,.80);dna.fillRect(769,87,55,3);
+   dna.lineStyle(1,0x53bfd6,.69);dna.lineBetween(129,161,830,161);
+   for(let xx=128;xx<=827;xx+=28){
+    dna.lineStyle(1,0x55a4bf,.075);dna.lineBetween(xx,174,xx,404);
+   }
+   for(let yy=176;yy<=399;yy+=28){
+    dna.lineStyle(1,0x55a4bf,.075);dna.lineBetween(128,yy,833,yy);
+   }
+   // Two distinct modules: stylized DNA visual on the left and research
+   // writing on the right. Never draw decorative lines over readable text.
+   dna.fillStyle(0x0a2b40,.99);dna.fillRoundedRect(128,175,180,229,6);
+   dna.lineStyle(1,dnaCyan,.74);dna.strokeRoundedRect(128,175,180,229,6);
+   dna.fillStyle(0x061f31,.98);dna.fillRoundedRect(140,208,156,144,4);
+   dna.lineStyle(1,0x367e97,.77);dna.strokeRoundedRect(140,208,156,144,4);
+   // Clean helix, rendered as two mathematical strands with connected rungs.
+   const strand=(yy,side)=>218+side*33*Math.sin((yy-213)*Math.PI/42);
+   for(let yy=215;yy<=340;yy+=5){
+    const next=Math.min(345,yy+5);
+    dna.lineStyle(2.2,dnaCyan,.9);
+    dna.lineBetween(strand(yy,-1),yy,strand(next,-1),next);
+    dna.lineStyle(2.2,dnaLime,.85);
+    dna.lineBetween(strand(yy,1),yy,strand(next,1),next);
+   }
+   for(let yy=222;yy<=336;yy+=14){
+    dna.lineStyle(1.5,0xb6f6e5,.70);
+    dna.lineBetween(strand(yy,-1),yy,strand(yy,1),yy);
+    dna.fillStyle(0xd5ffff,.9);
+    dna.fillCircle(strand(yy,-1),yy,2.3);
+    dna.fillStyle(dnaLime,.88);
+    dna.fillCircle(strand(yy,1),yy,2.3);
+   }
+   dna.fillStyle(0x102f42,.95);dna.fillRoundedRect(140,359,156,30,4);
+   dna.lineStyle(1,0x3b91a7,.65);dna.strokeRoundedRect(140,359,156,30,4);
+   for(let i=0;i<8;i++){
+    dna.fillStyle(i<5?0x74e6d9:0x285f73,.9);
+    dna.fillRect(152+i*17,375,12,3);
+   }
+   dna.fillStyle(0x0a2638,1);dna.fillRoundedRect(320,175,512,229,6);
+   dna.lineStyle(1,0x4ba9c4,.83);dna.strokeRoundedRect(320,175,512,229,6);
+   dna.lineStyle(1,0x65d9ea,.6);dna.lineBetween(339,203,814,203);
+   // Footer resembles the inset status rail of the physical Lab machine.
+   dna.fillStyle(0x0d3043,1);dna.fillRoundedRect(128,419,704,43,5);
+   dna.lineStyle(1,0x46879d,.83);dna.strokeRoundedRect(128,419,704,43,5);
+   dna.fillStyle(dnaCyan,.82);dna.fillRect(139,420,61,2);
+   dna.fillStyle(dnaLime,.68);dna.fillRect(767,459,53,2);
+   this.readerDnaBackground=dna;
+   this.readerDnaLabels=[
+    add(this.add.text(143,185,'DNA / VISUAL MODEL',{
+     fontFamily:'monospace',fontSize:'11px',fontStyle:'bold',color:'#baf7fa'
+    }).setResolution(2).setScrollFactor(0).setDepth(252)),
+    add(this.add.text(146,359,'DESIGN RESEARCH',{
+     fontFamily:'monospace',fontSize:'9px',fontStyle:'bold',color:'#a4e6d9'
+    }).setResolution(2).setScrollFactor(0).setDepth(252)),
+    add(this.add.text(339,184,'RESEARCH LOG  /  HUMAN EXPERIENCE',{
+     fontFamily:'monospace',fontSize:'11px',color:'#9ed9e5'
+    }).setResolution(2).setScrollFactor(0).setDepth(252)),
+    add(this.add.text(144,434,'LABORATORY  /  ANALYSIS TERMINAL',{
+     fontFamily:'monospace',fontSize:'11px',fontStyle:'bold',color:'#b9f1f4'
+    }).setResolution(2).setScrollFactor(0).setDepth(252))
+   ];
+   this.readerDnaHeading=add(this.add.text(339,215,'',{
+    fontFamily:'monospace',fontSize:'18px',fontStyle:'bold',
+    color:'#c7fff2'
+   }).setResolution(2).setScrollFactor(0).setDepth(252));
    this.readerTitle=add(this.add.text(138,97,station.title,{
     fontFamily:'monospace',fontSize:'26px',fontStyle:'bold',color:'#f4e8d5'
    }).setResolution(2).setScrollFactor(0).setDepth(252));
@@ -1856,14 +1931,16 @@ if (!window.Phaser) {
    this.readerTitle.setText(station.title);
    this.readerSubtitle.setText(station.subtitle);
    const page=station.pages[this.readerPage];
-   if(this.readerObject==='home-notebook'){
-    // Retain every original word. Display the existing first line as the
-    // note's own heading and its paragraph underneath.
-    const split=page.indexOf('\n\n');
-    this.readerNotesHeading.setText(split>=0?page.slice(0,split):'');
+   if(this.readerObject==='home-notebook'||this.readerObject==='lab-samples'){
+    // Reuse every original word: first line becomes the page heading and
+    // the remaining paragraph gets its own generous reading surface.
+    const split=page.indexOf('\n\n'),heading=split>=0?page.slice(0,split):'';
+    this.readerNotesHeading.setText(this.readerObject==='home-notebook'?heading:'');
+    this.readerDnaHeading.setText(this.readerObject==='lab-samples'?heading:'');
     this.readerBody.setText(split>=0?page.slice(split+2):page);
    }else{
     this.readerNotesHeading.setText('');
+    this.readerDnaHeading.setText('');
     this.readerBody.setText(page);
    }
    this.readerCount.setText(String(this.readerPage+1).padStart(2,'0')+
@@ -1879,31 +1956,36 @@ if (!window.Phaser) {
    this.lastJourneyDiscovery=this.readerJustCompleted?id:null;
    this.updateReaderPage();
    for(const obj of this.readerElements)obj.setVisible(true);
-   const isBlueprint=id==='home-blueprint',isNotes=id==='home-notebook';
-   this.readerGenericBackground.setVisible(!isBlueprint&&!isNotes);
+   const isBlueprint=id==='home-blueprint',isNotes=id==='home-notebook',
+    isDna=id==='lab-samples';
+   this.readerGenericBackground.setVisible(!isBlueprint&&!isNotes&&!isDna);
    this.readerBlueprintBackground.setVisible(isBlueprint);
    this.readerDigitalPaperBackground.setVisible(isNotes);
-   this.readerArchiveLabel.setVisible(!isBlueprint&&!isNotes);
+   this.readerDnaBackground.setVisible(isDna);
+   this.readerArchiveLabel.setVisible(!isBlueprint&&!isNotes&&!isDna);
    this.readerNotesHeading.setVisible(isNotes);
+   this.readerDnaHeading.setVisible(isDna);
    for(const label of this.readerBlueprintLabels)label.setVisible(isBlueprint);
    for(const label of this.readerNotesLabels)label.setVisible(isNotes);
-   // Select a legible, spacious one-column layout only for Design Notes.
-   // Reset all shared text properties for the ordinary/Blueprint readers.
+   for(const label of this.readerDnaLabels)label.setVisible(isDna);
+   // The three unique reader modes have independent layouts. Reset shared
+   // text properties for ordinary readers and prevent overlap with frames.
    this.readerTitle.setPosition(isNotes?153:138,isNotes?108:97);
    this.readerTitle.setFontFamily(isNotes?'Arial, sans-serif':'monospace');
-   this.readerTitle.setColor(isNotes?'#103c53':isBlueprint?'#edfcff':'#f4e8d5');
+   this.readerTitle.setColor(isNotes?'#103c53':isDna?'#e9feff':isBlueprint?'#edfcff':'#f4e8d5');
    this.readerSubtitle.setPosition(isNotes?153:138,isNotes?144:138);
-   this.readerSubtitle.setColor(isNotes?'#487387':isBlueprint?'#99dcf7':'#a8dad2');
-   this.readerBody.setPosition(isNotes?153:isBlueprint?321:321,isNotes?245:isBlueprint?207:189);
+   this.readerSubtitle.setColor(isNotes?'#487387':isDna?'#a4e0eb':isBlueprint?'#99dcf7':'#a8dad2');
+   this.readerBody.setPosition(isNotes?153:isDna?339:321,
+    isNotes?245:isDna?255:isBlueprint?207:189);
    this.readerBody.setFontFamily(isNotes?'Arial, sans-serif':'monospace');
-   this.readerBody.setFontSize(isNotes?21:19);
-   this.readerBody.setWordWrapWidth(isNotes?650:492,true);
-   this.readerBody.setLineSpacing(isNotes?9:isBlueprint?8:10);
-   this.readerBody.setColor(isNotes?'#143c4c':isBlueprint?'#edfaff':'#e8efe6');
-   this.readerCount.setPosition(isNotes?807:817,isNotes?135:isBlueprint?138:145);
-   this.readerCount.setColor(isNotes?'#315a6b':'#b6dcd7');
+   this.readerBody.setFontSize(isNotes?21:isDna?18:19);
+   this.readerBody.setWordWrapWidth(isNotes?650:isDna?462:492,true);
+   this.readerBody.setLineSpacing(isNotes?9:isDna?9:isBlueprint?8:10);
+   this.readerBody.setColor(isNotes?'#143c4c':isDna?'#effcff':isBlueprint?'#edfaff':'#e8efe6');
+   this.readerCount.setPosition(isNotes?807:817,isNotes?135:isDna?138:isBlueprint?138:145);
+   this.readerCount.setColor(isNotes?'#315a6b':isDna?'#c2f7fa':'#b6dcd7');
    this.readerNext.setPosition(isNotes?815:821,isNotes?437:443);
-   this.readerNext.setColor(isNotes?'#24556a':'#f5dcaa');
+   this.readerNext.setColor(isNotes?'#24556a':isDna?'#d0f9e6':'#f5dcaa');
   }
   advanceReader(){
    if(!this.readerObject)return;
