@@ -231,7 +231,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.60 — Hide Settings HUD During Popups</span></footer>
+<footer><span></span><span>Prototype 16.61 — Digital Paper Design Notes</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -1794,6 +1794,39 @@ if (!window.Phaser) {
     .setScrollFactor(0).setDepth(252)));
    this.readerBlueprintLabels=blueprintLabels;
 
+   // DESIGN NOTES: a dedicated, text-only digital paper reader.
+   // Cool ivory "e-paper", navy ink, subtle writing guides and restrained
+   // neon edges; no computer icon, diagram or decorative illustrations.
+   const paper=add(this.add.graphics().setScrollFactor(0).setDepth(251));
+   paper.fillStyle(0x020e1a,.96);paper.fillRect(0,0,W,H);
+   paper.fillStyle(0x102b40,1);paper.fillRoundedRect(103,69,754,408,11);
+   paper.lineStyle(2,0x69d6e2,.88);paper.strokeRoundedRect(103,69,754,408,11);
+   // Inset light digital sheet; all actual content remains live Phaser text.
+   paper.fillStyle(0xdbe9ea,1);paper.fillRoundedRect(117,83,726,377,7);
+   paper.lineStyle(1,0xf4ffff,.85);paper.strokeRoundedRect(118,84,724,375,6);
+   paper.fillStyle(0xabcbd3,.60);paper.fillRect(130,166,700,1);
+   paper.fillStyle(0x87adb9,.45);paper.fillRect(130,407,700,1);
+   paper.fillStyle(0x1d718b,.88);paper.fillRect(118,87,5,366);
+   paper.fillStyle(0x40c7d8,.9);paper.fillRect(130,88,74,3);
+   paper.fillStyle(0x40c7d8,.75);paper.fillRect(754,453,73,3);
+   // Faint ruled-paper baseline stays behind the text, never crossing it
+   // at high contrast or obscuring any paragraph.
+   for(let py=266;py<395;py+=32){
+    paper.fillStyle(0x629cae,.095);paper.fillRect(153,py,650,1);
+   }
+   this.readerDigitalPaperBackground=paper;
+   this.readerNotesHeading=add(this.add.text(153,199,'',{
+    fontFamily:'Arial, sans-serif',fontSize:'22px',fontStyle:'bold',
+    color:'#16465b'
+   }).setResolution(2).setScrollFactor(0).setDepth(252));
+   this.readerNotesLabels=[
+    add(this.add.text(153,181,'DESIGN PRINCIPLE  /  PERSONAL NOTES',{
+     fontFamily:'monospace',fontSize:'11px',fontStyle:'bold',color:'#4b7b8e'
+    }).setResolution(2).setScrollFactor(0).setDepth(252)),
+    add(this.add.text(153,422,'PERSONAL DESIGN LOG  /  BAIO 2077',{
+     fontFamily:'monospace',fontSize:'11px',fontStyle:'bold',color:'#466d80'
+    }).setResolution(2).setScrollFactor(0).setDepth(252))
+   ];
    this.readerTitle=add(this.add.text(138,97,station.title,{
     fontFamily:'monospace',fontSize:'26px',fontStyle:'bold',color:'#f4e8d5'
    }).setResolution(2).setScrollFactor(0).setDepth(252));
@@ -1822,8 +1855,19 @@ if (!window.Phaser) {
    if(!station)return;
    this.readerTitle.setText(station.title);
    this.readerSubtitle.setText(station.subtitle);
-   this.readerBody.setText(station.pages[this.readerPage]);
-   this.readerCount.setText((this.readerPage+1)+' / '+station.pages.length);
+   const page=station.pages[this.readerPage];
+   if(this.readerObject==='home-notebook'){
+    // Retain every original word. Display the existing first line as the
+    // note's own heading and its paragraph underneath.
+    const split=page.indexOf('\n\n');
+    this.readerNotesHeading.setText(split>=0?page.slice(0,split):'');
+    this.readerBody.setText(split>=0?page.slice(split+2):page);
+   }else{
+    this.readerNotesHeading.setText('');
+    this.readerBody.setText(page);
+   }
+   this.readerCount.setText(String(this.readerPage+1).padStart(2,'0')+
+    ' / '+String(station.pages.length).padStart(2,'0'));
    this.readerNext.setText(this.readerPage+1<station.pages.length?'[ E / SPACE ] NEXT  ▸':'[ E / SPACE ] CLOSE  ✕');
   }
   openReader(id){
@@ -1835,18 +1879,31 @@ if (!window.Phaser) {
    this.lastJourneyDiscovery=this.readerJustCompleted?id:null;
    this.updateReaderPage();
    for(const obj of this.readerElements)obj.setVisible(true);
-   const isBlueprint=id==='home-blueprint';
-   this.readerGenericBackground.setVisible(!isBlueprint);
+   const isBlueprint=id==='home-blueprint',isNotes=id==='home-notebook';
+   this.readerGenericBackground.setVisible(!isBlueprint&&!isNotes);
    this.readerBlueprintBackground.setVisible(isBlueprint);
-   this.readerArchiveLabel.setVisible(!isBlueprint);
+   this.readerDigitalPaperBackground.setVisible(isNotes);
+   this.readerArchiveLabel.setVisible(!isBlueprint&&!isNotes);
+   this.readerNotesHeading.setVisible(isNotes);
    for(const label of this.readerBlueprintLabels)label.setVisible(isBlueprint);
-   this.readerTitle.setColor(isBlueprint?'#edfcff':'#f4e8d5');
-   this.readerSubtitle.setColor(isBlueprint?'#99dcf7':'#a8dad2');
-   this.readerBody.setColor(isBlueprint?'#edfaff':'#e8efe6');
-   // The blueprint's small field-notes caption is above the body;
-   // move text below it to preserve a generous visual separation.
-   this.readerBody.setY(isBlueprint?207:189);
-   this.readerBody.setLineSpacing(isBlueprint?8:10);
+   for(const label of this.readerNotesLabels)label.setVisible(isNotes);
+   // Select a legible, spacious one-column layout only for Design Notes.
+   // Reset all shared text properties for the ordinary/Blueprint readers.
+   this.readerTitle.setPosition(isNotes?153:138,isNotes?108:97);
+   this.readerTitle.setFontFamily(isNotes?'Arial, sans-serif':'monospace');
+   this.readerTitle.setColor(isNotes?'#103c53':isBlueprint?'#edfcff':'#f4e8d5');
+   this.readerSubtitle.setPosition(isNotes?153:138,isNotes?144:138);
+   this.readerSubtitle.setColor(isNotes?'#487387':isBlueprint?'#99dcf7':'#a8dad2');
+   this.readerBody.setPosition(isNotes?153:isBlueprint?321:321,isNotes?245:isBlueprint?207:189);
+   this.readerBody.setFontFamily(isNotes?'Arial, sans-serif':'monospace');
+   this.readerBody.setFontSize(isNotes?21:19);
+   this.readerBody.setWordWrapWidth(isNotes?650:492,true);
+   this.readerBody.setLineSpacing(isNotes?9:isBlueprint?8:10);
+   this.readerBody.setColor(isNotes?'#143c4c':isBlueprint?'#edfaff':'#e8efe6');
+   this.readerCount.setPosition(isNotes?807:817,isNotes?135:145);
+   this.readerCount.setColor(isNotes?'#315a6b':'#b6dcd7');
+   this.readerNext.setPosition(isNotes?815:821,isNotes?437:443);
+   this.readerNext.setColor(isNotes?'#24556a':'#f5dcaa');
   }
   advanceReader(){
    if(!this.readerObject)return;
