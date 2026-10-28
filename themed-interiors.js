@@ -380,6 +380,39 @@ function renderThemedInterior(scene,place){
   // Existing Contact Hub reader and District exit are still reachable.
   scene.zones[0].r=28;
   scene.zones.push({x:480,y:339,r:31,label:'View Contact Information',object:'hub'});
+  // Contact Hub reception terminal: the same floating interaction beacon
+  // used for clickable objects in HOME, LAB and WORKSHOP. Anchor it to the
+  // middle HD counter, not to Mira's portrait or the walkable floor.
+  // Visual only: no new zones, collisions or actions are introduced.
+  const receptionBeaconX=331+298/2;
+  const receptionBeaconY=counterY+40;
+  const receptionBeacon=scene.add.graphics().setDepth(5.2);
+  const receptionPulse={p:0};
+  const drawReceptionBeacon=()=>{
+   const wave=receptionPulse.p;
+   const x=receptionBeaconX,y=receptionBeaconY-3*Math.sin(wave*Math.PI);
+   const tint=0x76e4ee;
+   receptionBeacon.clear();
+   receptionBeacon.fillStyle(tint,.07+.09*wave);
+   receptionBeacon.fillCircle(x,y,14+2*wave);
+   receptionBeacon.lineStyle(2,tint,.60+.30*wave);
+   receptionBeacon.strokeCircle(x,y,9+2*wave);
+   receptionBeacon.fillStyle(0x152b3a,.95);
+   receptionBeacon.fillCircle(x,y,7);
+   receptionBeacon.fillStyle(tint,.95);
+   receptionBeacon.fillCircle(x,y,4);
+   receptionBeacon.fillStyle(0xf1ffff,.88);
+   receptionBeacon.fillRect(x-1,y-2,2,3);
+   receptionBeacon.fillStyle(tint,.85);
+   receptionBeacon.fillTriangle(x-4,y-15,x+4,y-15,x,y-11);
+  };
+  drawReceptionBeacon();
+  if(scene.tweens){
+   scene.tweens.add({
+    targets:receptionPulse,p:1,duration:1050,yoyo:true,repeat:-1,
+    ease:'Sine.easeInOut',onUpdate:drawReceptionBeacon
+   });
+  }
  }
  // Staff outfits are recolored INSIDE the original 32 walking sprite frames.
  // The former graphics 'uniform' was a separate static rectangle that looked
