@@ -228,7 +228,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.53 — Taller Lab EXIT Mat</span></footer>
+<footer><span></span><span>Prototype 16.54 — Seven Quest Missions & Futuristic Journal</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -459,20 +459,37 @@ if (!window.Phaser) {
    activePointers.clear();pressed.delete(dir);button.classList.remove('is-pressed');
   });
  }
- // Four portfolio locations are a light exploration quest, not a gate to content.
+ // Seven actual, independently tracked player interactions across four buildings.
+ // Do not count entering a building, NPC dialogue, or optional side props.
  const JOURNEY_STOPS=[
-  {id:'home',name:'HOME',detail:'About Me',hint:'Read the Home computer',direction:'Northwest',action:'USE HOME COMPUTER'},
-  {id:'lab',name:'LABORATORY',detail:'Experience',hint:'Access the career terminal',direction:'Northeast',action:'OPEN CAREER ARCHIVE'},
-  {id:'workshop',name:'WORKSHOP',detail:'Projects',hint:'Inspect the project board',direction:'Southeast',action:'VIEW PROJECT BOARD'},
-  {id:'hub',name:'CONTACT HUB',detail:'Contact',hint:'Open the contact console',direction:'Southwest',action:'OPEN CONTACT CONSOLE'}
+  {id:'home-blueprint',room:'home',name:'Blueprint',hint:'Inspect District Blueprint'},
+  {id:'home',room:'home',name:'Computer',hint:'Read About Me'},
+  {id:'home-notebook',room:'home',name:'Design Notes',hint:'Read Design Notes'},
+  {id:'lab',room:'lab',name:'Computer',hint:'Explore Experience'},
+  {id:'lab-samples',room:'lab',name:'DNA Machine',hint:'Inspect DNA Research'},
+  {id:'workshop',room:'workshop',name:'Computer',hint:'View Project Showcase'},
+  {id:'hub',room:'hub',name:'Reception Desk',hint:'View Contact Information'}
  ];
- const JOURNEY_STORAGE='baio-portfolio-discoveries-v2';
+ const JOURNEY_GROUPS=[
+  {id:'home',name:'HOME',accent:0x68c7ff,count:3},
+  {id:'lab',name:'LABORATORY',accent:0x70e3df,count:2},
+  {id:'workshop',name:'WORKSHOP',accent:0xffb467,count:1},
+  {id:'hub',name:'CONTACT HUB',accent:0xd6a2ff,count:1}
+ ];
+ const JOURNEY_STORAGE='baio-portfolio-discoveries-v3';
  const visitedStops=new Set();
  try{
-  const stored=JSON.parse(localStorage.getItem(JOURNEY_STORAGE)||'[]');
-  if(Array.isArray(stored))for(const id of stored)if(JOURNEY_STOPS.some(stop=>stop.id===id))visitedStops.add(id);
- }catch(e){/* Private browsing may disallow storage; in-session progress still works. */}
- // Progress is only earned by opening a portfolio object.
+  // Migrate only four previously recorded computer/reception interactions
+  // from v2. Newly introduced Blueprint, Design Notes and DNA quests are
+  // never auto-completed merely because the old building was visited.
+  const saved=localStorage.getItem(JOURNEY_STORAGE);
+  const stored=JSON.parse(saved===null
+   ?localStorage.getItem('baio-portfolio-discoveries-v2')||'[]':saved);
+  if(Array.isArray(stored)){
+   for(const id of stored)if(JOURNEY_STOPS.some(stop=>stop.id===id))visitedStops.add(id);
+  }
+ }catch(e){/* Private browsing: progress still works in this session. */}
+ // Award progress only when the matching interactive object is opened.
  function visitPortfolioLocation(id){
   if(!JOURNEY_STOPS.some(stop=>stop.id===id)||visitedStops.has(id))return false;
   visitedStops.add(id);
@@ -1523,74 +1540,120 @@ if (!window.Phaser) {
    g.fillStyle(0x486d7d,.83);g.fillRect(middle,yy,Math.max(8,last-middle-6),2);
    g.fillStyle(0xfad58c,.92);g.fillRect(last,yy,seg,2);
   }
-  createJourneyHUD(freshVisit){
-   // Replace the HUD and journal in-place after a new object discovery.
+  createJourneyHUD(newDiscovery=false){
+   // Quest HUD and modal rebuild from the same seven real-object flags.
    if(this.journeyUIObjects)for(const obj of this.journeyUIObjects)if(obj&&obj.active)obj.destroy();
    const startIndex=this.children.list.length;
-   const completed=visitedStops.size;
-   const earned=completed===JOURNEY_STOPS.length;
-   const next=JOURNEY_STOPS.find(stop=>!visitedStops.has(stop.id));
-   // A matching metal HUD, preserving live quest state and journal hotkeys.
+   const completed=visitedStops.size,total=JOURNEY_STOPS.length;
+   const earned=completed===total;
    const chipW=204,chipH=58,x=W-HUD_EDGE-chipW,y=HUD_EDGE;
    const g=this.add.graphics().setScrollFactor(0).setDepth(104);
    this.drawHudChassis(g,x,y,chipW,chipH,24);
-   // Centered white header; numeric quest progress remains in the journal.
-   // The compact HUD has no ornament or 4/4 counter; journal progress stays intact.
    this.add.text(x+chipW/2,y+6,'QUEST',{
-    fontFamily:'monospace',fontSize:'12px',fontStyle:'bold',
-    color:'#ffffff'
+    fontFamily:'monospace',fontSize:'12px',fontStyle:'bold',color:'#ffffff'
    }).setOrigin(.5,0).setScrollFactor(0).setDepth(105);
-   for(let i=0;i<JOURNEY_STOPS.length;i++){
-    const done=visitedStops.has(JOURNEY_STOPS[i].id);
-    const bx=x+18+i*28;
-    g.fillStyle(done?(earned?0xe6c985:0x88cabc):0x355663);
-    g.fillRoundedRect(bx,y+36,22,6,3);
+   // Seven discrete indicators fit inside the existing 204px quest widget.
+   for(let i=0;i<total;i++){
+    const bx=x+16+i*25,done=visitedStops.has(JOURNEY_STOPS[i].id);
+    g.fillStyle(done?0x8de9c9:0x365d6a,1);
+    g.fillRoundedRect(bx,y+31,18,6,2);
+    if(done){g.fillStyle(0xe0fff4,.85);g.fillRect(bx+3,y+32,12,1);}
    }
-   this.add.text(x+chipW-14,y+34,'Q · OPEN',{
-    fontFamily:'monospace',fontSize:'10px',color:'#a6c8cb'
+   this.add.text(x+17,y+43,completed+' / '+total,{
+    fontFamily:'monospace',fontSize:'10px',fontStyle:'bold',color:'#b7e7e6'
+   }).setScrollFactor(0).setDepth(105);
+   this.add.text(x+chipW-14,y+43,'Q · OPEN',{
+    fontFamily:'monospace',fontSize:'10px',color:'#b7e7e6'
    }).setOrigin(1,0).setScrollFactor(0).setDepth(105);
    this.journeyBounds={x,y,w:chipW,h:chipH};
-   // Optional quest journal is never an obstacle to exploring: press Q or click.
-   const objects=[];
-   const add=(o)=>{objects.push(o);return o};
+
+   // Wide neon HUD modal; missions are grouped by building for fast scanning.
+   const objects=[],add=obj=>{objects.push(obj);return obj};
    const frame=add(this.add.graphics().setScrollFactor(0).setDepth(301));
-   frame.fillStyle(0x071722,.65);frame.fillRect(0,0,W,H);
-   frame.fillStyle(0x102b39,.96);frame.fillRoundedRect(218,86,524,374,14);
-   frame.lineStyle(1.5,0x85ccc6,.78);frame.strokeRoundedRect(218,86,524,374,14);
-   frame.fillStyle(0x214753);frame.fillRoundedRect(240,151,480,7,3);
-   frame.fillStyle(earned?0xe8c985:0x8accc4);frame.fillRoundedRect(240,151,480*(completed/4),7,3);
-   add(this.add.text(244,106,'DISTRICT EXPLORATION JOURNAL',{
-    fontFamily:'monospace',fontSize:'23px',color:'#f3e9d3',fontStyle:'bold'
-   }).setScrollFactor(0).setDepth(302));
-   add(this.add.text(244,137,earned?'4 / 4 discoveries · Badge unlocked':completed+' / 4 discoveries',{
-    fontFamily:'monospace',fontSize:'13px',color:earned?'#f1d391':'#a6d6d3'
-   }).setScrollFactor(0).setDepth(302));
-   for(let i=0;i<JOURNEY_STOPS.length;i++){
-    const stop=JOURNEY_STOPS[i],done=visitedStops.has(stop.id),yy=178+i*54;
-    frame.fillStyle(done?0x214e4b:0x1a3a47);frame.fillRoundedRect(242,yy,477,47,6);
-    frame.lineStyle(1,done?0x76bea9:0x466b75,.62);frame.strokeRoundedRect(242,yy,477,47,6);
-    add(this.add.text(254,yy+10,done?'✓':'○',{
-     fontFamily:'monospace',fontSize:'22px',color:done?'#91d9ae':'#99b9c0'
-    }).setScrollFactor(0).setDepth(302));
-    add(this.add.text(290,yy+5,stop.name+'  /  '+stop.detail,{
-     fontFamily:'monospace',fontSize:'15px',fontStyle:'bold',color:done?'#e1f6e6':'#e8e4d8'
-    }).setScrollFactor(0).setDepth(302));
-    add(this.add.text(290,yy+27,done?'CONTENT DISCOVERED':stop.hint,{
-     fontFamily:'monospace',fontSize:'11px',color:done?'#99d7bb':'#acc8ca'
-    }).setScrollFactor(0).setDepth(302));
+   const write=(tx,ty,body,size,color,bold=false,originX=0)=>{
+    return add(this.add.text(tx,ty,body,{
+     fontFamily:'monospace',fontSize:size+'px',fontStyle:bold?'bold':'normal',
+     color,stroke:bold?'#071928':undefined,strokeThickness:bold?1:0
+    }).setOrigin(originX,0).setScrollFactor(0).setDepth(302));
+   };
+   const rect=(rx,ry,rw,rh,color,alpha=1)=>{
+    frame.fillStyle(color,alpha);frame.fillRoundedRect(rx,ry,rw,rh,5);
+   };
+   const border=(rx,ry,rw,rh,color,width=1,alpha=1)=>{
+    frame.lineStyle(width,color,alpha);frame.strokeRoundedRect(rx,ry,rw,rh,5);
+   };
+   // Dim the world, then draw a double-bordered polygonal command center.
+   frame.fillStyle(0x020b15,.83);frame.fillRect(0,0,W,H);
+   frame.fillStyle(0x0c2636,1);frame.fillRoundedRect(72,37,816,472,12);
+   frame.lineStyle(3,0x2aaec7,.8);frame.strokeRoundedRect(72,37,816,472,12);
+   frame.lineStyle(1,0x83f6ff,.7);frame.strokeRoundedRect(78,43,804,460,9);
+   frame.fillStyle(0x143f52,.70);frame.fillRoundedRect(84,49,792,77,7);
+   frame.fillStyle(0x5aeaff,.92);frame.fillRect(103,49,154,3);
+   frame.fillStyle(0x5aeaff,.72);frame.fillRect(731,49,126,3);
+   for(let k=0;k<4;k++){
+    frame.fillStyle(k===0?0xb9fcff:0x3b9ab3,.86);
+    frame.fillRect(825+k*9,67,5,3);
    }
-   add(this.add.text(480,428,earned?'✦ BAIO DISTRICT EXPLORER UNLOCKED ✦':'PRESS Q OR TAP ANYWHERE TO CLOSE',{
-    fontFamily:'monospace',fontSize:'13px',color:earned?'#f2d58e':'#b7d5d6'
-   }).setOrigin(.5).setScrollFactor(0).setDepth(302));
+   write(105,59,'DISTRICT QUEST LOG',27,'#effaff',true);
+   write(107,99,'MISSION CONTROL   //   4 LOCATIONS   //   7 INTERACTIONS',12,'#9ed6df');
+   write(855,102,String(completed).padStart(2,'0')+' / 07 COMPLETE',12,
+    earned?'#f7d68e':'#b7f9eb',true,1);
+   rect(103,137,754,9,0x123b4d);
+   rect(103,137,754*completed/total,9,earned?0xf5d18a:0x67e7da);
+   frame.fillStyle(0xe9ffff,.65);frame.fillRect(103,137,754*completed/total,2);
+
+   // 2 × 2 dashboard: three Home tasks, two Laboratory tasks and
+   // one task each for Workshop and Contact Hub.
+   const renderGroup=(group,x0,y0,w,h,number)=>{
+    const tasks=JOURNEY_STOPS.filter(task=>task.room===group.id);
+    const done=tasks.filter(task=>visitedStops.has(task.id)).length;
+    rect(x0,y0,w,h,0x102e40,1);
+    border(x0,y0,w,h,group.accent,1,.76);
+    frame.fillStyle(group.accent,.85);frame.fillRect(x0+2,y0+2,5,h-4);
+    frame.fillStyle(group.accent,.17);frame.fillRect(x0+9,y0+8,w-18,25);
+    write(x0+18,y0+12,String(number).padStart(2,'0')+' / '+group.name,
+     16,'#f0faff',true);
+    write(x0+w-15,y0+15,done+' / '+tasks.length,12,done===tasks.length?'#9df8cd':'#b4d9df',true,1);
+    tasks.forEach((task,i)=>{
+     const rowY=y0+39+i*38,finished=visitedStops.has(task.id);
+     rect(x0+15,rowY,w-30,35,finished?0x194a48:0x0a2434);
+     border(x0+15,rowY,w-30,35,finished?0x66caa6:0x37697d,1,.6);
+     frame.fillStyle(finished?0x69dfb0:0x24485b,.95);
+     frame.fillRoundedRect(x0+23,rowY+9,20,18,4);
+     write(x0+33,rowY+8,finished?'✓':'·',15,
+      finished?'#082c30':'#b7e3e7',true,.5);
+     write(x0+53,rowY+3,task.name,14,'#f3faff',true);
+     write(x0+53,rowY+20,finished?'COMPLETED':task.hint,10,
+      finished?'#9bdfc5':'#a5ced8');
+     if(finished){
+      frame.fillStyle(0x70e8ba,.85);
+      frame.fillRect(x0+w-32,rowY+6,8,2);
+     }
+    });
+   };
+   renderGroup(JOURNEY_GROUPS[0],103,160,368,176,1);
+   renderGroup(JOURNEY_GROUPS[1],489,160,368,176,2);
+   renderGroup(JOURNEY_GROUPS[2],103,345,368,72,3);
+   renderGroup(JOURNEY_GROUPS[3],489,345,368,72,4);
+
+   // Helpful note: players can speak with nearby NPCs for guidance.
+   rect(103,427,754,56,0x163747,.98);
+   border(103,427,754,56,0x5ecbda,1,.77);
+   frame.fillStyle(0x69ecf2,.85);frame.fillRect(104,428,5,54);
+   write(119,434,'NOTES  /  NEED HELP?',14,'#c5fbff',true);
+   write(119,452,'Forgot what to do? Ask nearby NPCs for hints. Press E / SPACE to talk.',12,'#e0f2f3');
+   write(479,490,earned?'✦ BAIO DISTRICT EXPLORER UNLOCKED ✦':'Q / ESC / TAP ANYWHERE TO CLOSE',
+    12,earned?'#f5d98e':'#9dd3d9',true,.5);
    this.journalObjects=objects;
    for(const obj of objects)obj.setVisible(false);
    this.journeyUIObjects=this.children.list.slice(startIndex);
-   if(freshVisit){
-    const stop=JOURNEY_STOPS.find(item=>item.id===this.place);
+   // Show only the newly completed task, even if multiple tasks share a room.
+   if(newDiscovery){
+    const stop=JOURNEY_STOPS.find(task=>task.id===newDiscovery);
     const msg=earned?'✦ BADGE UNLOCKED: BAIO DISTRICT EXPLORER':
-     '✓ '+stop.detail.toUpperCase()+' DISCOVERED  ·  '+completed+'/4';
+     '✓ '+(stop?stop.name.toUpperCase():'QUEST')+' COMPLETE  ·  '+completed+'/'+total;
     const toast=this.add.text(W/2,127,msg,{
-     fontFamily:'monospace',fontSize:'17px',fontStyle:'bold',color:'#e4f7e8',
+     fontFamily:'monospace',fontSize:'16px',fontStyle:'bold',color:'#e4f7e8',
      backgroundColor:'#1b5654',padding:{x:16,y:10}
     }).setOrigin(.5).setScrollFactor(0).setDepth(150);
     this.tweens.add({targets:toast,alpha:0,delay:1850,duration:500,onComplete:()=>toast.destroy()});
@@ -1655,6 +1718,7 @@ if (!window.Phaser) {
    this.readerObject=id;this.readerPage=0;
    // Content discovery—not just room entry—earns quest progress.
    this.readerJustCompleted=visitPortfolioLocation(id);
+   this.lastJourneyDiscovery=this.readerJustCompleted?id:null;
    this.updateReaderPage();
    for(const obj of this.readerElements)obj.setVisible(true);
   }
@@ -1668,8 +1732,8 @@ if (!window.Phaser) {
    if(!this.readerObject)return;
    for(const obj of this.readerElements)obj.setVisible(false);
    this.readerObject=null;this.readerPage=0;
-   if(this.readerJustCompleted)this.createJourneyHUD(true);
-   this.readerJustCompleted=false;
+   if(this.readerJustCompleted)this.createJourneyHUD(this.lastJourneyDiscovery);
+   this.readerJustCompleted=false;this.lastJourneyDiscovery=null;
   }
   showDialogPage(){
    const npc=this.dialogNpc;
