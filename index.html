@@ -228,7 +228,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.56 — Taller Quest HUD Spacing</span></footer>
+<footer><span></span><span>Prototype 16.57 — Aligned Quest HUD Margins</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -1548,23 +1548,28 @@ if (!window.Phaser) {
    const startIndex=this.children.list.length;
    const completed=visitedStops.size,total=JOURNEY_STOPS.length;
    const earned=completed===total;
-   const chipW=204,chipH=76,x=W-HUD_EDGE-chipW,y=HUD_EDGE;
+   // Equal rhythm between header divider, progress pips, text and bottom
+   // trim: 8px / 8px / ~8px. All horizontal edges share an 18px inset.
+   const chipW=204,chipH=78,x=W-HUD_EDGE-chipW,y=HUD_EDGE;
+   const chipInset=18,pipW=18,pipGap=7,pipY=36,labelY=50;
    const g=this.add.graphics().setScrollFactor(0).setDepth(104);
    this.drawHudChassis(g,x,y,chipW,chipH,24);
    this.add.text(x+chipW/2,y+6,'QUEST',{
     fontFamily:'monospace',fontSize:'12px',fontStyle:'bold',color:'#ffffff'
    }).setOrigin(.5,0).setScrollFactor(0).setDepth(105);
-   // Keep the compact existing quest widget, now with 7 real progress pips.
+   // Exactly fill the content width: 7×18px bars + 6×7px gaps
+   // = 168px, leaving identical 18px margins on both sides.
    for(let i=0;i<total;i++){
-    const bx=x+16+i*25,done=visitedStops.has(JOURNEY_STOPS[i].id);
+    const bx=x+chipInset+i*(pipW+pipGap);
+    const done=visitedStops.has(JOURNEY_STOPS[i].id);
     g.fillStyle(done?0x8de9c9:0x365d6a);
-    g.fillRoundedRect(bx,y+31,18,6,2);
-    if(done){g.fillStyle(0xe0fff4,.85);g.fillRect(bx+3,y+32,12,1);}
+    g.fillRoundedRect(bx,y+pipY,pipW,6,2);
+    if(done){g.fillStyle(0xe0fff4,.85);g.fillRect(bx+3,y+pipY+1,pipW-6,1);}
    }
-   this.add.text(x+17,y+47,completed+' / '+total,{
+   this.add.text(x+chipInset,y+labelY,completed+' / '+total,{
     fontFamily:'monospace',fontSize:'10px',fontStyle:'bold',color:'#b7e7e6'
    }).setScrollFactor(0).setDepth(105);
-   this.add.text(x+chipW-14,y+47,'Q · OPEN',{
+   this.add.text(x+chipW-chipInset,y+labelY,'Q · OPEN',{
     fontFamily:'monospace',fontSize:'10px',color:'#b7e7e6'
    }).setOrigin(1,0).setScrollFactor(0).setDepth(105);
    this.journeyBounds={x,y,w:chipW,h:chipH};
