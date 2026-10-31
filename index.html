@@ -231,7 +231,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.73 — Unified Minimap Landmark Visibility</span></footer>
+<footer><span></span><span>Prototype 16.74 — Clear HUD While Quest Journal Is Open</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -1630,7 +1630,7 @@ if (!window.Phaser) {
    // conversations can temporarily hide just the HUD without affecting
    // persistent quest progress, rebuilding, or journal visibility.
    this.questHudObjects=this.children.list.slice(startIndex);
-   if(this.dialogNpc)this.setQuestHudVisible(false);
+   if(this.dialogNpc||this.journalOpen)this.setQuestHudVisible(false);
 
    // Simple high-resolution quest modal. Clear spacing, full-size labels,
    // restrained neon accents and a one-line help note.
@@ -1738,7 +1738,14 @@ if (!window.Phaser) {
    if(this.dialogNpc||this.readerObject)return;
    this.journalOpen=typeof force==='boolean'?force:!this.journalOpen;
    syncPopupControls(this);
-   // Hide/restore the minimap and its four DOM landmark badges at once.
+   // The full QUEST JOURNAL owns the screen: hide its small HUD shortcut
+   // and all three TIME elements, then restore them together on close.
+   // Only visibility changes; in-game time and quest progress keep running.
+   this.setQuestHudVisible(!this.journalOpen);
+   for(const obj of [this.clockHudFrame,this.clockHudLabel,this.gameClockText]){
+    if(obj&&obj.active)obj.setVisible(!this.journalOpen);
+   }
+   // Minimap graphics, title and SVG building icons already share this rule.
    if(this.place==='district')syncHDMinimapIcons(this);
    for(const obj of this.journalObjects)obj.setVisible(this.journalOpen);
    if(this.journalOpen&&this.npcHint)this.npcHint.setVisible(false);
