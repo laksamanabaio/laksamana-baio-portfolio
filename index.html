@@ -231,7 +231,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.78 — First Raka Portrait Safely Framed</span></footer>
+<footer><span></span><span>Prototype 16.79 — Raka HD Close-Up Portrait</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -676,10 +676,11 @@ if (!window.Phaser) {
     './assets/npc/portraits/v1676/dialogue-portraits.webp?v=16.76',{
      frameWidth:92,frameHeight:116,margin:0,spacing:0
     });
-   // User's original half-body Raka portrait (not the later jeans version):
-   // 768x1024 HD WebP with transparent edges, used only inside TALK.
-   this.load.image('npc-raka-talk-v1678-hd',
-    './assets/npc/portraits/v1678/raka-talk-first-hd.webp?v=16.78');
+   // Raka's original high-resolution portrait is now a tightly framed
+   // head-and-shoulders crop, rather than a full torso squeezed to 90px.
+   // The 640x820 alpha WebP keeps the eyes and mouth readable in TALK.
+   this.load.image('npc-raka-talk-v1679-closeup',
+    './assets/npc/portraits/v1679/raka-talk-closeup-hd.webp?v=16.79');
    if(!this.portfolioLoaderBound){
     this.portfolioLoaderBound=true;
     this.load.on('progress',updateAssetProgress);
@@ -2209,17 +2210,16 @@ if (!window.Phaser) {
    // (not the little full-body walking sprites). Keep a safe fallback for
    // NPCs whose new custom portraits have not been generated yet.
    const portraitFrame=NPC_DIALOGUE_PORTRAITS[npc.name];
-   if(npc.name==='Raka'&&this.textures.exists('npc-raka-talk-v1678-hd')){
-    // Show the requested FIRST portrait with safe padding on ALL sides.
-    // 90x120px is proportionate to its 3:4 original aspect ratio, and
-    // fits completely inside the 117x~149px framed TALK portrait window.
-    // Use linear texture filtering solely for this HD image; global
-    // nearest-neighbor scaling remains unchanged for walking NPCs.
-    const portrait=this.textures.get('npc-raka-talk-v1678-hd');
+   if(npc.name==='Raka'&&this.textures.exists('npc-raka-talk-v1679-closeup')){
+    // Crop is composed for this 117x~144 TALK window. Enlarging the face,
+    // not stretching the artwork, restores visible eyes and mouth at 960x540.
+    // A 105x134 inset leaves at least 6px horizontal and 5px vertical
+    // safety margin from the frame; all other portraits stay unchanged.
+    const portrait=this.textures.get('npc-raka-talk-v1679-closeup');
     if(typeof portrait.setFilter==='function')
      portrait.setFilter(Phaser.Textures.FilterMode.LINEAR);
-    this.dialogAvatar.setTexture('npc-raka-talk-v1678-hd');
-    this.dialogAvatar.setOrigin(.5,.5).setDisplaySize(90,120);
+    this.dialogAvatar.setTexture('npc-raka-talk-v1679-closeup');
+    this.dialogAvatar.setOrigin(.5,.5).setDisplaySize(105,134);
    }else if(portraitFrame!==undefined&&this.textures.exists('dialogue-portraits-v1676')){
     this.dialogAvatar.setTexture('dialogue-portraits-v1676',portraitFrame);
     // Fill the existing portrait frame without covering its neon border.
