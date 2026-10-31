@@ -720,8 +720,8 @@ if (!window.Phaser) {
      './assets/npc/portraits/v1682/'+id+'.webp?v='+(id==='citra'?'16.83':'16.82'));
    }
    // Transparent HD head-to-chest artwork, framed like the existing NPC TALK portraits.
-   this.load.image('baio-prologue-talk-v1684',
-    './assets/player/portraits/v1684/baio-prologue-talk.webp?v=16.84');
+   this.load.image('baio-prologue-talk-v1685',
+    './assets/player/portraits/v1685/baio-prologue-talk.webp?v=16.85');
    if(!this.portfolioLoaderBound){
     this.portfolioLoaderBound=true;
     this.load.on('progress',updateAssetProgress);
@@ -2267,11 +2267,11 @@ if (!window.Phaser) {
    const portraitFrame=NPC_DIALOGUE_PORTRAITS[npc.name];
    const updatedPortraitId=NPC_TALK_UPDATED_PORTRAITS[npc.name];
    const updatedPortraitKey=updatedPortraitId&&'npc-talk-hd-'+updatedPortraitId+'-v1682';
-   if(npc.isIntro&&this.textures.exists('baio-prologue-talk-v1684')){
-    const portrait=this.textures.get('baio-prologue-talk-v1684');
+   if(npc.isIntro&&this.textures.exists('baio-prologue-talk-v1685')){
+    const portrait=this.textures.get('baio-prologue-talk-v1685');
     if(typeof portrait.setFilter==='function')
      portrait.setFilter(Phaser.Textures.FilterMode.LINEAR);
-    this.dialogAvatar.setTexture('baio-prologue-talk-v1684');
+    this.dialogAvatar.setTexture('baio-prologue-talk-v1685');
     this.dialogAvatar.setOrigin(.5,.5).setDisplaySize(105,134);
    }else if(updatedPortraitKey&&this.textures.exists(updatedPortraitKey)){
     // Same 105x134 size, center alignment, and HD filtering as Dimas.
