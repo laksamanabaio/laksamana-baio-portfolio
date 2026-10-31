@@ -231,7 +231,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.72 — Hide QUEST HUD During NPC TALK</span></footer>
+<footer><span></span><span>Prototype 16.73 — Unified Minimap Landmark Visibility</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -342,9 +342,14 @@ if (!window.Phaser) {
     .map(el=>[el.dataset.building,el])
   );
   const syncHDMinimapIcons=scene=>{
-   // This SVG overlay sits above the Phaser canvas in the DOM; hide it
-   // during TALK so it cannot pierce through the full-width dialogue.
-   if(scene.dialogNpc){minimapHDLayer.hidden=true;return;}
+   // The minimap uses Phaser graphics and text, while its four crisp
+   // landmark symbols live in one browser SVG overlay. Treat all three
+   // as ONE HUD unit: hide them together behind TALK, QUEST JOURNAL,
+   // or any other interactive reading modal.
+   const minimapVisible=!(scene.dialogNpc||scene.journalOpen||scene.readerObject);
+   if(scene.minimap)scene.minimap.setVisible(minimapVisible);
+   if(scene.minimapTitle)scene.minimapTitle.setVisible(minimapVisible);
+   if(!minimapVisible){minimapHDLayer.hidden=true;return;}
    const canvas=scene.game.canvas,layout=scene.minimapLayout;
    if(!canvas||!layout||!scene.buildings)return;
    const screen=canvas.getBoundingClientRect();
@@ -1733,6 +1738,8 @@ if (!window.Phaser) {
    if(this.dialogNpc||this.readerObject)return;
    this.journalOpen=typeof force==='boolean'?force:!this.journalOpen;
    syncPopupControls(this);
+   // Hide/restore the minimap and its four DOM landmark badges at once.
+   if(this.place==='district')syncHDMinimapIcons(this);
    for(const obj of this.journalObjects)obj.setVisible(this.journalOpen);
    if(this.journalOpen&&this.npcHint)this.npcHint.setVisible(false);
   }
@@ -2174,8 +2181,11 @@ if (!window.Phaser) {
    syncPopupControls(this);
    // Restore the QUEST widget alongside Music/Fullscreen after TALK closes.
    this.setQuestHudVisible(true);
-   // The next minimap redraw restores browser-rendered landmark icons.
-   if(this.place==='district')this.minimapHDLayoutKey=null;
+   // Restore minimap, title, and all four icons together with one sync.
+   if(this.place==='district'){
+    this.minimapHDLayoutKey=null;
+    syncHDMinimapIcons(this);
+   }
    for(const obj of [this.dialogFrame,this.dialogAvatar,this.dialogName,this.dialogText,this.dialogNext,this.dialogAction,this.dialogPageIndicator])if(obj)obj.setVisible(false);
   }
   interact(){
@@ -2198,7 +2208,7 @@ if (!window.Phaser) {
     syncPopupControls(this);
     // Match the settings controls: hide QUEST during NPC dialogue only.
     this.setQuestHudVisible(false);
-    if(this.place==='district')minimapHDLayer.hidden=true;
+    if(this.place==='district')syncHDMinimapIcons(this);
     this.dialogPage=0;
     for(const obj of [this.dialogFrame,this.dialogAvatar,this.dialogName,this.dialogText,this.dialogNext,this.dialogAction,this.dialogPageIndicator])obj.setVisible(true);
     if(this.npcHint)this.npcHint.setVisible(false);
