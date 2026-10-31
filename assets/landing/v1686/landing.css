@@ -1,0 +1,86 @@
+/* Landing v16.86: viewport-safe 16:9 comic illustration and independent controls. */
+#opening { position:absolute; inset:0; z-index:20; display:grid; place-items:center;
+  overflow:hidden; background:#030d19; color:#f4fcff; }
+#opening[hidden] { display:none; }
+#opening .landing-stage { position:relative; isolation:isolate;
+  width:min(100vw,177.77778dvh); max-height:100dvh; aspect-ratio:16/9;
+  overflow:hidden; background:#050f20; }
+#opening .landing-art { position:absolute; inset:0; display:block; width:100%; height:100%;
+  object-fit:contain; object-position:center; pointer-events:none; user-select:none; }
+#opening .landing-copyright { position:absolute; z-index:2; left:2.4%; top:3.4%;
+  max-width:46%; padding:8px 11px; color:#e7f7f7; background:rgba(2,14,28,.48);
+  border-left:2px solid rgba(110,230,239,.66);
+  font:700 clamp(9px,.8vw,13px)/1.25 monospace; letter-spacing:.07em;
+  text-shadow:0 1px 4px #031321; }
+#opening .landing-title { position:absolute; z-index:3; right:2.7%; top:5.8%;
+  display:block; width:52%; height:auto; object-fit:contain; pointer-events:none;
+  filter:drop-shadow(0 7px 11px rgba(0,5,13,.56));
+  animation:landingLogoFloat 5.4s ease-in-out infinite; will-change:transform; }
+@keyframes landingLogoFloat {
+  0%,100% { transform:translate3d(0,0,0); }
+  50% { transform:translate3d(0,-9px,0); }
+}
+#opening .landing-actions { position:absolute; z-index:4; right:6.1%; bottom:9%;
+  width:clamp(210px,31%,520px); }
+#startGame { position:relative; display:flex; justify-content:center; align-items:center; gap:14px;
+  width:100%; min-height:clamp(56px,5.8vw,90px); padding:13px 28px; cursor:pointer;
+  border:2px solid #7cebf2; outline:0; color:#efffff;
+  font:900 clamp(18px,2.1vw,31px)/1.1 monospace; letter-spacing:.22em;
+  background:linear-gradient(180deg,#184558 0%,#0a2638 22%,#061827 80%,#10384c 100%);
+  box-shadow:inset 0 0 0 3px #082436,inset 0 0 0 5px rgba(95,232,234,.33),
+    0 6px 0 #04121e,0 0 18px rgba(34,222,237,.26);
+  clip-path:polygon(0 0,calc(100% - 17px) 0,100% 17px,100% 100%,
+    17px 100%,0 calc(100% - 17px));
+  text-shadow:0 0 10px rgba(142,253,255,.53);
+  animation:startNeonFlicker 4.8s steps(1,end) infinite;
+  transition:transform .2s ease,background-color .2s ease; }
+#startGame::before { content:""; pointer-events:none; position:absolute; inset:6px;
+  border:1px solid rgba(130,239,241,.66);
+  clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,
+    12px 100%,0 calc(100% - 12px)); }
+#startGame::after { content:""; pointer-events:none; position:absolute;
+  left:8%; right:8%; bottom:6px; height:3px;
+  background:repeating-linear-gradient(90deg,#6df0ed 0 27px,transparent 27px 38px,
+    #f4d48a 38px 44px,transparent 44px 53px); opacity:.84; }
+#startGame .start-icon { display:inline-block; color:#a2f4ef; font-size:.89em;
+  text-shadow:0 0 9px rgba(88,239,235,.75); }
+#startGame .start-label { position:relative; top:-1px; }
+#startGame:hover { transform:translateY(-3px); background:#164154; animation-play-state:paused;
+  border-color:#edda9d; box-shadow:inset 0 0 0 3px #092739,
+    0 0 26px rgba(94,248,245,.52),0 7px 0 #04121e; }
+#startGame:focus-visible { outline:3px solid #f8e2a3; outline-offset:5px; animation-play-state:paused; }
+#startGame:active { transform:translateY(1px); }
+@keyframes startNeonFlicker {
+  0%,23%,28%,67%,73%,100% { border-color:#7cebf2; color:#f4ffff;
+    box-shadow:inset 0 0 0 3px #082436,inset 0 0 0 5px rgba(95,232,234,.35),
+      0 6px 0 #04121e,0 0 25px rgba(57,236,244,.56);
+    text-shadow:0 0 12px rgba(142,253,255,.64); }
+  24%,26%,68%,70% { border-color:#346778; color:#9dbfc9;
+    box-shadow:inset 0 0 0 3px #082436,0 5px 0 #04121e,
+      0 0 3px rgba(52,103,120,.2); text-shadow:none; }
+  27%,71% { border-color:#e9d49b; color:#fff6db;
+    box-shadow:inset 0 0 0 3px #092436,0 5px 0 #04121e,
+      0 0 22px rgba(250,212,134,.54);
+    text-shadow:0 0 11px rgba(249,215,162,.57); }
+}
+@media(max-width:790px) and (orientation:landscape) {
+  #opening .landing-copyright { font-size:9px; padding:5px 7px; }
+  #opening .landing-title { width:50%; top:4%; }
+  #opening .landing-actions { width:34%; bottom:7%; }
+  #startGame { min-height:43px; font-size:15px; }
+}
+/* Portrait fallback keeps the complete illustration visible while giving controls room. */
+@media(orientation:portrait) {
+  #opening .landing-stage { width:100%; height:100%; max-height:none; aspect-ratio:auto;
+    background:radial-gradient(ellipse at 50% 50%,#102b42 0%,#030d19 80%); }
+  #opening .landing-art { height:100%; object-fit:contain; object-position:center; }
+  #opening .landing-copyright { left:4%; right:4%; top:4%; max-width:none;
+    font-size:clamp(9px,2.2vw,12px); text-align:center; }
+  #opening .landing-title { left:5%; right:5%; top:15%; width:90%; max-height:25%; }
+  #opening .landing-actions { left:10%; right:10%; bottom:9%; width:80%; }
+  #startGame { min-height:64px; font-size:clamp(18px,5.2vw,26px); }
+}
+@media(prefers-reduced-motion:reduce) {
+  #opening .landing-title,#startGame { animation:none; }
+  #startGame { transition:none; }
+}

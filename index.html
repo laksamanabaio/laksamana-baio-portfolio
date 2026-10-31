@@ -60,24 +60,6 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 @media(pointer:fine){.touch{display:none}}
 @media(max-width:700px){:root{--hud-margin:var(--hud-margin-compact)}.touch{bottom:16px;left:16px}}
 
-/* Opening experience */
-#opening{position:absolute;inset:0;z-index:20;overflow:hidden;background:radial-gradient(ellipse at 50% 75%,#284c57 0%,#132d3c 55%,#091923 100%);color:#f4e7d0}
-#opening[hidden]{display:none}
-#opening .brand{position:absolute;left:var(--hud-margin);top:var(--hud-margin);font-size:clamp(19px,2.5vw,36px);font-weight:800;letter-spacing:.09em;max-width:52%}
-#opening .brand small{display:block;color:#83c5c5;font-size:12px;letter-spacing:.28em;margin-bottom:10px}
-#opening .profile{position:absolute;right:var(--hud-margin);top:var(--hud-margin);text-align:right;color:#cce1df;font-size:clamp(11px,1.2vw,16px);line-height:1.7}
-#opening .profile strong{display:block;color:#f3d4a3;font-size:clamp(16px,1.8vw,24px)}
-#opening .scene{position:absolute;left:10%;right:10%;top:29%;bottom:21%;border:3px solid #4c7983;box-shadow:0 0 0 8px #0b2533,0 15px 65px #050e18;background:linear-gradient(#213c4a 0 37%,#3e5260 37% 41%,#8e765f 41%);overflow:hidden;image-rendering:pixelated}
-#opening .scene:before{content:"";position:absolute;left:14%;top:10%;width:27%;height:40%;background:linear-gradient(90deg,#1b5266 49%,#416b78 50%);border:12px solid #172f3c;box-shadow:inset 0 0 0 4px #78aeb7}
-#opening .scene:after{content:"";position:absolute;right:12%;bottom:12%;width:27%;height:14%;background:#3c515c;border-top:12px solid #c4a482;box-shadow:0 12px 0 #263b46}
-#opening .desk{position:absolute;right:15%;top:35%;width:24%;height:13%;background:#344d5a;border:8px solid #c4a482}
-#opening .desk:before{content:"";position:absolute;left:18%;bottom:100%;width:50%;height:75%;background:#65b7c0;border:8px solid #182b38}
-#opening .avatar{position:absolute;left:43%;top:57%;width:36px;height:52px;background:linear-gradient(#1c303d 0 18%,#dcb48e 18% 42%,#273e50 42% 84%,#182b38 84%);box-shadow:inset 6px 0 #315b6b;animation:workloop 8s steps(1,end) infinite}
-@keyframes workloop{0%,20%{transform:translate(0,0)}25%,45%{transform:translate(105px,-10px)}50%,70%{transform:translate(105px,-10px) scaleX(-1)}75%,100%{transform:translate(0,0)}}
-#opening .cta{position:absolute;bottom:clamp(56px,8vh,90px);left:50%;transform:translateX(-50%);text-align:center;width:min(90%,460px)}
-#startGame{cursor:pointer;display:block;width:100%;padding:15px 30px;background:#84c7c5;border:3px solid #cce8d9;box-shadow:6px 6px 0 #173e4c;color:#102c37;font:800 clamp(17px,2vw,24px) monospace;letter-spacing:.2em}
-#startGame:hover,#startGame:focus-visible{background:#e8c99d;outline:3px solid #fff0d4}
-#opening .copyright{margin-top:19px;color:#b8ced0;font-size:12px}
 /* Rules screen appears after START and before the real asset-loading screen. */
 #rules{position:absolute;inset:0;z-index:21;display:grid;place-items:center;overflow-y:auto;
  padding:clamp(12px,4vh,38px) 16px;
@@ -174,6 +156,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 .minimapHDIcon{position:absolute;display:block;transform:translate(-50%,-50%);line-height:0;will-change:left,top}
 .minimapHDIcon svg{display:block;width:100%;height:100%;shape-rendering:geometricPrecision}
 </style>
+<link rel="stylesheet" href="./assets/landing/v1686/landing.css?v=16.86">
 </head>
 <body>
 <main>
@@ -232,11 +215,19 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
 <footer><span></span><span>Prototype 16.84 — Baio's Opening Story</span></footer>
-<section id="opening" aria-label="Portfolio opening screen">
- <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
- <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
- <div class="scene" aria-hidden="true"><div class="desk"></div><div class="avatar"></div></div>
- <div class="cta"><button id="startGame" type="button">▶ START</button><div class="copyright">© Laksamana Baio. All rights reserved.</div></div>
+<section id="opening" aria-label="Laksamana Baio's World — portfolio landing page">
+ <div class="landing-stage">
+  <img class="landing-art" src="./assets/landing/v1686/landing-background.webp?v=16.86"
+   alt="" aria-hidden="true" decoding="async" fetchpriority="high">
+  <div class="landing-copyright">COPYRIGHT © 2077 LAKSAMANABAIO · PORTFOLIO WEBSITE</div>
+  <img class="landing-title" src="./assets/landing/v1686/landing-title.webp?v=16.86"
+   alt="Laksamana Baio's World" decoding="async">
+  <div class="landing-actions">
+   <button id="startGame" type="button" aria-label="Start game">
+    <span class="start-icon" aria-hidden="true">▶</span><span class="start-label">START</span>
+   </button>
+  </div>
+ </div>
 </section>
 <section id="rules" aria-labelledby="rulesTitle" tabindex="-1" hidden>
  <div class="rules-panel">
