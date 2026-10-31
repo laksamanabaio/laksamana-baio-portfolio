@@ -231,7 +231,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.80 — Ten Individual HD TALK Portraits</span></footer>
+<footer><span></span><span>Prototype 16.81 — Nine New Pixel-Art TALK Portraits</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -379,13 +379,19 @@ if (!window.Phaser) {
   // Each imported portrait is a distinct half-body image drawn for its NPC.
   // Sheet indices 0..9 are in artist-approved reading order (5x2 layout).
   // Unassigned NPCs keep their original animated sprite portrait.
-  // Unique 512x656 transparent cropped portraits for the first 10 NPCs.
-  // Keep Raka and all animated in-world sprites fully unchanged.
+  // All TALK portraits are 512x656 transparent cropped WebP assets.
+  // NPC walking animations and the existing dialogue layout stay untouched.
   const NPC_TALK_HD_PORTRAITS={
-   'Nadia':'nadia','Mr. Bima':'mr-bima','Maya':'maya',
+   'Mr. Bima':'mr-bima','Maya':'maya',
    'Dimas':'dimas','Grandma Sari':'grandma-sari',
    'Grandpa Arman':'grandpa-arman','Lina':'lina',
    'Reno':'reno','Grandma Ratih':'grandma-ratih','Adit':'adit'
+  };
+  // Nine new or revised 16-bit NPC portraits, individually framed like Dimas.
+  const NPC_TALK_UPDATED_PORTRAITS={
+   'Nadia':'nadia','Tara':'tara','Mr. Jaya':'mr-jaya',
+   'Citra':'citra','Fajar':'fajar','Dr. Nira':'dr-nira',
+   'Pak Damar':'pak-damar','Mira':'mira','Raka':'raka'
   };
   const NPC_DIALOGUE_PORTRAITS={
    'Dr. Nira':0,'Mira':1,'Tara':2,'Citra':3,'Maya':4,
@@ -693,6 +699,10 @@ if (!window.Phaser) {
    for(const id of Object.values(NPC_TALK_HD_PORTRAITS)){
     this.load.image('npc-talk-hd-'+id+'-v1680',
      './assets/npc/portraits/v1680/'+id+'.webp?v=16.80');
+   }
+   for(const id of Object.values(NPC_TALK_UPDATED_PORTRAITS)){
+    this.load.image('npc-talk-hd-'+id+'-v1681',
+     './assets/npc/portraits/v1681/'+id+'.webp?v=16.81');
    }
    if(!this.portfolioLoaderBound){
     this.portfolioLoaderBound=true;
@@ -2223,7 +2233,17 @@ if (!window.Phaser) {
    // (not the little full-body walking sprites). Keep a safe fallback for
    // NPCs whose new custom portraits have not been generated yet.
    const portraitFrame=NPC_DIALOGUE_PORTRAITS[npc.name];
-   if(npc.name==='Raka'&&this.textures.exists('npc-raka-talk-v1679-closeup')){
+   const updatedPortraitId=NPC_TALK_UPDATED_PORTRAITS[npc.name];
+   const updatedPortraitKey=updatedPortraitId&&'npc-talk-hd-'+updatedPortraitId+'-v1681';
+   if(updatedPortraitKey&&this.textures.exists(updatedPortraitKey)){
+    // Same 105x134 size, center alignment, and HD filtering as Dimas.
+    // Transparent 512x656 composition keeps the face readable and hair uncropped.
+    const portrait=this.textures.get(updatedPortraitKey);
+    if(typeof portrait.setFilter==='function')
+     portrait.setFilter(Phaser.Textures.FilterMode.LINEAR);
+    this.dialogAvatar.setTexture(updatedPortraitKey);
+    this.dialogAvatar.setOrigin(.5,.5).setDisplaySize(105,134);
+   }else if(npc.name==='Raka'&&this.textures.exists('npc-raka-talk-v1679-closeup')){
     // Crop is composed for this 117x~144 TALK window. Enlarging the face,
     // not stretching the artwork, restores visible eyes and mouth at 960x540.
     // A 105x134 inset leaves at least 6px horizontal and 5px vertical
