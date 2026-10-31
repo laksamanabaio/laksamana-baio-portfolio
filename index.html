@@ -231,7 +231,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.71 — Home EXIT Mat Alignment</span></footer>
+<footer><span></span><span>Prototype 16.72 — Hide QUEST HUD During NPC TALK</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -1558,7 +1558,8 @@ if (!window.Phaser) {
     if(this.readerObject){this.advanceReader();return;}
     if(this.journalOpen){this.toggleJourney(false);return}
     const b=this.journeyBounds;
-    if(pointer.x>=b.x&&pointer.x<=b.x+b.w&&pointer.y>=b.y&&pointer.y<=b.y+b.h){
+    if(!this.dialogNpc&&pointer.x>=b.x&&pointer.x<=b.x+b.w&&
+       pointer.y>=b.y&&pointer.y<=b.y+b.h){
      this.toggleJourney(true);return;
     }
     if(this.dialogNpc||this.near)this.interact();
@@ -1619,6 +1620,12 @@ if (!window.Phaser) {
     fontFamily:'monospace',fontSize:'10px',color:'#b7e7e6'
    }).setOrigin(1,0).setScrollFactor(0).setDepth(105);
    this.journeyBounds={x,y,w:chipW,h:chipH};
+   // Only the small QUEST widget belongs to the exploration HUD.
+   // Preserve this group separately from the full QUEST journal so NPC
+   // conversations can temporarily hide just the HUD without affecting
+   // persistent quest progress, rebuilding, or journal visibility.
+   this.questHudObjects=this.children.list.slice(startIndex);
+   if(this.dialogNpc)this.setQuestHudVisible(false);
 
    // Simple high-resolution quest modal. Clear spacing, full-size labels,
    // restrained neon accents and a one-line help note.
@@ -1715,6 +1722,11 @@ if (!window.Phaser) {
      backgroundColor:'#1b5654',padding:{x:16,y:10}
     }).setResolution(2).setOrigin(.5).setScrollFactor(0).setDepth(150);
     this.tweens.add({targets:toast,alpha:0,delay:1850,duration:500,onComplete:()=>toast.destroy()});
+   }
+  }
+  setQuestHudVisible(visible){
+   for(const obj of this.questHudObjects||[]){
+    if(obj&&obj.active)obj.setVisible(visible);
    }
   }
   toggleJourney(force){
@@ -2160,6 +2172,8 @@ if (!window.Phaser) {
    this.dialogNpc=null;
    this.dialogPage=0;
    syncPopupControls(this);
+   // Restore the QUEST widget alongside Music/Fullscreen after TALK closes.
+   this.setQuestHudVisible(true);
    // The next minimap redraw restores browser-rendered landmark icons.
    if(this.place==='district')this.minimapHDLayoutKey=null;
    for(const obj of [this.dialogFrame,this.dialogAvatar,this.dialogName,this.dialogText,this.dialogNext,this.dialogAction,this.dialogPageIndicator])if(obj)obj.setVisible(false);
@@ -2182,6 +2196,8 @@ if (!window.Phaser) {
    if(this.near.npc){
     this.dialogNpc=this.near.npc;
     syncPopupControls(this);
+    // Match the settings controls: hide QUEST during NPC dialogue only.
+    this.setQuestHudVisible(false);
     if(this.place==='district')minimapHDLayer.hidden=true;
     this.dialogPage=0;
     for(const obj of [this.dialogFrame,this.dialogAvatar,this.dialogName,this.dialogText,this.dialogNext,this.dialogAction,this.dialogPageIndicator])obj.setVisible(true);
