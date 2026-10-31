@@ -231,7 +231,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.79 — Raka HD Close-Up Portrait</span></footer>
+<footer><span></span><span>Prototype 16.80 — Ten Individual HD TALK Portraits</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -379,6 +379,14 @@ if (!window.Phaser) {
   // Each imported portrait is a distinct half-body image drawn for its NPC.
   // Sheet indices 0..9 are in artist-approved reading order (5x2 layout).
   // Unassigned NPCs keep their original animated sprite portrait.
+  // Unique 512x656 transparent cropped portraits for the first 10 NPCs.
+  // Keep Raka and all animated in-world sprites fully unchanged.
+  const NPC_TALK_HD_PORTRAITS={
+   'Nadia':'nadia','Mr. Bima':'mr-bima','Maya':'maya',
+   'Dimas':'dimas','Grandma Sari':'grandma-sari',
+   'Grandpa Arman':'grandpa-arman','Lina':'lina',
+   'Reno':'reno','Grandma Ratih':'grandma-ratih','Adit':'adit'
+  };
   const NPC_DIALOGUE_PORTRAITS={
    'Dr. Nira':0,'Mira':1,'Tara':2,'Citra':3,'Maya':4,
    'Grandma Ratih':5,'Grandma Sari':6,'Grandpa Arman':7,
@@ -681,6 +689,11 @@ if (!window.Phaser) {
    // The 640x820 alpha WebP keeps the eyes and mouth readable in TALK.
    this.load.image('npc-raka-talk-v1679-closeup',
     './assets/npc/portraits/v1679/raka-talk-closeup-hd.webp?v=16.79');
+   // One independent HD WebP per NPC, tightly composed for TALK 105x134.
+   for(const id of Object.values(NPC_TALK_HD_PORTRAITS)){
+    this.load.image('npc-talk-hd-'+id+'-v1680',
+     './assets/npc/portraits/v1680/'+id+'.webp?v=16.80');
+   }
    if(!this.portfolioLoaderBound){
     this.portfolioLoaderBound=true;
     this.load.on('progress',updateAssetProgress);
@@ -2219,6 +2232,16 @@ if (!window.Phaser) {
     if(typeof portrait.setFilter==='function')
      portrait.setFilter(Phaser.Textures.FilterMode.LINEAR);
     this.dialogAvatar.setTexture('npc-raka-talk-v1679-closeup');
+    this.dialogAvatar.setOrigin(.5,.5).setDisplaySize(105,134);
+   }else if(NPC_TALK_HD_PORTRAITS[npc.name]&&
+    this.textures.exists('npc-talk-hd-'+NPC_TALK_HD_PORTRAITS[npc.name]+'-v1680')){
+    // Same 105x134 inset and HD filtering as Raka; transparent crop
+    // leaves room for each hairstyle inside the cyan portrait border.
+    const portraitKey='npc-talk-hd-'+NPC_TALK_HD_PORTRAITS[npc.name]+'-v1680';
+    const portrait=this.textures.get(portraitKey);
+    if(typeof portrait.setFilter==='function')
+     portrait.setFilter(Phaser.Textures.FilterMode.LINEAR);
+    this.dialogAvatar.setTexture(portraitKey);
     this.dialogAvatar.setOrigin(.5,.5).setDisplaySize(105,134);
    }else if(portraitFrame!==undefined&&this.textures.exists('dialogue-portraits-v1676')){
     this.dialogAvatar.setTexture('dialogue-portraits-v1676',portraitFrame);
