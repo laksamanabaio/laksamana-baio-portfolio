@@ -702,7 +702,7 @@ if (!window.Phaser) {
    }
    for(const id of Object.values(NPC_TALK_UPDATED_PORTRAITS)){
     this.load.image('npc-talk-hd-'+id+'-v1682',
-     './assets/npc/portraits/v1682/'+id+'.webp?v=16.82');
+     './assets/npc/portraits/v1682/'+id+'.webp?v='+(id==='citra'?'16.83':'16.82'));
    }
    if(!this.portfolioLoaderBound){
     this.portfolioLoaderBound=true;
