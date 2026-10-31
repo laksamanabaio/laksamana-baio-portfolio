@@ -1,12 +1,14 @@
-/* Landing v16.86: viewport-safe 16:9 comic illustration and independent controls. */
+/* Landing v16.87: desktop full-viewport image without left/right gutters or cropping. */
 #opening { position:absolute; inset:0; z-index:20; display:grid; place-items:center;
   overflow:hidden; background:#030d19; color:#f4fcff; }
 #opening[hidden] { display:none; }
 #opening .landing-stage { position:relative; isolation:isolate;
-  width:min(100vw,177.77778dvh); max-height:100dvh; aspect-ratio:16/9;
+  width:100%; height:100%; max-width:none; max-height:none;
   overflow:hidden; background:#050f20; }
 #opening .landing-art { position:absolute; inset:0; display:block; width:100%; height:100%;
-  object-fit:contain; object-position:center; pointer-events:none; user-select:none; }
+  /* Fill every desktop/laptop viewport edge to edge, and preserve every illustrated edge.
+     On non-16:9 monitors the artwork scales slightly differently along X/Y. */
+  object-fit:fill; object-position:center; pointer-events:none; user-select:none; }
 #opening .landing-copyright { position:absolute; z-index:2; left:2.4%; top:3.4%;
   max-width:46%; padding:8px 11px; color:#e7f7f7; background:rgba(2,14,28,.48);
   border-left:2px solid rgba(110,230,239,.66);
