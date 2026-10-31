@@ -231,7 +231,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.75 — Hide QUEST and TIME During Object Readers</span></footer>
+<footer><span></span><span>Prototype 16.76 — Unique NPC Dialogue Portrait Atlas</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -376,6 +376,14 @@ if (!window.Phaser) {
   };
   const DISTRICT_BUILDING_SIZE={width:392,height:326};
   const NPC_HINT_Y=-Math.ceil(175*NPC_CHARACTER_SCALE)-30;
+  // Each imported portrait is a distinct half-body image drawn for its NPC.
+  // Sheet indices 0..9 are in artist-approved reading order (5x2 layout).
+  // Unassigned NPCs keep their original animated sprite portrait.
+  const NPC_DIALOGUE_PORTRAITS={
+   'Dr. Nira':0,'Mira':1,'Tara':2,'Citra':3,'Maya':4,
+   'Grandma Ratih':5,'Grandma Sari':6,'Grandpa Arman':7,
+   'Nadia':8,'Reno':9
+  };
   // A new website visit starts at a random time of day: morning, midday,
   // dusk or night each have a 25% chance, regardless of their duration.
   // Choose a time comfortably inside the selected phase so visitors
@@ -661,6 +669,13 @@ if (!window.Phaser) {
  class World extends Phaser.Scene{
   constructor(){super('World')}
   preload(){
+   // Ten unique RPG-style half-body portraits, 92x116 each, packed into
+   // one lightweight WebP atlas (5 columns x 2 rows) for dialogue ONLY.
+   // NPCs walking in the world retain their existing sprite sheets.
+   this.load.spritesheet('dialogue-portraits-v1676',
+    './assets/npc/portraits/v1676/dialogue-portraits.webp?v=16.76',{
+     frameWidth:92,frameHeight:116,margin:0,spacing:0
+    });
    if(!this.portfolioLoaderBound){
     this.portfolioLoaderBound=true;
     this.load.on('progress',updateAssetProgress);
@@ -2186,11 +2201,20 @@ if (!window.Phaser) {
    this.dialogAction.setText(this.dialogPage<npc.pages.length-1?'NEXT  ›':'CLOSE ×');
    this.dialogPageIndicator.setText(String(this.dialogPage+1).padStart(2,'0')+
     ' / '+String(npc.pages.length).padStart(2,'0'));
-   // Dialogue portrait is the same new character design as the NPC in-world.
-   this.dialogAvatar.setTexture(npc.portraitTexture||'npc-'+npc.appearance,npc.portraitFrame??0);
-   // Portraits all display at the same logical 136x184 frame size.
-   if(npc.portraitFrame==='__BASE')this.dialogAvatar.setDisplaySize(136*.48,184*.48);
-   else this.dialogAvatar.setScale(.48);
+   // Portraits in TALK use their own half-body pixel-art character art
+   // (not the little full-body walking sprites). Keep a safe fallback for
+   // NPCs whose new custom portraits have not been generated yet.
+   const portraitFrame=NPC_DIALOGUE_PORTRAITS[npc.name];
+   if(portraitFrame!==undefined&&this.textures.exists('dialogue-portraits-v1676')){
+    this.dialogAvatar.setTexture('dialogue-portraits-v1676',portraitFrame);
+    // Fill the existing portrait frame without covering its neon border.
+    this.dialogAvatar.setOrigin(.5,.5).setDisplaySize(109,135);
+   }else{
+    this.dialogAvatar.setTexture(npc.portraitTexture||'npc-'+npc.appearance,npc.portraitFrame??0);
+    this.dialogAvatar.setOrigin(.5,.52);
+    if(npc.portraitFrame==='__BASE')this.dialogAvatar.setDisplaySize(136*.48,184*.48);
+    else this.dialogAvatar.setScale(.48);
+   }
   }
   closeDialog(){
    this.dialogNpc=null;
