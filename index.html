@@ -231,7 +231,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  <button type="button" data-dir="down" aria-label="Move down"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="right" aria-label="Move right"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
-<footer><span></span><span>Prototype 16.74 — Clear HUD While Quest Journal Is Open</span></footer>
+<footer><span></span><span>Prototype 16.75 — Hide QUEST and TIME During Object Readers</span></footer>
 <section id="opening" aria-label="Portfolio opening screen">
  <div class="brand"><small>WELCOME TO SECTOR 2077</small>Laksamana Baio<br>Online Portfolio</div>
  <div class="profile"><strong>PRODUCT DESIGNER</strong>5 years in UI/UX design<br>Interactive portfolio · 2077</div>
@@ -1734,17 +1734,21 @@ if (!window.Phaser) {
     if(obj&&obj.active)obj.setVisible(visible);
    }
   }
+  setExplorationHudVisible(visible){
+   // QUEST shortcut and TIME belong to exploration, not a fullscreen
+   // object reader or the QUEST JOURNAL. Hide all four HUD objects
+   // together while preserving the running clock and quest state.
+   this.setQuestHudVisible(visible);
+   for(const obj of [this.clockHudFrame,this.clockHudLabel,this.gameClockText]){
+    if(obj&&obj.active)obj.setVisible(visible);
+   }
+  }
   toggleJourney(force){
    if(this.dialogNpc||this.readerObject)return;
    this.journalOpen=typeof force==='boolean'?force:!this.journalOpen;
    syncPopupControls(this);
-   // The full QUEST JOURNAL owns the screen: hide its small HUD shortcut
-   // and all three TIME elements, then restore them together on close.
-   // Only visibility changes; in-game time and quest progress keep running.
-   this.setQuestHudVisible(!this.journalOpen);
-   for(const obj of [this.clockHudFrame,this.clockHudLabel,this.gameClockText]){
-    if(obj&&obj.active)obj.setVisible(!this.journalOpen);
-   }
+   // Quest Journal and object interactions share the same HUD visibility.
+   this.setExplorationHudVisible(!this.journalOpen);
    // Minimap graphics, title and SVG building icons already share this rule.
    if(this.place==='district')syncHDMinimapIcons(this);
    for(const obj of this.journalObjects)obj.setVisible(this.journalOpen);
@@ -2106,6 +2110,9 @@ if (!window.Phaser) {
    if(!this.readerElements||!PORTFOLIO_STATIONS[id])return;
    this.readerObject=id;this.readerPage=0;
    syncPopupControls(this);
+   // All object pop-ups (computer, Blueprint, Design Notes, DNA, etc.)
+   // hide both the small QUEST shortcut and TIME until the reader closes.
+   this.setExplorationHudVisible(false);
    // Content discovery—not just room entry—earns quest progress.
    this.readerJustCompleted=visitPortfolioLocation(id);
    this.lastJourneyDiscovery=this.readerJustCompleted?id:null;
@@ -2159,6 +2166,9 @@ if (!window.Phaser) {
    this.readerObject=null;this.readerPage=0;
    syncPopupControls(this);
    if(this.readerJustCompleted)this.createJourneyHUD(this.lastJourneyDiscovery);
+   // Restore the rebuilt QUEST HUD (if the interaction completed a mission)
+   // together with TIME after the object reader is fully closed.
+   this.setExplorationHudVisible(true);
    this.readerJustCompleted=false;this.lastJourneyDiscovery=null;
   }
   showDialogPage(){
