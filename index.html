@@ -1913,18 +1913,31 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    g.fillStyle(0x9cb7b3);g.fillRect(178,340,70,8);
    this.readerGenericBackground=g;
 
-   // DISTRICT BLUEPRINT: a crisp vector HUD, not a raster screenshot.
-   // 704px body: 260px map + 12px gutter + 432px field notes.
-   // The 432:260 proportion approximates the golden ratio; 16px inner
-   // padding and 16px vertical gutters align every reading edge.
+   // DISTRICT BLUEPRINT / RULES-INSPIRED HUD v17.00.
+   // Keep the crisp vector / 16-bit pixel style of the actual game.
+   // Outer top gap = 19px and outer bottom gap = 20px.
+   // Header 89..159, content 169..400, footer 416..456:
+   // cards move 6px up and footer 7px up, without shortening content.
+   // Two content cards remain at the approximate golden ratio 260:432.
    const blueprint=add(this.add.graphics().setScrollFactor(0).setDepth(251));
    const cyan=0x86eeff,blue=0x3f8ab6,deep=0x082743;
-   const bpLeft={x:128,y:175,w:260,h:231};
-   const bpRight={x:400,y:175,w:432,h:231};
-   blueprint.fillStyle(0x03101f,.97);blueprint.fillRect(0,0,W,H);
-   blueprint.fillStyle(deep);blueprint.fillRoundedRect(104,70,752,406,6);
-   blueprint.lineStyle(2,cyan,.96);blueprint.strokeRoundedRect(104,70,752,406,6);
-   blueprint.lineStyle(1,0x438fac,.73);blueprint.strokeRoundedRect(112,78,736,390,4);
+   const bpLeft={x:128,y:169,w:260,h:231};
+   const bpRight={x:400,y:169,w:432,h:231};
+   blueprint.fillStyle(0x02101b,.96);blueprint.fillRect(0,0,W,H);
+   // Deep shadow and four-pixel bezel echo the neon-framed Rules popup.
+   blueprint.fillStyle(0x010711,.80);blueprint.fillRoundedRect(109,78,752,406,10);
+   blueprint.fillStyle(0x081a2c,1);blueprint.fillRoundedRect(100,66,760,414,10);
+   blueprint.fillStyle(0x0a2637,1);blueprint.fillRoundedRect(104,70,752,406,8);
+   // A quiet navy-to-teal treatment keeps blueprint markings readable.
+   for(let n=0;n<5;n++){
+    blueprint.fillStyle(n%2?0x0e3043:0x0b2a3c,.14);
+    blueprint.fillRect(116,84+n*76,728,76);
+   }
+   blueprint.lineStyle(2,0x70d6e2,1);blueprint.strokeRoundedRect(104,70,752,406,8);
+   blueprint.lineStyle(1,0x27627a,.92);blueprint.strokeRoundedRect(110,76,740,394,5);
+   blueprint.lineStyle(1,0x7de8ed,.30);blueprint.strokeRoundedRect(113,79,734,388,4);
+   blueprint.fillStyle(0x69eaf2,.9);
+   blueprint.fillRect(124,70,96,3);blueprint.fillRect(755,473,80,3);
    // Architectural graph paper: very faint, behind opaque content modules.
    for(let x=120,i=0;x<=840;x+=16,i++){
     blueprint.lineStyle(1,blue,i%4===0?.19:.07);
@@ -1944,34 +1957,51 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    bpCorner(116,82,1,1);bpCorner(844,82,-1,1);
    bpCorner(116,464,1,-1);bpCorner(844,464,-1,-1);
    // Title rail, with the section title and page number on one baseline.
-   blueprint.fillStyle(0x0b3652,.98);blueprint.fillRect(125,89,710,70);
-   blueprint.lineStyle(1,0x75d9ed,.8);blueprint.strokeRect(125,89,710,70);
-   blueprint.lineStyle(1,0x76deef,.83);blueprint.lineBetween(126,159,834,159);
-   blueprint.fillStyle(0x61e9f5,1);blueprint.fillRect(127,97,3,50);
-   blueprint.fillStyle(0x55cbe7,.75);
-   for(let k=0;k<4;k++)blueprint.fillRect(747+k*15,101,10,3);
-   // Both content cards use the same top, bottom, and interior inset.
+   blueprint.fillStyle(0x061a2d,1);blueprint.fillRect(125,89,710,70);
+   blueprint.fillStyle(0x11394d,1);blueprint.fillRect(127,91,706,66);
+   blueprint.fillStyle(0x14465b,.48);blueprint.fillRect(127,91,706,33);
+   blueprint.lineStyle(2,0x70d6e2,.92);blueprint.strokeRect(125,89,710,70);
+   blueprint.lineStyle(1,0x2b7892,.87);blueprint.strokeRect(128,92,704,64);
+   blueprint.fillStyle(0x78f5f8,1);blueprint.fillRect(127,98,3,50);
+   blueprint.fillStyle(0x53bfd7,.93);blueprint.fillRect(135,91,80,3);
+   blueprint.fillStyle(0x5bcbde,.85);
+   for(let k=0;k<4;k++)blueprint.fillRect(747+k*15,102,10,3);
+   blueprint.lineStyle(1,0x70d6e2,.44);blueprint.lineBetween(141,155,821,155);
+   // Rules-style inner cards: two-pixel neon borders, navy underlay and
+   // subtle top highlight. Matching 16px inner margins on both cards.
    for(const card of [bpLeft,bpRight]){
-    blueprint.fillStyle(0x07253b,.99);
+    blueprint.fillStyle(0x041521,1);
+    blueprint.fillRect(card.x-2,card.y+3,card.w+4,card.h+2);
+    blueprint.fillStyle(0x0b2c42,.99);
     blueprint.fillRect(card.x,card.y,card.w,card.h);
-    blueprint.lineStyle(1,0x6ad8ed,.84);
+    blueprint.fillStyle(0x164357,.5);
+    blueprint.fillRect(card.x+2,card.y+2,card.w-4,30);
+    blueprint.lineStyle(2,0x70d6e2,.97);
     blueprint.strokeRect(card.x,card.y,card.w,card.h);
-    blueprint.fillStyle(0x67eaf4,.9);
-    for(const [xx,yy] of [[card.x+4,card.y+4],[card.x+card.w-6,card.y+4],
-                          [card.x+4,card.y+card.h-6],[card.x+card.w-6,card.y+card.h-6]]){
+    blueprint.lineStyle(1,0x286b83,.76);
+    blueprint.strokeRect(card.x+4,card.y+4,card.w-8,card.h-8);
+    blueprint.fillStyle(0x56e2f1,.94);
+    for(const [xx,yy] of [[card.x+5,card.y+5],[card.x+card.w-7,card.y+5],
+                         [card.x+5,card.y+card.h-7],[card.x+card.w-7,card.y+card.h-7]]){
      blueprint.fillRect(xx,yy,2,2);
     }
-    blueprint.lineStyle(1,0x4f9cb9,.55);
-    blueprint.lineBetween(card.x+12,211,card.x+card.w-12,211);
+    blueprint.fillStyle(0x59e4ed,.85);blueprint.fillRect(card.x+2,card.y+2,48,2);
+    blueprint.lineStyle(1,0x6dbfd5,.55);
+    blueprint.lineBetween(card.x+16,card.y+36,card.x+card.w-16,card.y+36);
    }
+   // Keep the existing four distinct building silhouettes and fountain;
+   // offset the survey art with its card for symmetrical vertical padding.
+   const survey=add(this.add.graphics().setScrollFactor(0).setDepth(251.5));
+   survey.setY(-6);
+   this.readerBlueprintMap=survey;
    // Faint local map grid and surveyed streets; never beneath text.
    for(let xx=143,i=0;xx<=373;xx+=12,i++){
-    blueprint.lineStyle(1,blue,i%4===0?.22:.10);
-    blueprint.lineBetween(xx,216,xx,389);
+    survey.lineStyle(1,blue,i%4===0?.22:.10);
+    survey.lineBetween(xx,216,xx,389);
    }
    for(let yy=220,i=0;yy<=390;yy+=12,i++){
-    blueprint.lineStyle(1,blue,i%4===0?.22:.10);
-    blueprint.lineBetween(143,yy,373,yy);
+    survey.lineStyle(1,blue,i%4===0?.22:.10);
+    survey.lineBetween(143,yy,373,yy);
    }
    // Four locations connect to a central fountain like a mini district map.
    const nodes=[
@@ -1980,95 +2010,88 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
     {x:171,y:337,cx:198,cy:361,key:'C'},
     {x:291,y:337,cx:318,cy:361,key:'W'}
    ];
-   blueprint.lineStyle(5,0x1b678b,.8);
-   blueprint.lineBetween(198,270,198,337);
-   blueprint.lineBetween(318,270,318,337);
-   blueprint.lineBetween(198,305,318,305);
-   blueprint.lineStyle(2,0x87ecf7,.88);
-   blueprint.lineBetween(198,270,198,337);
-   blueprint.lineBetween(318,270,318,337);
-   blueprint.lineBetween(198,305,318,305);
+   survey.lineStyle(5,0x1b678b,.8);
+   survey.lineBetween(198,270,198,337);
+   survey.lineBetween(318,270,318,337);
+   survey.lineBetween(198,305,318,305);
+   survey.lineStyle(2,0x87ecf7,.88);
+   survey.lineBetween(198,270,198,337);
+   survey.lineBetween(318,270,318,337);
+   survey.lineBetween(198,305,318,305);
    for(const [xx,yy] of [[198,305],[318,305]]){
-    blueprint.fillStyle(0xb5faff,1);blueprint.fillRect(xx-3,yy-3,6,6);
+    survey.fillStyle(0xb5faff,1);survey.fillRect(xx-3,yy-3,6,6);
    }
    // Location markers: clean pixel frames with a recognizable icon per site.
    for(const node of nodes){
-    blueprint.fillStyle(0x0c3550,.99);blueprint.fillRect(node.x,node.y,54,49);
-    blueprint.lineStyle(2,cyan,.95);blueprint.strokeRect(node.x,node.y,54,49);
-    blueprint.lineStyle(1,0x4d9dbd,.75);
-    blueprint.strokeRect(node.x+3,node.y+3,48,43);
-    blueprint.fillStyle(0x75e9f3,.95);
-    blueprint.fillRect(node.x+3,node.y+3,4,2);
-    blueprint.fillRect(node.x+47,node.y+44,4,2);
+    survey.fillStyle(0x0c3550,.99);survey.fillRect(node.x,node.y,54,49);
+    survey.lineStyle(2,cyan,.95);survey.strokeRect(node.x,node.y,54,49);
+    survey.lineStyle(1,0x4d9dbd,.75);
+    survey.strokeRect(node.x+3,node.y+3,48,43);
+    survey.fillStyle(0x75e9f3,.95);
+    survey.fillRect(node.x+3,node.y+3,4,2);
+    survey.fillRect(node.x+47,node.y+44,4,2);
    }
    // HOME: sloped roof, square room, front door.
-   blueprint.lineStyle(2,0xc3fbff,.94);
-   blueprint.lineBetween(187,242,198,232);blueprint.lineBetween(198,232,209,242);
-   blueprint.strokeRect(190,241,17,11);
-   blueprint.strokeRect(196,245,5,7);
+   survey.lineStyle(2,0xc3fbff,.94);
+   survey.lineBetween(187,242,198,232);survey.lineBetween(198,232,209,242);
+   survey.strokeRect(190,241,17,11);
+   survey.strokeRect(196,245,5,7);
    // LAB: two graduated test tubes and a connecting beaker.
-   blueprint.strokeRect(308,233,5,15);
-   blueprint.strokeRect(322,233,5,15);
-   blueprint.lineBetween(306,250,329,250);
-   blueprint.lineBetween(310,250,312,253);
-   blueprint.lineBetween(325,250,323,253);
-   blueprint.fillStyle(0x8cfaed,.9);blueprint.fillRect(309,243,3,4);
-   blueprint.fillRect(323,239,3,8);
+   survey.strokeRect(308,233,5,15);
+   survey.strokeRect(322,233,5,15);
+   survey.lineBetween(306,250,329,250);
+   survey.lineBetween(310,250,312,253);
+   survey.lineBetween(325,250,323,253);
+   survey.fillStyle(0x8cfaed,.9);survey.fillRect(309,243,3,4);
+   survey.fillRect(323,239,3,8);
    // CONTACT HUB: envelope with a clearly visible fold.
-   blueprint.strokeRect(187,346,22,13);
-   blueprint.lineBetween(187,346,198,354);
-   blueprint.lineBetween(198,354,209,346);
-   blueprint.fillStyle(0x8cfaed,.9);blueprint.fillRect(210,342,3,3);
+   survey.strokeRect(187,346,22,13);
+   survey.lineBetween(187,346,198,354);
+   survey.lineBetween(198,354,209,346);
+   survey.fillStyle(0x8cfaed,.9);survey.fillRect(210,342,3,3);
    // WORKSHOP: small cog with center hub and four teeth.
-   blueprint.strokeCircle(318,352,7);
-   blueprint.fillStyle(0xb4ffff,.95);blueprint.fillCircle(318,352,2);
-   blueprint.lineStyle(2,0xc3fbff,.95);
+   survey.strokeCircle(318,352,7);
+   survey.fillStyle(0xb4ffff,.95);survey.fillCircle(318,352,2);
+   survey.lineStyle(2,0xc3fbff,.95);
    for(const [x1,y1,x2,y2] of [[318,341,318,344],[318,360,318,363],
      [307,352,310,352],[326,352,329,352]]){
-    blueprint.lineBetween(x1,y1,x2,y2);
+    survey.lineBetween(x1,y1,x2,y2);
    }
    // Precise concentric water rings at the central landmark.
-   blueprint.fillStyle(0x07283e,1);blueprint.fillCircle(258,305,25);
-   blueprint.lineStyle(1,0x65bfe1,.65);blueprint.strokeCircle(258,305,25);
-   blueprint.lineStyle(2,0x9cffff,.95);blueprint.strokeCircle(258,305,18);
-   blueprint.lineStyle(1,0x67ddef,.85);blueprint.strokeCircle(258,305,10);
-   blueprint.fillStyle(0x7beef7,.35);blueprint.fillCircle(258,305,7);
-   blueprint.fillStyle(0xd2ffff,.99);blueprint.fillRect(255,302,6,6);
-   // Compass and survey register, kept outside the four illustrated pins.
-   blueprint.lineStyle(1,0x8cddf2,.85);
-   blueprint.lineBetween(369,225,369,235);
-   blueprint.lineBetween(369,225,365,231);
-   blueprint.lineBetween(369,225,373,231);
-   blueprint.lineStyle(1,0x6dc9e1,.5);
-   blueprint.lineBetween(143,387,157,387);
-   blueprint.lineBetween(359,387,373,387);
-   // Field notes panel has a solid backdrop and a quiet writing grid.
-   for(let yy=274;yy<396;yy+=24){
-    blueprint.lineStyle(1,0x387b9f,.10);
+   survey.fillStyle(0x07283e,1);survey.fillCircle(258,305,25);
+   survey.lineStyle(1,0x65bfe1,.65);survey.strokeCircle(258,305,25);
+   survey.lineStyle(2,0x9cffff,.95);survey.strokeCircle(258,305,18);
+   survey.lineStyle(1,0x67ddef,.85);survey.strokeCircle(258,305,10);
+   survey.fillStyle(0x7beef7,.35);survey.fillCircle(258,305,7);
+   survey.fillStyle(0xd2ffff,.99);survey.fillRect(255,302,6,6);
+   // Survey marker labels are intentionally omitted for a clean map.
+   // Solid field-note writing area with a subtle, nonintrusive grid.
+   for(let yy=268;yy<390;yy+=24){
+    blueprint.lineStyle(1,0x387b9f,.085);
     blueprint.lineBetween(416,yy,816,yy);
    }
-   blueprint.fillStyle(0x7beef7,.9);blueprint.fillRect(402,188,3,17);
-   // Footer: 704px full-width command/status strip and matching 16px inset.
-   blueprint.fillStyle(0x092d46,.99);blueprint.fillRect(128,423,704,40);
-   blueprint.lineStyle(1,0x66cadd,.83);blueprint.strokeRect(128,423,704,40);
-   blueprint.fillStyle(0x71dcec,.90);
-   for(let n=0;n<3;n++){
-    blueprint.fillRect(144+n*9,431,6,2);
-   }
+   blueprint.fillStyle(0x82f0f4,.98);blueprint.fillRect(402,181,3,17);
+   // Rules-style footer: same outer clearance as the top title card.
+   // Bottom at 456, exactly 20px from the outer bottom edge at 476.
+   blueprint.fillStyle(0x041521,1);blueprint.fillRect(126,419,708,41);
+   blueprint.fillStyle(0x0c3147,1);blueprint.fillRect(128,416,704,40);
+   blueprint.fillStyle(0x164357,.5);blueprint.fillRect(130,418,700,13);
+   blueprint.lineStyle(2,0x70d6e2,.96);blueprint.strokeRect(128,416,704,40);
+   blueprint.lineStyle(1,0x296f88,.86);blueprint.strokeRect(132,420,696,32);
+   blueprint.fillStyle(0x73e5f0,.94);blueprint.fillRect(130,418,78,2);
+   for(let n=0;n<3;n++)blueprint.fillRect(144+n*9,424,6,2);
    blueprint.lineStyle(1,0x51a7c4,.36);
-   blueprint.lineBetween(400,443,585,443);
+   blueprint.lineBetween(400,436,585,436);
    this.readerBlueprintBackground=blueprint;
 
    const blueprintLabels=[
-    [144,186,'SITE PLAN / 2077',11,'#c6f4ff'],
-    [189,255,'H',11,'#deffff'],
-    [309,255,'L',11,'#deffff'],
-    [189,368,'C',11,'#deffff'],
-    [309,368,'W',11,'#deffff'],
-    [360,235,'N',9,'#a7e4ee'],
-    [220,390,'NOT TO SCALE',9,'#8fd8ec'],
-    [416,186,'FIELD NOTES / INTERACTIVE PORTFOLIO',10,'#a2e6f5'],
-    [144,436,'B-2077 / SITE SCHEMATIC 01',11,'#b8e9f5']
+    [144,180,'SITE PLAN / 2077',11,'#c6f4ff'],
+    [189,249,'H',11,'#deffff'],
+    [309,249,'L',11,'#deffff'],
+    [189,362,'C',11,'#deffff'],
+    [309,362,'W',11,'#deffff'],
+    [416,180,'FIELD NOTES / INTERACTIVE PORTFOLIO',10,'#a2e6f5'],
+    [144,429,'B-2077 / SITE SCHEMATIC 01',11,'#b8e9f5']
    ].map(([xx,yy,label,size,color])=>add(this.add.text(xx,yy,label,{
     fontFamily:'monospace',fontSize:size+'px',color,
     fontStyle:label.length===1?'bold':'normal'
@@ -2076,7 +2099,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    this.readerBlueprintLabels=blueprintLabels;
    // Heading and paragraph have independent anchors so long prose cannot
    // push the title down or spill across the 406px panel boundary.
-   this.readerBlueprintHeading=add(this.add.text(416,225,'',{
+   this.readerBlueprintHeading=add(this.add.text(416,219,'',{
     fontFamily:'monospace',fontSize:'17px',fontStyle:'bold',
     color:'#e7fcff',wordWrap:{width:395,useAdvancedWrap:true}
    }).setResolution(3).setScrollFactor(0).setDepth(252));
@@ -2353,6 +2376,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
     isDna=id==='lab-samples',isComputer=COMPUTER_READER_IDS.has(id);
    this.readerGenericBackground.setVisible(!isBlueprint&&!isNotes&&!isDna&&!isComputer);
    this.readerBlueprintBackground.setVisible(isBlueprint);
+   this.readerBlueprintMap.setVisible(isBlueprint);
    this.readerDigitalPaperBackground.setVisible(isNotes);
    this.readerDnaBackground.setVisible(isDna);
    this.readerComputerBackground.setVisible(isComputer);
@@ -2373,17 +2397,22 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    this.readerSubtitle.setPosition(isNotes?153:isComputer?145:isBlueprint?142:138,isNotes?144:isComputer?144:isBlueprint?137:138);
    this.readerSubtitle.setColor(isNotes?'#487387':isComputer?this.readerComputerTheme.muted:isDna?'#a4e0eb':isBlueprint?'#99dcf7':'#a8dad2');
    this.readerBody.setPosition(isNotes?153:isDna?339:isComputer?154:isBlueprint?416:321,
-    isNotes?245:isDna?255:isComputer?264:isBlueprint?258:189);
+    isNotes?245:isDna?255:isComputer?264:isBlueprint?252:189);
    this.readerBody.setFontFamily(isNotes?'Arial, sans-serif':'monospace');
    this.readerBody.setFontSize(isNotes?21:isComputer?18:isDna?18:isBlueprint?17:19);
    this.readerBody.setWordWrapWidth(isNotes?650:isDna?462:isComputer?652:isBlueprint?395:492,true);
    this.readerBody.setLineSpacing(isNotes?9:isComputer?5:isDna?9:isBlueprint?4:10);
    this.readerBody.setResolution(isBlueprint?3:2);
+   // Preserve crisp high-resolution typography even at FIT canvas scales.
+   this.readerTitle.setResolution(isBlueprint?3:2);
+   this.readerSubtitle.setResolution(isBlueprint?3:2);
+   this.readerCount.setResolution(isBlueprint?3:2);
+   this.readerNext.setResolution(isBlueprint?3:2);
    this.readerBody.setColor(isNotes?'#143c4c':isComputer?this.readerComputerTheme.text:isDna?'#effcff':isBlueprint?'#edfaff':'#e8efe6');
    this.readerCount.setPosition(isNotes?807:isComputer?813:isBlueprint?814:817,
     isNotes?135:isComputer?144:isDna?138:isBlueprint?137:145);
    this.readerCount.setColor(isNotes?'#315a6b':isComputer?this.readerComputerTheme.muted:isDna?'#c2f7fa':'#b6dcd7');
-   this.readerNext.setPosition(isNotes?815:isComputer?815:isBlueprint?814:821,isNotes?437:isComputer?440:isBlueprint?443:443);
+   this.readerNext.setPosition(isNotes?815:isComputer?815:isBlueprint?814:821,isNotes?437:isComputer?440:isBlueprint?436:443);
    this.readerNext.setColor(isNotes?'#24556a':isComputer?this.readerComputerTheme.action:isDna?'#d0f9e6':'#f5dcaa');
    // Apply selected reader measurements before page word-wrap/auto-fit.
    this.updateReaderPage();
