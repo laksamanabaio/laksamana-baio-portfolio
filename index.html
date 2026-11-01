@@ -514,7 +514,17 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    "Then I'll talk to people nearby and explore different places around the city.",
    "Maybe, piece by piece, I'll remember who I really am."
   ];
+  // First outdoor discovery is a separate, one-time Baio self-talk scene.
+  // Like the HOME prologue, it resets only when a new page visit begins.
+  const HOME_EXIT_MONOLOGUE=[
+   "I can't believe it... The city outside my home is breathtaking. Neon lights, towering buildings... there's so much to discover.",
+   "I should press Q to open my Quest Journal. It can guide me toward the places and clues worth exploring.",
+   "If I want to understand who I really am, I need to follow the quests, one step at a time. Each mission may reveal a missing piece of my story.",
+   "And if I feel lost, I should talk to people around the building I want to visit. They might help me understand what I can find inside.",
+   "All right, Baio. Follow the clues, ask questions, and keep moving. Maybe this city will help me remember who I am."
+  ];
   let introShownThisVisit=false;
+  let homeExitTalkShownThisVisit=false;
   const portfolioLoadState={progress:0,ready:false,started:false,enteredWorld:false,errors:[],loadingShownAt:0};
   const updateAssetProgress=progress=>{
    portfolioLoadState.progress=Math.max(0,Math.min(1,progress));
@@ -938,7 +948,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
      './assets/district/'+revision+'/'+filename+'.png?v='+(revision==='v1512'?'15.12':'15.11'));
    }
    }
-  init(data){this.place=data.place||'home';minimapHDLayer.hidden=true;this.minimapHDLayoutKey=null;this.spawn=data.spawn||null;this.teleportArrivalLocked=this.spawn?.at==='teleport-front';this.changing=false;this.roadNeon=null;this.roadRailNight=null;this.ambientShade=null;this.panelDaylight=null;this.poolFeedChannels=null;this.poolFeedPlanters=null;this.poolFeedPlanterArt=null;this.poolFeedWater=null;this.poolFeedCurrent=null;this.poolFeedClock=0;this.homeWindow=null;this.homeFurniture=null;this.roomGuard=null}
+  init(data){this.place=data.place||'home';this.showHomeExitTalk=this.place==='district'&&data.showHomeExitTalk===true;minimapHDLayer.hidden=true;this.minimapHDLayoutKey=null;this.spawn=data.spawn||null;this.teleportArrivalLocked=this.spawn?.at==='teleport-front';this.changing=false;this.roadNeon=null;this.roadRailNight=null;this.ambientShade=null;this.panelDaylight=null;this.poolFeedChannels=null;this.poolFeedPlanters=null;this.poolFeedPlanterArt=null;this.poolFeedWater=null;this.poolFeedCurrent=null;this.poolFeedClock=0;this.homeWindow=null;this.homeFurniture=null;this.roomGuard=null}
   create(){
    const g=this.add.graphics(),rect=(x,y,w,h,c)=>{g.fillStyle(c);g.fillRect(x,y,w,h)};
    // The District has independent floor layers; only interiors need this flat base.
@@ -1720,6 +1730,12 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
     updateAssetProgress(1);
     document.getElementById('loadText').textContent='World ready.';
     revealLoadedWorld();
+   }
+   // The TALK HUD and controls now exist. Only the first HOME -> district
+   // arrival receives Baio's outdoor self-talk; other exits are unaffected.
+   if(this.place==='district'&&this.showHomeExitTalk){
+    this.showHomeExitTalk=false;
+    this.startHomeExitMonologue();
    }
   }
   // Shared navy bezel and teal rails, now without upper-corner ornaments.
@@ -2577,6 +2593,24 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    this.setExplorationHudVisible(true);
    this.readerJustCompleted=false;this.lastJourneyDiscovery=null;
   }
+  startHomeExitMonologue(){
+   if(this.place!=='district'||!this.dialogFrame||this.dialogNpc)return;
+   // Reuse the existing TALK interface and HD portrait of Baio.
+   this.dialogNpc={
+    name:'Laksamana Baio',
+    pages:HOME_EXIT_MONOLOGUE,
+    isIntro:true,
+    isHomeExit:true
+   };
+   this.dialogPage=0;
+   syncPopupControls(this);
+   this.setQuestHudVisible(false);
+   for(const obj of [this.dialogFrame,this.dialogAvatar,this.dialogName,
+    this.dialogText,this.dialogNext,this.dialogAction,this.dialogPageIndicator])
+    obj.setVisible(true);
+   if(this.npcHint)this.npcHint.setVisible(false);
+   this.showDialogPage();
+  }
   startIntroMonologue(){
    if(this.place!=='home'||introShownThisVisit||!this.dialogFrame)return;
    introShownThisVisit=true;
@@ -2709,7 +2743,9 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
         : {x:480,y:340};
    this.cameras.main.fadeOut(240,0,0,0);
    this.cameras.main.once('camerafadeoutcomplete',()=>{
-    this.scene.restart({place:to,spawn});
+    const firstHomeExit=this.place==='home'&&to==='district'&&!homeExitTalkShownThisVisit;
+    if(firstHomeExit)homeExitTalkShownThisVisit=true;
+    this.scene.restart({place:to,spawn,showHomeExitTalk:firstHomeExit});
    });
   }
   updateWorldLighting(delta){
