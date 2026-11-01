@@ -1915,9 +1915,9 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
 
    // DISTRICT BLUEPRINT / RULES-INSPIRED HUD v17.00.
    // Keep the crisp vector / 16-bit pixel style of the actual game.
-   // Outer top gap = 19px and outer bottom gap = 20px.
-   // Header 89..159, content 169..400, footer 416..456:
-   // cards move 6px up and footer 7px up, without shortening content.
+   // Both visible cards are inset 19px from the outer top/bottom edges.
+   // Header 89..159, content 169..400, footer 417..457:
+   // header/footer margins match; all lower cards move 6px up.
    // Two content cards remain at the approximate golden ratio 260:432.
    const blueprint=add(this.add.graphics().setScrollFactor(0).setDepth(251));
    const cyan=0x86eeff,blue=0x3f8ab6,deep=0x082743;
@@ -2072,16 +2072,16 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    }
    blueprint.fillStyle(0x82f0f4,.98);blueprint.fillRect(402,181,3,17);
    // Rules-style footer: same outer clearance as the top title card.
-   // Bottom at 456, exactly 20px from the outer bottom edge at 476.
-   blueprint.fillStyle(0x041521,1);blueprint.fillRect(126,419,708,41);
-   blueprint.fillStyle(0x0c3147,1);blueprint.fillRect(128,416,704,40);
-   blueprint.fillStyle(0x164357,.5);blueprint.fillRect(130,418,700,13);
-   blueprint.lineStyle(2,0x70d6e2,.96);blueprint.strokeRect(128,416,704,40);
-   blueprint.lineStyle(1,0x296f88,.86);blueprint.strokeRect(132,420,696,32);
-   blueprint.fillStyle(0x73e5f0,.94);blueprint.fillRect(130,418,78,2);
-   for(let n=0;n<3;n++)blueprint.fillRect(144+n*9,424,6,2);
+   // Top margin 89-70=19px; bottom margin 476-457=19px.
+   blueprint.fillStyle(0x041521,1);blueprint.fillRect(126,419,708,39);
+   blueprint.fillStyle(0x0c3147,1);blueprint.fillRect(128,417,704,40);
+   blueprint.fillStyle(0x164357,.5);blueprint.fillRect(130,419,700,13);
+   blueprint.lineStyle(2,0x70d6e2,.96);blueprint.strokeRect(128,417,704,40);
+   blueprint.lineStyle(1,0x296f88,.86);blueprint.strokeRect(132,421,696,32);
+   blueprint.fillStyle(0x73e5f0,.94);blueprint.fillRect(130,419,78,2);
+   for(let n=0;n<3;n++)blueprint.fillRect(144+n*9,425,6,2);
    blueprint.lineStyle(1,0x51a7c4,.36);
-   blueprint.lineBetween(400,436,585,436);
+   blueprint.lineBetween(400,437,585,437);
    this.readerBlueprintBackground=blueprint;
 
    const blueprintLabels=[
@@ -2091,7 +2091,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
     [189,362,'C',11,'#deffff'],
     [309,362,'W',11,'#deffff'],
     [416,180,'FIELD NOTES / INTERACTIVE PORTFOLIO',10,'#a2e6f5'],
-    [144,429,'B-2077 / SITE SCHEMATIC 01',11,'#b8e9f5']
+    [144,430,'B-2077 / SITE SCHEMATIC 01',11,'#b8e9f5']
    ].map(([xx,yy,label,size,color])=>add(this.add.text(xx,yy,label,{
     fontFamily:'monospace',fontSize:size+'px',color,
     fontStyle:label.length===1?'bold':'normal'
@@ -2412,7 +2412,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    this.readerCount.setPosition(isNotes?807:isComputer?813:isBlueprint?814:817,
     isNotes?135:isComputer?144:isDna?138:isBlueprint?137:145);
    this.readerCount.setColor(isNotes?'#315a6b':isComputer?this.readerComputerTheme.muted:isDna?'#c2f7fa':'#b6dcd7');
-   this.readerNext.setPosition(isNotes?815:isComputer?815:isBlueprint?814:821,isNotes?437:isComputer?440:isBlueprint?436:443);
+   this.readerNext.setPosition(isNotes?815:isComputer?815:isBlueprint?814:821,isNotes?437:isComputer?440:isBlueprint?437:443);
    this.readerNext.setColor(isNotes?'#24556a':isComputer?this.readerComputerTheme.action:isDna?'#d0f9e6':'#f5dcaa');
    // Apply selected reader measurements before page word-wrap/auto-fit.
    this.updateReaderPage();
