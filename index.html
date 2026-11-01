@@ -3,6 +3,16 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#17252f">
+<script>
+/* Identify phones and tablets before first paint, including desktop-UA iPads. */
+(function(){
+ const ua=navigator.userAgent||'';
+ const handheld=!!(navigator.userAgentData&&navigator.userAgentData.mobile) ||
+  /Android|iPhone|iPad|iPod|Windows Phone|IEMobile|BlackBerry|Opera Mini|Mobile|Silk|Kindle/i.test(ua) ||
+  (/Macintosh/i.test(ua)&&navigator.maxTouchPoints>1);
+ if(handheld)document.documentElement.classList.add('portfolio-handheld');
+})();
+</script>
 <title>Laksamana Baio | Interactive Portfolio Prototype</title>
 <style>
 *:not(svg){box-sizing:border-box}
@@ -155,6 +165,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 <link rel="stylesheet" href="./assets/landing/v1686/landing.css?v=16.93">
 <link rel="stylesheet" href="./assets/rules/v1691/rules.css?v=16.94">
 <link rel="stylesheet" href="./assets/loading/v1695/loading.css?v=16.97">
+<link rel="stylesheet" href="./assets/compatibility/v1698/compatibility.css?v=16.98">
 </head>
 <body>
 <main>
@@ -289,6 +300,47 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
   </div>
  </div>
 </section>
+<section id="compatibilityNotice" role="dialog" aria-modal="true"
+ aria-labelledby="compatibilityTitle" aria-describedby="compatibilityMessage">
+ <div class="compatibility-panel">
+  <p class="compatibility-eyebrow">LAKSAMANA BAIO'S WORLD // ACCESS NOTICE</p>
+  <svg class="compatibility-device-icon" viewBox="0 0 80 80" width="80" height="80"
+   fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"
+   stroke-linecap="square" aria-hidden="true" focusable="false">
+   <rect x="9" y="11" width="62" height="44" rx="2"/>
+   <path d="M17 19h46v28H17zM40 55v10M27 67h26"/>
+   <path d="M25 33h8M38 33h17" stroke-width="2"/>
+  </svg>
+  <h2 id="compatibilityTitle">DESKTOP EXPERIENCE REQUIRED</h2>
+  <div class="compatibility-divider" aria-hidden="true"></div>
+  <p id="compatibilityMessage" class="compatibility-message">
+   I'm truly sorry, but this interactive portfolio is currently designed for
+   desktop and laptop computers only. Please open it on a computer or laptop
+   with a landscape-oriented browser window to enjoy the full experience.
+   Thank you for your understanding!
+  </p>
+  <p class="compatibility-landscape-hint">Already on a computer? Widen your browser window to continue.</p>
+  <p class="compatibility-status">DESKTOP + LANDSCAPE MODE ONLY</p>
+ </div>
+</section>
+<script>
+/* Keep the notice usable inside <main> even when the game is fullscreen.
+   Disable all other page regions while a phone/tablet or portrait layout is active. */
+(function(){
+ const main=document.querySelector('main');
+ const notice=document.getElementById('compatibilityNotice');
+ const portrait=window.matchMedia('(orientation: portrait)');
+ const sync=()=>{
+  const blocked=document.documentElement.classList.contains('portfolio-handheld')||portrait.matches;
+  for(const child of main.children)if(child!==notice)child.inert=blocked;
+  if(blocked&&main.contains(document.activeElement)&&!notice.contains(document.activeElement))
+   document.activeElement.blur();
+ };
+ sync();
+ window.addEventListener('resize',sync,{passive:true});
+ window.addEventListener('orientationchange',sync,{passive:true});
+})();
+</script>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
 <script src="./home-interior.js?v=16.71"></script>
@@ -298,7 +350,9 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 <script src="./workshop-interior-art.js?v=16.52"></script>
 <script src="./cyberpop-music.js?v=15.42"></script>
 <script>
-if (!window.Phaser) {
+if (document.documentElement.classList.contains('portfolio-handheld')) {
+ // Phones/tablets show the compatibility notice; do not initialize Phaser or fetch game assets.
+} else if (!window.Phaser) {
  document.getElementById('game').textContent='Unable to load Phaser. Please check your internet connection.';
 } else {
 

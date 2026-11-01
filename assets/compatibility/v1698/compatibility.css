@@ -1,0 +1,87 @@
+/* Compatibility notice 16.98 — phones/tablets and portrait browser windows. */
+#compatibilityNotice {
+ position:absolute;inset:0;z-index:100;isolation:isolate;
+ display:none;align-items:center;justify-content:center;
+ overflow-y:auto;overscroll-behavior:contain;
+ padding:clamp(16px,4vw,50px);
+ background:#061321;color:#edfafa;text-align:center;
+}
+html.portfolio-handheld #compatibilityNotice {display:flex}
+@media (orientation:portrait) {
+ #compatibilityNotice {display:flex}
+}
+/* Reuse the same LB billboard art as Rules and Loading without stretching it. */
+#compatibilityNotice::before {
+ content:"";position:absolute;inset:0;z-index:-2;pointer-events:none;
+ background:url('../../rules/v1691/rules-background.webp?v=16.94') center bottom/cover no-repeat;
+}
+#compatibilityNotice::after {
+ content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+ background:linear-gradient(155deg,rgba(2,12,26,.66),rgba(4,22,37,.78));
+}
+#compatibilityNotice .compatibility-panel {
+ position:relative;flex:none;width:min(750px,100%);
+ margin:auto;padding:clamp(25px,4.5vw,49px);
+ border:2px solid #74deed;
+ background:linear-gradient(145deg,rgba(10,38,55,.97),rgba(4,17,33,.98));
+ box-shadow:0 0 0 4px #081a2c,0 20px 70px rgba(0,5,15,.75),inset 0 0 0 1px #27627a;
+}
+#compatibilityNotice .compatibility-panel::before,
+#compatibilityNotice .compatibility-panel::after {
+ content:"";position:absolute;height:3px;pointer-events:none;
+ background:#87f5fb;box-shadow:0 0 12px #3ce8f5;
+}
+#compatibilityNotice .compatibility-panel::before {top:0;left:22px;width:32%}
+#compatibilityNotice .compatibility-panel::after {bottom:0;right:20px;width:25%}
+#compatibilityNotice .compatibility-eyebrow {
+ margin:0 0 clamp(15px,2.4vh,24px);
+ color:#9ae5ee;font:800 clamp(10px,1.45vw,12px)/1.5 monospace;
+ letter-spacing:.13em;
+}
+#compatibilityNotice .compatibility-device-icon {
+ display:block;margin:0 auto clamp(14px,2.4vh,22px);
+ width:clamp(49px,12vw,70px);height:auto;
+ color:#91ebf1;filter:drop-shadow(0 0 11px rgba(95,234,242,.37));
+}
+#compatibilityNotice h2 {
+ margin:0;color:#f9ffff;
+ font:900 clamp(21px,3.5vw,38px)/1.24 monospace;
+ letter-spacing:.055em;text-wrap:balance;
+ text-shadow:2px 2px 0 #145064,0 0 14px rgba(103,238,247,.15);
+}
+#compatibilityNotice .compatibility-divider {
+ width:100%;height:1px;margin:clamp(19px,3vh,28px) 0;
+ background:linear-gradient(90deg,#3b8397,#83e5ee 50%,#3b8397);
+ box-shadow:0 0 5px rgba(91,230,240,.25);
+}
+#compatibilityNotice .compatibility-message {
+ margin:0 auto;max-width:610px;
+ color:#e5f5f7;font:500 clamp(14px,1.8vw,17px)/1.7 system-ui,-apple-system,sans-serif;
+}
+#compatibilityNotice .compatibility-landscape-hint {
+ margin:clamp(15px,2.7vh,24px) auto 0;
+ color:#f5dda6;font:700 clamp(12px,1.7vw,14px)/1.5 monospace;
+}
+html.portfolio-handheld #compatibilityNotice .compatibility-landscape-hint {display:none}
+#compatibilityNotice .compatibility-status {
+ margin:clamp(21px,3.5vh,30px) 0 0;padding:11px 12px;
+ border:1px solid #3e9caf;background:rgba(8,33,50,.7);
+ color:#95e5eb;font:800 clamp(10px,1.5vw,12px)/1.35 monospace;
+ letter-spacing:.1em;
+}
+@media (max-width:480px) {
+ #compatibilityNotice {padding:15px}
+ #compatibilityNotice .compatibility-panel {padding:24px 19px}
+ #compatibilityNotice .compatibility-eyebrow {letter-spacing:.045em}
+ #compatibilityNotice .compatibility-message {line-height:1.6}
+ #compatibilityNotice .compatibility-status {letter-spacing:.035em}
+}
+@media (max-height:530px) and (orientation:landscape) {
+ #compatibilityNotice {padding:12px}
+ #compatibilityNotice .compatibility-panel {padding:15px 24px}
+ #compatibilityNotice .compatibility-eyebrow {margin-bottom:9px}
+ #compatibilityNotice .compatibility-device-icon {width:40px;margin-bottom:8px}
+ #compatibilityNotice .compatibility-divider {margin:12px 0}
+ #compatibilityNotice .compatibility-message {font-size:13px;line-height:1.45}
+ #compatibilityNotice .compatibility-status {margin-top:12px;padding:6px}
+}
