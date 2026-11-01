@@ -18,7 +18,7 @@
   position:absolute;
   inset:-28px;
   z-index:-1;
-  background:url('./rules-background.webp?v=16.91') center/cover no-repeat;
+  background:url('./rules-background.webp?v=16.94') center/cover no-repeat;
   filter:blur(18px) brightness(.36);
   opacity:.65;
   pointer-events:none;
