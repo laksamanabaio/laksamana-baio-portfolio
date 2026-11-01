@@ -1,4 +1,4 @@
-/* Loading screen 16.96: centered connection panel and proportional full-bleed backdrop. */
+/* Loading screen 16.97: cyan corner accents and equal top/bottom popup content padding. */
 #loading {
  position:absolute;inset:0;z-index:22;isolation:isolate;
  display:none;overflow:hidden;place-items:center;
@@ -36,8 +36,8 @@
 }
 #loading .loading-panel::after {
  content:"";position:absolute;bottom:0;right:20px;width:25%;height:3px;
- background:linear-gradient(90deg,transparent,#f5d48a);
- box-shadow:0 0 10px rgba(245,212,138,.52);pointer-events:none;
+ background:linear-gradient(90deg,transparent,#87f5fb);
+ box-shadow:0 0 12px #3ce8f5;pointer-events:none;
 }
 #loading .loading-kicker {
  margin:0 0 12px;color:#91dfe9;
@@ -74,9 +74,10 @@
  box-shadow:0 0 14px rgba(68,241,246,.50);
  transition:width .14s linear;
 }
+/* No extra minimum-height after the last line: panel padding is equal above and below. */
 #loading .loading-description {
- min-height:1.6em;margin:0;color:#e7f5f7;
- font:700 clamp(15px,1.25vw,18px)/1.55 monospace;
+ min-height:0;margin:0;color:#e7f5f7;
+ font:700 clamp(15px,1.25vw,18px)/1.4 monospace;
 }
 @media(max-height:650px) and (orientation:landscape) {
  #loading .loading-content {padding:14px 24px;}
