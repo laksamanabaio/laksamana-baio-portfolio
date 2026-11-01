@@ -2127,17 +2127,26 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    for(let py=271;py<393;py+=31){
     paper.fillStyle(0x629cae,.075);paper.fillRect(144,py,672,1);
    }
+   // Design-principle label: a compact framed ink-blue tab on e-paper.
+   // The text itself starts at x=144, in line with every other left label.
+   // Its fill matches the dark DESIGN NOTES title; the lettering uses the
+   // same almost-white teal as the digital sheet.
+   paper.fillStyle(0x103c53,1);paper.fillRoundedRect(136,174,292,26,3);
+   paper.lineStyle(1,0x4b8295,.96);paper.strokeRoundedRect(136,174,292,26,3);
    this.readerDigitalPaperBackground=paper;
-   this.readerNotesHeading=add(this.add.text(144,199,'',{
+   // Label tab ends at y=200; title begins at y=210; body begins at
+   // y=245. The title's approximate 26px height leaves a balanced
+   // 10px gap to the badge and a 9px gap before the paragraph.
+   this.readerNotesHeading=add(this.add.text(144,210,'',{
     fontFamily:'Arial, sans-serif',fontSize:'22px',fontStyle:'bold',
     color:'#16465b'
    }).setResolution(3).setScrollFactor(0).setDepth(252));
    this.readerNotesLabels=[
-    add(this.add.text(144,181,'DESIGN PRINCIPLE  /  PERSONAL NOTES',{
-     fontFamily:'monospace',fontSize:'11px',fontStyle:'bold',color:'#4b7b8e'
+    add(this.add.text(144,179,'DESIGN PRINCIPLE  /  PERSONAL NOTES',{
+     fontFamily:'monospace',fontSize:'12px',fontStyle:'bold',color:'#e2eff1'
     }).setResolution(3).setScrollFactor(0).setDepth(252)),
     add(this.add.text(144,422,'PERSONAL DESIGN LOG  /  BAIO 2077',{
-     fontFamily:'monospace',fontSize:'11px',fontStyle:'bold',color:'#466d80'
+     fontFamily:'monospace',fontSize:'12px',fontStyle:'bold',color:'#244d60'
     }).setResolution(3).setScrollFactor(0).setDepth(252))
    ];
    // Dedicated DNA MACHINE / DESIGN RESEARCH laboratory monitor.
@@ -2406,7 +2415,9 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    this.readerTitle.setFontSize(isComputer?22:26);
    this.readerTitle.setColor(isNotes?'#103c53':isComputer?this.readerComputerTheme.text:isDna?'#e9feff':isBlueprint?'#ffe29b':'#f4e8d5');
    this.readerSubtitle.setPosition(isNotes?144:isComputer?145:isBlueprint?142:138,isNotes?144:isComputer?144:isBlueprint?137:138);
-   this.readerSubtitle.setColor(isNotes?'#487387':isComputer?this.readerComputerTheme.muted:isDna?'#a4e0eb':isBlueprint?'#99dcf7':'#a8dad2');
+   this.readerSubtitle.setFontSize(isNotes?14:13);
+   this.readerSubtitle.setFontStyle(isNotes?'bold':'normal');
+   this.readerSubtitle.setColor(isNotes?'#244d60':isComputer?this.readerComputerTheme.muted:isDna?'#a4e0eb':isBlueprint?'#99dcf7':'#a8dad2');
    this.readerBody.setPosition(isNotes?144:isDna?339:isComputer?154:isBlueprint?416:321,
     isNotes?245:isDna?255:isComputer?264:isBlueprint?252:189);
    this.readerBody.setFontFamily(isNotes?'Arial, sans-serif':'monospace');
@@ -2422,12 +2433,14 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    this.readerBody.setColor(isNotes?'#143c4c':isComputer?this.readerComputerTheme.text:isDna?'#effcff':isBlueprint?'#edfaff':'#e8efe6');
    this.readerCount.setPosition(isNotes?816:isComputer?813:isBlueprint?814:817,
     isNotes?144:isComputer?144:isDna?138:isBlueprint?137:145);
-   this.readerCount.setFontSize(isNotes?13:14);
-   this.readerCount.setColor(isNotes?'#315a6b':isComputer?this.readerComputerTheme.muted:isDna?'#c2f7fa':'#b6dcd7');
+   this.readerCount.setFontSize(isNotes?14:14);
+   this.readerCount.setFontStyle(isNotes?'bold':'normal');
+   this.readerCount.setColor(isNotes?'#244d60':isComputer?this.readerComputerTheme.muted:isDna?'#c2f7fa':'#b6dcd7');
    this.readerNext.setPosition(isNotes?816:isComputer?815:isBlueprint?814:821,isNotes?422:isComputer?440:isBlueprint?437:443);
-   this.readerNext.setFontSize(isNotes?11:14);
+   this.readerNext.setFontSize(isNotes?12:14);
+   this.readerNext.setFontStyle(isNotes?'bold':'normal');
    this.readerNext.setOrigin(1,isNotes?0:.5);
-   this.readerNext.setColor(isNotes?'#24556a':isComputer?this.readerComputerTheme.action:isDna?'#d0f9e6':'#f5dcaa');
+   this.readerNext.setColor(isNotes?'#244d60':isComputer?this.readerComputerTheme.action:isDna?'#d0f9e6':'#f5dcaa');
    // Apply selected reader measurements before page word-wrap/auto-fit.
    this.updateReaderPage();
   }
