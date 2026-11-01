@@ -119,11 +119,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 #rules .rules-actions button:hover,#rules .rules-actions button:focus-visible{
  outline:3px solid #f4dea3;outline-offset:3px}
 #rules #rulesContinue:hover,#rules #rulesContinue:focus-visible{background:#f3dbaa}
-#loading{position:absolute;inset:0;z-index:22;display:none;place-content:center;text-align:center;background:#091923;color:#d4e8e6}
-#loading.active{display:grid}
-#loading h2{letter-spacing:.2em;font:700 clamp(19px,3vw,34px) monospace}
-#loading .track{width:min(70vw,420px);height:18px;border:2px solid #8ec8c6;background:#142f3d;margin:20px auto}
-#loading .fill{height:100%;width:0;background:#83c5c5;transition:width .12s linear}
+/* Loading screen visuals moved to assets/loading/v1695/loading.css. */
 @media(max-width:650px){#opening .profile{top:100px;left:var(--hud-margin);right:auto;text-align:left}#opening .brand{max-width:95%}#opening .scene{top:29%;left:4%;right:4%;bottom:26%}#opening .cta{bottom:40px}}
 @media(max-width:680px){
  #rules .rules-title-panel{padding:12px 16px 11px;margin-bottom:11px}
@@ -158,6 +154,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 </style>
 <link rel="stylesheet" href="./assets/landing/v1686/landing.css?v=16.93">
 <link rel="stylesheet" href="./assets/rules/v1691/rules.css?v=16.94">
+<link rel="stylesheet" href="./assets/loading/v1695/loading.css?v=16.95">
 </head>
 <body>
 <main>
@@ -275,7 +272,24 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
   </div>
  </div>
 </section>
-<section id="loading" role="status" aria-live="polite"><div><h2>INITIALIZING BAIO WORLD</h2><p>CONNECTING TO HOME // 2077</p><div class="track"><div class="fill" id="loadFill"></div></div><p id="loadText">Preparing your journey...</p></div></section>
+<section id="loading" role="status" aria-live="polite" aria-label="Loading Baio's World">
+ <img class="loading-background" src="./assets/rules/v1691/rules-background.webp?v=16.94"
+  alt="" aria-hidden="true" decoding="async">
+ <div class="loading-dimmer" aria-hidden="true"></div>
+ <div class="loading-content">
+  <img class="loading-logo" src="./assets/landing/v1686/landing-title.webp?v=16.90"
+   alt="Laksamana Baio's World" decoding="async">
+  <div class="loading-panel">
+   <p class="loading-kicker">WORLD CONNECTION // SECTOR 2077</p>
+   <h2 class="loading-heading">CONNECTING TO HOME // 2077</h2>
+   <div class="loading-progress-meta" aria-hidden="true"><span>WORLD ASSETS</span><span id="loadPercent" class="loading-percentage">0%</span></div>
+   <div class="track" id="loadTrack" role="progressbar" aria-label="Loading game assets" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+    <div class="fill" id="loadFill"></div>
+   </div>
+   <p class="loading-description" id="loadText">Loading world assets... 0%</p>
+  </div>
+ </div>
+</section>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
 <script src="./home-interior.js?v=16.71"></script>
@@ -451,7 +465,10 @@ if (!window.Phaser) {
   const portfolioLoadState={progress:0,ready:false,started:false,enteredWorld:false,errors:[],loadingShownAt:0};
   const updateAssetProgress=progress=>{
    portfolioLoadState.progress=Math.max(0,Math.min(1,progress));
-   document.getElementById('loadFill').style.width=Math.round(portfolioLoadState.progress*100)+'%';
+   const percentage=Math.round(portfolioLoadState.progress*100);
+   document.getElementById('loadFill').style.width=percentage+'%';
+   document.getElementById('loadPercent').textContent=percentage+'%';
+   document.getElementById('loadTrack').setAttribute('aria-valuenow',String(percentage));
    if(!portfolioLoadState.ready&&!portfolioLoadState.errors.length){
     document.getElementById('loadText').textContent=
      portfolioLoadState.progress<1
