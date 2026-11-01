@@ -523,6 +523,15 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    "And if I feel lost, I should talk to people around the building I want to visit. They might help me understand what I can find inside.",
    "All right, Baio. Follow the clues, ask questions, and keep moving. Maybe this city will help me remember who I am."
   ];
+  // Baio's final self-talk celebrates the first completion of all seven
+  // quests. The dialogue is an aspiration, not a claim of a job offer.
+  const QUEST_FINALE_MONOLOGUE=[
+   "So this is who I am... I've created more than I ever imagined. From design ideas to digital experiences, I can turn curiosity into something real.",
+   "But discovering my past is only the beginning. Life keeps moving, and so will I. I want to find meaningful projects and new opportunities that challenge me to grow.",
+   "Whatever I build next, I hope it makes a difference. Even a small, thoughtful design can make someone's day easier, clearer, or more enjoyable.",
+   "I dream of joining a team where I can contribute for years, keep learning, and build something lasting. A long-term remote role would give me the chance to do just that.",
+   "Seven quests, and a clearer sense of who I am. I want to keep creating, keep improving, and make digital experiences that truly help people. My next chapter starts here."
+  ];
   let introShownThisVisit=false;
   let homeExitTalkShownThisVisit=false;
   const portfolioLoadState={progress:0,ready:false,started:false,enteredWorld:false,errors:[],loadingShownAt:0};
@@ -607,7 +616,12 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
   {id:'hub',name:'CONTACT HUB',accent:0xd6a2ff,count:1}
  ];
  const JOURNEY_STORAGE='baio-portfolio-discoveries-v3';
+ const QUEST_FINALE_STORAGE='baio-portfolio-quest-finale-talk-v1';
  const visitedStops=new Set();
+ // Persistent one-time flag, while private browsing still uses the session flag.
+ let questFinaleTalkShown=false;
+ try{questFinaleTalkShown=localStorage.getItem(QUEST_FINALE_STORAGE)==='1';}
+ catch(e){/* Storage unavailable: play at most once this session. */}
  try{
   // Migrate only four previously recorded computer/reception interactions
   // from v2. Newly introduced Blueprint, Design Notes and DNA quests are
@@ -1593,7 +1607,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
     this.updateWorldLighting(0);
     this.readerObject=null;this.readerPage=0;this.readerJustCompleted=false;
    if(this.place!=='district')this.createContentReader();
-   if(this.place==='district'||this.roomGuard||this.place==='home'){
+   if(['district','home','lab','workshop','hub'].includes(this.place)){
     // Shared responsive TALK HUD: the left edge equals the minimap bezel,
     // right edge equals the TIME bezel and the bottom covers both HUDs.
     // Minimap bottom is 7px below TIME, so the dialogue follows that edge
@@ -2632,6 +2646,10 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
   }
   closeReader(){
    if(!this.readerObject)return;
+   // Only a newly completed seventh quest triggers this self-talk.
+   // Wait until the existing object popup has closed so no HUDs overlap.
+   const reachedFinalQuestNow=this.readerJustCompleted&&
+    visitedStops.size===JOURNEY_STOPS.length&&!questFinaleTalkShown;
    for(const obj of this.readerElements)obj.setVisible(false);
    this.readerObject=null;this.readerPage=0;
    syncPopupControls(this);
@@ -2640,6 +2658,28 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    // together with TIME after the object reader is fully closed.
    this.setExplorationHudVisible(true);
    this.readerJustCompleted=false;this.lastJourneyDiscovery=null;
+   if(reachedFinalQuestNow)this.startQuestFinaleMonologue();
+  }
+  startQuestFinaleMonologue(){
+   if(questFinaleTalkShown||visitedStops.size!==JOURNEY_STOPS.length||
+      !this.dialogFrame||this.dialogNpc)return;
+   questFinaleTalkShown=true;
+   try{localStorage.setItem(QUEST_FINALE_STORAGE,'1');}catch(e){}
+   // Same TALK popup and HD Baio portrait as the introduction and HOME exit.
+   this.dialogNpc={
+    name:'Laksamana Baio',
+    pages:QUEST_FINALE_MONOLOGUE,
+    isIntro:true,
+    isQuestFinale:true
+   };
+   this.dialogPage=0;
+   syncPopupControls(this);
+   this.setQuestHudVisible(false);
+   for(const obj of [this.dialogFrame,this.dialogAvatar,this.dialogName,
+    this.dialogText,this.dialogNext,this.dialogAction,this.dialogPageIndicator])
+    obj.setVisible(true);
+   if(this.npcHint)this.npcHint.setVisible(false);
+   this.showDialogPage();
   }
   startHomeExitMonologue(){
    if(this.place!=='district'||!this.dialogFrame||this.dialogNpc)return;
