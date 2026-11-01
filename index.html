@@ -2222,52 +2222,85 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    for(let gy=224;gy<380;gy+=12){
     dna.lineStyle(1,dnaBlue,.13);dna.lineBetween(148,gy,369,gy);
    }
-   // Circular sequencing chamber and precise targeting crosshair.
-   dna.lineStyle(1,0x3e849d,.37);dna.strokeCircle(258,299,74);
-   dna.lineStyle(1,0x6dc9df,.32);dna.strokeCircle(258,299,58);
-   dna.lineStyle(1,dnaLime,.22);dna.strokeCircle(258,299,46);
-   dna.lineStyle(1,0x75d4e8,.33);
+   // Holographic sequencing chamber: layered reticles and segmented
+   // circular scanner rings. Geometry stays strictly inside the DNA view.
+   dna.lineStyle(1,0x3e849d,.32);dna.strokeCircle(258,299,74);
+   dna.lineStyle(1,0x6dc9df,.33);dna.strokeCircle(258,299,58);
+   dna.lineStyle(1,dnaLime,.19);dna.strokeCircle(258,299,45);
+   for(let a=0;a<Math.PI*2;a+=Math.PI/9){
+    const r=69,from=a,to=a+Math.PI/15;
+    dna.lineStyle(1.6,0x88eafb,.42);
+    dna.lineBetween(258+r*Math.cos(from),299+r*Math.sin(from),
+     258+r*Math.cos(to),299+r*Math.sin(to));
+   }
+   dna.lineStyle(1,0x75d4e8,.24);
    dna.lineBetween(150,299,366,299);
    dna.lineBetween(258,219,258,379);
-   // DNA strands (cyan/mint), rendered as dense vector samples for clarity.
-   const strand=(yy,side)=>258+side*37*Math.sin((yy-225)*Math.PI/59);
-   for(let yy=225;yy<369;yy+=3){
-    const ny=Math.min(369,yy+3);
-    dna.lineStyle(2.5,dnaCyan,.95);
-    dna.lineBetween(strand(yy,-1),yy,strand(ny,-1),ny);
-    dna.lineStyle(2.5,dnaLime,.94);
-    dna.lineBetween(strand(yy,1),yy,strand(ny,1),ny);
+   // The DNA double helix is drawn with a low-opacity light halo,
+   // an illuminated core, depth-sensitive front/back strands,
+   // and legible molecular base pairs. Vector strokes stay crisp at FIT.
+   const helixX=(yy,side)=>258+side*37*Math.sin((yy-225)*Math.PI/59);
+   const helixDepth=(yy,side)=>side*Math.cos((yy-225)*Math.PI/59);
+   for(let yy=225;yy<369;yy+=2){
+    const ny=Math.min(369,yy+2);
+    for(const side of [-1,1]){
+     const x1=helixX(yy,side),x2=helixX(ny,side);
+     const near=helixDepth(yy,side)>0;
+     const color=side<0?dnaCyan:dnaLime;
+     // Diffuse glow behind each crisp foreground molecular strand.
+     dna.lineStyle(7,color,near?.13:.06);
+     dna.lineBetween(x1,yy,x2,ny);
+     dna.lineStyle(near?3.2:2.1,color,near?.98:.51);
+     dna.lineBetween(x1,yy,x2,ny);
+     if(near){
+      dna.lineStyle(1.2,0xf0ffff,.65);
+      dna.lineBetween(x1-.9,yy,x2-.9,ny);
+     }
+    }
    }
-   for(let yy=231;yy<=363;yy+=12){
-    const left=strand(yy,-1),right=strand(yy,1);
-    dna.lineStyle(2,0xb8f9f1,.82);
-    dna.lineBetween(left,yy,right,yy);
-    dna.fillStyle(0xd6ffff,.98);dna.fillRect(left-2,yy-2,4,4);
-    dna.fillStyle(dnaLime,.98);dna.fillRect(right-2,yy-2,4,4);
+   // Each rung is drawn independently with a translucent halo and two
+   // tones, suggesting base-pair connections within a 3D double helix.
+   for(let yy=231,k=0;yy<=363;yy+=11,k++){
+    const left=helixX(yy,-1),right=helixX(yy,1);
+    const low=Math.min(left,right),high=Math.max(left,right);
+    const rungColor=k%2?0x97dcff:0xbafce1;
+    dna.lineStyle(5,rungColor,.13);
+    dna.lineBetween(low,yy,high,yy);
+    dna.lineStyle(1.8,rungColor,.83);
+    dna.lineBetween(low,yy,high,yy);
+    dna.fillStyle(0xcaffff,.96);
+    dna.fillRect(left-1.8,yy-1.8,3.6,3.6);
+    dna.fillStyle(dnaLime,.97);
+    dna.fillRect(right-1.8,yy-1.8,3.6,3.6);
+    // Tiny central readout is part of each molecule, not a status bar.
+    dna.fillStyle(k%2?0x97dcff:dnaLime,.64);
+    dna.fillRect(257,yy-1,2,2);
    }
-   // Scan markers and discrete molecular readout lights.
+   // Scanner's concentrated highlights mark the helix crossovers.
+   for(const yy of [225,284,343]){
+    dna.lineStyle(1.4,0xeaffff,.82);
+    dna.strokeCircle(258,yy,3.5);
+    dna.fillStyle(0xd9ffff,.95);dna.fillRect(257,yy-1,2,2);
+   }
+   // Discrete calibration corners: do not add the former nine bottom bars.
    dna.lineStyle(1,dnaCyan,.79);
    for(const [cx,cy] of [[150,220],[366,220],[150,377],[366,377]]){
     dna.lineBetween(cx-4,cy,cx+4,cy);
     dna.lineBetween(cx,cy-4,cx,cy+4);
-   }
-   for(let k=0;k<9;k++){
-    dna.fillStyle(k%3===0?dnaLime:dnaCyan,k%3===0?.90:.4);
-    dna.fillRect(159+k*11,389,7,2);
    }
    // Right research screen: opaque text surface, subtle guide lines.
    for(let py=274;py<389;py+=25){
     dna.lineStyle(1,0x387b9f,.10);
     dna.lineBetween(416,py,816,py);
    }
-   dna.fillStyle(dnaLime,.85);dna.fillRect(402,181,3,17);
+   // RESEARCH LOG header is kept clean, without a vertical accent.
    // Shared footer proportions, 19px top and bottom outer margins.
    dna.fillStyle(0x041521,1);dna.fillRect(126,419,708,39);
    dna.fillStyle(0x0c3147,1);dna.fillRect(128,417,704,40);
    dna.fillStyle(0x164357,.5);dna.fillRect(130,419,700,13);
    dna.lineStyle(2,0x70d6e2,.96);dna.strokeRect(128,417,704,40);
    dna.lineStyle(1,0x296f88,.86);dna.strokeRect(132,421,696,32);
-   dna.fillStyle(dnaLime,.88);dna.fillRect(130,419,46,2);
+   // Footer has no colored line above LABORATORY / ANALYSIS TERMINAL.
    this.readerDnaBackground=dna;
    this.readerDnaLabels=[
     add(this.add.text(144,180,'DNA / VISUAL MODEL',{
