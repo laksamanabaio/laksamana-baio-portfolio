@@ -1,4 +1,4 @@
-/* RULES 16.91 — accessible cyberpunk guide, original story assets intact. */
+/* RULES 16.92 — proportional fullscreen backdrop, clearly acknowledged controls and calm BACK. */
 #rules {
   position:absolute;
   inset:0;
@@ -12,7 +12,7 @@
   color:#e6f5f2;
 }
 #rules[hidden] { display:none; }
-/* Blurred ambient only occupies letterbox space; the actual image is always complete. */
+/* The backdrop zooms proportionally, matching the landing page's cover treatment. */
 #rules::before {
   content:"";
   position:absolute;
@@ -28,8 +28,8 @@
   inset:0;
   width:100%;height:100%;
   z-index:-1;
-  object-fit:contain;
-  object-position:center;
+  object-fit:cover;
+  object-position:center center;
   opacity:.86;
   pointer-events:none;
   user-select:none;
@@ -107,21 +107,42 @@
   margin:18px 0 19px;
   padding:15px 18px;
   background:rgba(7,34,51,.92);
-  border:1px solid #609da9;
+  border:2px solid #609da9;
   cursor:pointer;
   color:#eef7f8;
   font:600 clamp(15px,1.1vw,17px)/1.55 monospace;
+  transition:transform .2s ease, border-color .2s ease, background-color .2s ease, box-shadow .2s ease;
+}
+#rules .rules-acknowledgement:not(.is-checked):hover {
+  transform:translateY(-2px);
+  border-color:#81e8f2;
+  background:rgba(16,55,72,.96);
+  box-shadow:0 0 14px rgba(80,227,237,.25),inset 0 0 0 1px rgba(86,199,219,.2);
+}
+#rules .rules-acknowledgement.is-checked {
+  border-color:#f5d48a;
+  background:rgba(54,48,33,.9);
+  box-shadow:0 0 0 2px rgba(245,212,138,.32),0 0 17px rgba(246,207,120,.17);
+}
+#rules .rules-acknowledgement.is-checked:hover {
+  transform:translateY(-2px);
+  box-shadow:0 0 0 2px rgba(245,212,138,.38),0 0 21px rgba(246,207,120,.27);
 }
 #rules .rules-acknowledgement input {
   flex:none;
   width:25px;height:25px;
   margin:1px 0 0;
-  accent-color:#77eaf1;
+  accent-color:#f5d48a;
   cursor:pointer;
+  transition:transform .2s ease, filter .2s ease;
 }
-#rules .rules-acknowledgement:focus-within {
-  outline:2px solid #f6d69e;
-  outline-offset:3px;
+#rules .rules-acknowledgement:hover input {
+  transform:scale(1.12);
+  filter:drop-shadow(0 0 5px rgba(111,234,243,.55));
+}
+#rules .rules-acknowledgement input:focus-visible {
+  outline:2px solid #83eef6;
+  outline-offset:4px;
 }
 #rules .rules-actions { display:flex;align-items:stretch;justify-content:space-between;gap:16px; }
 #rules .rules-actions .rules-hud-button,
@@ -156,9 +177,12 @@
   font-size:.85em;line-height:1;transform:translateY(-2px);
   color:#a2f4ef;text-shadow:0 0 9px rgba(88,239,235,.75);
 }
-/* Match the already-shipped landing page's neon on/off animation. */
-#rules .rules-actions .rules-hud-button:not(:disabled) {
+/* Only START PLAYING flickers; BACK remains deliberately calm. */
+#rules #rulesContinue.rules-hud-button:not(:disabled) {
   animation:startNeonFlicker 4.8s steps(1,end) infinite;
+}
+#rules #rulesBack.rules-hud-button {
+  animation:none;
 }
 #rules .rules-actions .rules-hud-button:not(:disabled):hover,
 #rules #rulesContinue.rules-hud-button:not(:disabled):hover {
@@ -204,5 +228,9 @@
   #rules .rules-title-secondary {font-size:clamp(21px,5.5vw,32px);}
 }
 @media(prefers-reduced-motion:reduce) {
-  #rules .rules-actions .rules-hud-button {animation:none!important;transition:none;}
+  #rules .rules-actions .rules-hud-button,
+  #rules .rules-acknowledgement,
+  #rules .rules-acknowledgement input {animation:none!important;transition:none;}
+  #rules .rules-acknowledgement:hover,
+  #rules .rules-acknowledgement.is-checked:hover {transform:none;}
 }

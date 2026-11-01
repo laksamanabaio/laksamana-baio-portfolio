@@ -157,7 +157,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 .minimapHDIcon svg{display:block;width:100%;height:100%;shape-rendering:geometricPrecision}
 </style>
 <link rel="stylesheet" href="./assets/landing/v1686/landing.css?v=16.90">
-<link rel="stylesheet" href="./assets/rules/v1691/rules.css?v=16.91">
+<link rel="stylesheet" href="./assets/rules/v1691/rules.css?v=16.92">
 </head>
 <body>
 <main>
@@ -235,10 +235,10 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
   alt="" aria-hidden="true" decoding="async">
  <div class="rules-scene-shade" aria-hidden="true"></div>
  <div class="rules-panel">
-  <p class="rules-eyebrow">PLAYER GUIDE // SECTOR 2077</p>
+  <p class="rules-eyebrow">LAKSAMANA BAIO'S WORLD // SECTOR 2077</p>
   <div class="rules-title-panel">
    <h2 id="rulesTitle"><span class="rules-title-primary">RULES</span><span class="rules-title-secondary">BEFORE PLAYING</span></h2>
-   <div class="rules-title-status" aria-hidden="true"><span>CONTROL SYSTEM</span><span>READY / 2077</span></div>
+   <div class="rules-title-status" aria-hidden="true"><span>CONTROL SYSTEM</span><span>12/03/2077</span></div>
   </div>
   <p class="rules-intro">Learn the basic controls before exploring Baio's World.</p>
   <p class="rules-desktop-warning">DESKTOP / LAPTOP ONLY — This portfolio game is designed for computers and laptops. Please use a keyboard for the best experience.</p>
@@ -255,8 +255,8 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
    <article class="rule-item">
     <span class="rule-number">02 / SPRINT</span>
     <h3>RUN</h3>
-    <div class="rule-keys"><kbd>SHIFT</kbd><span class="rule-or">+</span><kbd>WASD</kbd></div>
-    <p>Hold Shift while moving to sprint.</p>
+    <div class="rule-keys"><kbd>SHIFT</kbd><span class="rule-or">+</span><kbd>WASD</kbd><span class="rule-or">OR</span><kbd>ARROWS</kbd></div>
+    <p>Hold Shift while moving with WASD or the arrow keys to sprint.</p>
    </article>
    <article class="rule-item">
     <span class="rule-number">03 / INTERACT</span>
@@ -270,7 +270,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
    <span>I have read and understood the rules and controls. I understand that these gameplay instructions will not be repeated inside the game.</span>
   </label>
   <div class="rules-actions">
-   <button id="rulesBack" class="rules-hud-button" type="button"><span class="rules-action-icon" aria-hidden="true">◀</span><span>BACK</span></button>
+   <button id="rulesBack" class="rules-hud-button" type="button"><span>BACK</span></button>
    <button id="rulesContinue" class="rules-hud-button" type="button" disabled aria-disabled="true"><span class="rules-action-icon" aria-hidden="true">▶</span><span>START PLAYING</span></button>
   </div>
  </div>
@@ -2667,6 +2667,7 @@ if (!window.Phaser) {
   const ready=rulesAcknowledge.checked;
   rulesContinueButton.disabled=!ready;
   rulesContinueButton.setAttribute('aria-disabled',String(!ready));
+  rulesAcknowledge.closest('.rules-acknowledgement').classList.toggle('is-checked',ready);
  };
  rulesAcknowledge.addEventListener('change',syncRulesAcknowledgement);
  syncRulesAcknowledgement();
