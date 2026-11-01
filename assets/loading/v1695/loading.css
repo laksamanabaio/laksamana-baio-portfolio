@@ -1,19 +1,14 @@
-/* Loading screen 16.95: shared neon HUD language, full uncropped city artwork. */
+/* Loading screen 16.96: centered connection panel and proportional full-bleed backdrop. */
 #loading {
  position:absolute;inset:0;z-index:22;isolation:isolate;
  display:none;overflow:hidden;place-items:center;
  background:#030d1d;color:#eafcff;text-align:center;
 }
 #loading.active {display:grid}
-/* Subtle ambient bleed fills non-16:9 viewports; the main image below is always uncropped. */
-#loading::before {
- content:"";position:absolute;inset:-30px;z-index:0;pointer-events:none;
- background:url('../../rules/v1691/rules-background.webp?v=16.94') center center/cover no-repeat;
- filter:blur(22px) brightness(.38);opacity:.84;
-}
+/* Full-bleed image below covers all viewport sizes; no distorted overlay is needed. */
 #loading .loading-background {
  position:absolute;inset:0;z-index:1;display:block;
- width:100%;height:100%;object-fit:contain;object-position:center;
+ width:100%;height:100%;object-fit:cover;object-position:center bottom;
  pointer-events:none;user-select:none;
 }
 #loading .loading-dimmer {
@@ -21,19 +16,14 @@
  background:linear-gradient(180deg,rgba(3,10,26,.27),rgba(3,12,27,.52));
 }
 #loading .loading-content {
- position:relative;z-index:3;width:100%;height:100dvh;min-height:0;
- display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
- gap:clamp(20px,3vh,36px);
- padding:clamp(28px,5vh,64px) clamp(18px,4vw,50px) 28px;
+ position:relative;z-index:3;width:100%;height:100%;min-height:0;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ padding:clamp(18px,4vh,42px) clamp(18px,4vw,50px);
  overflow-y:auto;overscroll-behavior:contain;scrollbar-color:#58bcd0 #082034;
-}
-#loading .loading-logo {
- display:block;flex:none;width:clamp(245px,29vw,550px);max-width:100%;
- height:auto;max-height:27dvh;object-fit:contain;
- filter:drop-shadow(0 7px 14px rgba(0,6,18,.72));
 }
 #loading .loading-panel {
  position:relative;flex:none;width:min(860px,100%);min-width:0;
+ margin:auto;
  padding:clamp(24px,2.7vw,40px);
  border:2px solid #74deed;
  background:linear-gradient(145deg,rgba(10,38,55,.96),rgba(4,17,33,.97));
@@ -54,10 +44,17 @@
  font:800 clamp(11px,.92vw,13px)/1.4 monospace;letter-spacing:.18em;
 }
 #loading .loading-heading {
- margin:0 0 28px;color:#f5ffff;
+ margin:0 0 20px;color:#f5ffff;
  font:900 clamp(22px,2.05vw,32px)/1.25 monospace;
  letter-spacing:.095em;
  text-shadow:2px 2px 0 #164a60,0 0 14px rgba(103,238,247,.21);
+}
+/* Hairline divider has the same width and horizontal edges as the progress track. */
+#loading .loading-divider {
+ display:block;width:100%;height:1px;flex:none;
+ margin:0 0 20px;
+ background:linear-gradient(90deg,#3b8397,#83e5ee 50%,#3b8397);
+ box-shadow:0 0 5px rgba(91,230,240,.22);
 }
 #loading .loading-progress-meta {
  display:flex;justify-content:space-between;align-items:center;gap:16px;
@@ -82,15 +79,14 @@
  font:700 clamp(15px,1.25vw,18px)/1.55 monospace;
 }
 @media(max-height:650px) and (orientation:landscape) {
- #loading .loading-content {gap:14px;padding-top:20px;}
- #loading .loading-logo {width:clamp(190px,22vw,350px);max-height:21dvh;}
+ #loading .loading-content {padding:14px 24px;}
  #loading .loading-panel {padding:19px 25px;}
- #loading .loading-heading {margin-bottom:15px;font-size:clamp(18px,1.8vw,26px);}
+ #loading .loading-heading {margin-bottom:14px;font-size:clamp(18px,1.8vw,26px);}
+ #loading .loading-divider {margin-bottom:14px;}
  #loading .track {margin-bottom:10px;}
 }
 @media(orientation:portrait) {
- #loading .loading-content {gap:26px;padding-top:clamp(44px,10dvh,110px);}
- #loading .loading-logo {width:min(78vw,410px);max-height:30dvh;}
+ #loading .loading-content {padding:20px;}
  #loading .loading-panel {padding:clamp(20px,5vw,30px);}
  #loading .loading-heading {font-size:clamp(20px,5vw,27px);letter-spacing:.035em;}
 }
