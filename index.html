@@ -2155,72 +2155,135 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    paper.fillRoundedRect(144,174,noteBadgeWidth,26,3);
    paper.lineStyle(1,0x4b8295,.96);
    paper.strokeRoundedRect(144,174,noteBadgeWidth,26,3);
-   // Dedicated DNA MACHINE / DESIGN RESEARCH laboratory monitor.
-   // Crisp vector HUD, never an image covering text; display only for lab-samples.
+   // LABORATORY DESIGN RESEARCH: high-definition DNA analysis HUD.
+   // Uses the same frame/grid proportions as Home Blueprint:
+   // header y=89..159, cards y=169..400, footer y=417..457.
+   // Panels divide the 704px width in a 260:432 golden-ratio layout.
+   // Everything is drawn as Phaser vectors, not a raster screenshot.
    const dna=add(this.add.graphics().setScrollFactor(0).setDepth(251));
-   const dnaCyan=0x75eaf5,dnaLime=0x9cf4b9;
-   dna.fillStyle(0x02101c,.97);dna.fillRect(0,0,W,H);
-   dna.fillStyle(0x081e30,1);dna.fillRoundedRect(104,70,752,406,10);
-   dna.lineStyle(2,dnaCyan,.94);dna.strokeRoundedRect(104,70,752,406,10);
-   dna.lineStyle(1,0x36819a,.78);dna.strokeRoundedRect(111,77,738,392,7);
-   // Emissive top display rail and subtle, low-contrast instrument grid.
-   dna.fillStyle(0x103548,.97);dna.fillRoundedRect(121,86,718,74,4);
-   dna.fillStyle(dnaCyan,.86);dna.fillRect(135,87,86,3);
-   dna.fillStyle(dnaLime,.80);dna.fillRect(769,87,55,3);
-   dna.lineStyle(1,0x53bfd6,.69);dna.lineBetween(129,161,830,161);
-   for(let xx=128;xx<=827;xx+=28){
-    dna.lineStyle(1,0x55a4bf,.075);dna.lineBetween(xx,174,xx,404);
+   const dnaCyan=0x75eaf5,dnaLime=0x9cf4b9,dnaBlue=0x3f8ab6;
+   const dnaLeft={x:128,y:169,w:260,h:231};
+   const dnaRight={x:400,y:169,w:432,h:231};
+   dna.fillStyle(0x02101b,.97);dna.fillRect(0,0,W,H);
+   // Rules-style dark bezel with blueprint-thin nested cyan outlines.
+   dna.fillStyle(0x010711,.83);dna.fillRoundedRect(109,78,752,406,10);
+   dna.fillStyle(0x081a2c,1);dna.fillRoundedRect(100,66,760,414,10);
+   dna.fillStyle(0x0a2637,1);dna.fillRoundedRect(104,70,752,406,8);
+   dna.lineStyle(2,0x70d6e2,1);dna.strokeRoundedRect(104,70,752,406,8);
+   dna.lineStyle(1,0x27627a,.94);dna.strokeRoundedRect(110,76,740,394,5);
+   dna.lineStyle(1,0x7de8ed,.28);dna.strokeRoundedRect(113,79,734,388,4);
+   // Survey grid is quiet enough to sit behind research writing.
+   for(let x=120,i=0;x<=840;x+=16,i++){
+    dna.lineStyle(1,dnaBlue,i%4===0?.17:.06);
+    dna.lineBetween(x,82,x,466);
    }
-   for(let yy=176;yy<=399;yy+=28){
-    dna.lineStyle(1,0x55a4bf,.075);dna.lineBetween(128,yy,833,yy);
+   for(let y=86,i=0;y<=468;y+=16,i++){
+    dna.lineStyle(1,dnaBlue,i%4===0?.17:.06);
+    dna.lineBetween(116,y,844,y);
    }
-   // Two distinct modules: stylized DNA visual on the left and research
-   // writing on the right. Never draw decorative lines over readable text.
-   dna.fillStyle(0x0a2b40,.99);dna.fillRoundedRect(128,175,180,229,6);
-   dna.lineStyle(1,dnaCyan,.74);dna.strokeRoundedRect(128,175,180,229,6);
-   // Extend the inset DNA display into the unused lower part of its panel.
-   // Stretch the helix proportionally while retaining its original shape.
-   dna.fillStyle(0x061f31,.98);dna.fillRoundedRect(140,208,156,184,4);
-   dna.lineStyle(1,0x367e97,.77);dna.strokeRoundedRect(140,208,156,184,4);
-   const strand=(yy,side)=>218+side*33*Math.sin((yy-213)*Math.PI/56);
-   for(let yy=215;yy<382;yy+=5){
-    const next=Math.min(382,yy+5);
-    dna.lineStyle(2.2,dnaCyan,.9);
-    dna.lineBetween(strand(yy,-1),yy,strand(next,-1),next);
-    dna.lineStyle(2.2,dnaLime,.85);
-    dna.lineBetween(strand(yy,1),yy,strand(next,1),next);
+   // Calibrated corner brackets and small terminal status indicators.
+   const dnaCorner=(x,y,sx,sy)=>{
+    dna.lineStyle(2,0x9ceef7,.9);
+    dna.lineBetween(x,y,x+9*sx,y);dna.lineBetween(x,y,x,y+9*sy);
+    dna.fillStyle(0xc6ffff,.9);dna.fillRect(x,y,2,2);
+   };
+   dnaCorner(116,82,1,1);dnaCorner(844,82,-1,1);
+   dnaCorner(116,464,1,-1);dnaCorner(844,464,-1,-1);
+   dna.fillStyle(0x061a2d,1);dna.fillRect(125,89,710,70);
+   dna.fillStyle(0x11394d,1);dna.fillRect(127,91,706,66);
+   dna.fillStyle(0x14465b,.48);dna.fillRect(127,91,706,33);
+   dna.lineStyle(2,0x70d6e2,.93);dna.strokeRect(125,89,710,70);
+   dna.lineStyle(1,0x2b7892,.85);dna.strokeRect(128,92,704,64);
+   // Mint-colored diagnostic bars distinguish LAB from District Blueprint.
+   dna.fillStyle(dnaLime,.92);
+   for(let k=0;k<4;k++)dna.fillRect(747+k*15,102,10,3);
+   // Content cards: identical gutters and high-definition neon frames.
+   for(const card of [dnaLeft,dnaRight]){
+    dna.fillStyle(0x041521,1);
+    dna.fillRect(card.x-2,card.y+3,card.w+4,card.h+2);
+    dna.fillStyle(0x0b2c42,.99);dna.fillRect(card.x,card.y,card.w,card.h);
+    dna.fillStyle(0x164357,.5);dna.fillRect(card.x+2,card.y+2,card.w-4,30);
+    dna.lineStyle(2,0x70d6e2,.97);dna.strokeRect(card.x,card.y,card.w,card.h);
+    dna.lineStyle(1,0x286b83,.76);
+    dna.strokeRect(card.x+4,card.y+4,card.w-8,card.h-8);
+    dna.fillStyle(dnaLime,.82);
+    for(const [cx,cy] of [[card.x+5,card.y+5],
+      [card.x+card.w-7,card.y+5],[card.x+5,card.y+card.h-7],
+      [card.x+card.w-7,card.y+card.h-7]])dna.fillRect(cx,cy,2,2);
+    dna.lineStyle(1,0x6dbfd5,.55);
+    dna.lineBetween(card.x+16,card.y+36,card.x+card.w-16,card.y+36);
    }
-   for(let yy=222;yy<=378;yy+=18){
-    dna.lineStyle(1.5,0xb6f6e5,.70);
-    dna.lineBetween(strand(yy,-1),yy,strand(yy,1),yy);
-    dna.fillStyle(0xd5ffff,.9);
-    dna.fillCircle(strand(yy,-1),yy,2.3);
-    dna.fillStyle(dnaLime,.88);
-    dna.fillCircle(strand(yy,1),yy,2.3);
+   // Left display: spectrometer-style viewport with faint measurement grid.
+   dna.fillStyle(0x061e30,1);dna.fillRect(144,215,228,168);
+   dna.lineStyle(1,0x367e97,.77);dna.strokeRect(144,215,228,168);
+   for(let gx=156;gx<370;gx+=12){
+    dna.lineStyle(1,dnaBlue,.13);dna.lineBetween(gx,218,gx,380);
    }
-   dna.fillStyle(0x0a2638,1);dna.fillRoundedRect(320,175,512,229,6);
-   dna.lineStyle(1,0x4ba9c4,.83);dna.strokeRoundedRect(320,175,512,229,6);
-   dna.lineStyle(1,0x65d9ea,.6);dna.lineBetween(339,203,814,203);
-   // Clean Lab footer: keep its frame, without the two accent lines
-   // above the terminal label and beneath the E / SPACE prompt.
-   dna.fillStyle(0x0d3043,1);dna.fillRoundedRect(128,419,704,43,5);
-   dna.lineStyle(1,0x46879d,.83);dna.strokeRoundedRect(128,419,704,43,5);
+   for(let gy=224;gy<380;gy+=12){
+    dna.lineStyle(1,dnaBlue,.13);dna.lineBetween(148,gy,369,gy);
+   }
+   // Circular sequencing chamber and precise targeting crosshair.
+   dna.lineStyle(1,0x3e849d,.37);dna.strokeCircle(258,299,74);
+   dna.lineStyle(1,0x6dc9df,.32);dna.strokeCircle(258,299,58);
+   dna.lineStyle(1,dnaLime,.22);dna.strokeCircle(258,299,46);
+   dna.lineStyle(1,0x75d4e8,.33);
+   dna.lineBetween(150,299,366,299);
+   dna.lineBetween(258,219,258,379);
+   // DNA strands (cyan/mint), rendered as dense vector samples for clarity.
+   const strand=(yy,side)=>258+side*37*Math.sin((yy-225)*Math.PI/59);
+   for(let yy=225;yy<369;yy+=3){
+    const ny=Math.min(369,yy+3);
+    dna.lineStyle(2.5,dnaCyan,.95);
+    dna.lineBetween(strand(yy,-1),yy,strand(ny,-1),ny);
+    dna.lineStyle(2.5,dnaLime,.94);
+    dna.lineBetween(strand(yy,1),yy,strand(ny,1),ny);
+   }
+   for(let yy=231;yy<=363;yy+=12){
+    const left=strand(yy,-1),right=strand(yy,1);
+    dna.lineStyle(2,0xb8f9f1,.82);
+    dna.lineBetween(left,yy,right,yy);
+    dna.fillStyle(0xd6ffff,.98);dna.fillRect(left-2,yy-2,4,4);
+    dna.fillStyle(dnaLime,.98);dna.fillRect(right-2,yy-2,4,4);
+   }
+   // Scan markers and discrete molecular readout lights.
+   dna.lineStyle(1,dnaCyan,.79);
+   for(const [cx,cy] of [[150,220],[366,220],[150,377],[366,377]]){
+    dna.lineBetween(cx-4,cy,cx+4,cy);
+    dna.lineBetween(cx,cy-4,cx,cy+4);
+   }
+   for(let k=0;k<9;k++){
+    dna.fillStyle(k%3===0?dnaLime:dnaCyan,k%3===0?.90:.4);
+    dna.fillRect(159+k*11,389,7,2);
+   }
+   // Right research screen: opaque text surface, subtle guide lines.
+   for(let py=274;py<389;py+=25){
+    dna.lineStyle(1,0x387b9f,.10);
+    dna.lineBetween(416,py,816,py);
+   }
+   dna.fillStyle(dnaLime,.85);dna.fillRect(402,181,3,17);
+   // Shared footer proportions, 19px top and bottom outer margins.
+   dna.fillStyle(0x041521,1);dna.fillRect(126,419,708,39);
+   dna.fillStyle(0x0c3147,1);dna.fillRect(128,417,704,40);
+   dna.fillStyle(0x164357,.5);dna.fillRect(130,419,700,13);
+   dna.lineStyle(2,0x70d6e2,.96);dna.strokeRect(128,417,704,40);
+   dna.lineStyle(1,0x296f88,.86);dna.strokeRect(132,421,696,32);
+   dna.fillStyle(dnaLime,.88);dna.fillRect(130,419,46,2);
    this.readerDnaBackground=dna;
    this.readerDnaLabels=[
-    add(this.add.text(143,185,'DNA / VISUAL MODEL',{
+    add(this.add.text(144,180,'DNA / VISUAL MODEL',{
      fontFamily:'monospace',fontSize:'11px',fontStyle:'bold',color:'#baf7fa'
-    }).setResolution(2).setScrollFactor(0).setDepth(252)),
-    add(this.add.text(339,184,'RESEARCH LOG  /  HUMAN EXPERIENCE',{
-     fontFamily:'monospace',fontSize:'11px',color:'#9ed9e5'
-    }).setResolution(2).setScrollFactor(0).setDepth(252)),
-    add(this.add.text(144,434,'LABORATORY  /  ANALYSIS TERMINAL',{
+    }).setResolution(3).setScrollFactor(0).setDepth(252)),
+    add(this.add.text(416,180,'RESEARCH LOG / HUMAN EXPERIENCE',{
+     fontFamily:'monospace',fontSize:'11px',fontStyle:'bold',color:'#baf7fa'
+    }).setResolution(3).setScrollFactor(0).setDepth(252)),
+    add(this.add.text(144,430,'LABORATORY / ANALYSIS TERMINAL',{
      fontFamily:'monospace',fontSize:'11px',fontStyle:'bold',color:'#b9f1f4'
-    }).setResolution(2).setScrollFactor(0).setDepth(252))
+    }).setResolution(3).setScrollFactor(0).setDepth(252))
    ];
-   this.readerDnaHeading=add(this.add.text(339,215,'',{
+   this.readerDnaHeading=add(this.add.text(416,222,'',{
     fontFamily:'monospace',fontSize:'18px',fontStyle:'bold',
-    color:'#c7fff2'
-   }).setResolution(2).setScrollFactor(0).setDepth(252));
+    color:'#ffe29b',wordWrap:{width:395,useAdvancedWrap:true}
+   }).setResolution(3).setScrollFactor(0).setDepth(252));
    // Building-specific modern desktop, shared by Home, Lab, Workshop and
    // reception. Identical margins and typography; per-room tones + a tiny
    // identifiable glyph ensure the window belongs to its environment.
@@ -2359,6 +2422,14 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
       if(this.readerBody.height<=150)break;
      }
     }
+    if(this.readerObject==='lab-samples'){
+     // Keep the entire real research note inside the digital writing card.
+     // Top y=258, panel bottom=400, protected baseline at y=390.
+     for(const size of [18,17,16,15,14]){
+      this.readerBody.setFontSize(size);
+      if(this.readerBody.height<=130)break;
+     }
+    }
     if(this.readerObject==='home-blueprint'){
      // Fit the measured wrapped paragraph to the right-hand field-note card:
      // body starts at y=258 and may occupy at most 133px (bottom margin 15).
@@ -2416,33 +2487,33 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    for(const label of this.readerDnaLabels)label.setVisible(isDna);
    for(const label of this.readerComputerLabels)label.setVisible(isComputer);
    // Each reader mode resets every shared text layout and color.
-   this.readerTitle.setPosition(isNotes?144:isComputer?240:isBlueprint?142:138,isNotes?108:isComputer?94:isBlueprint?97:97);
+   this.readerTitle.setPosition(isNotes?144:isComputer?240:isBlueprint||isDna?142:138,isNotes?108:isComputer?94:isBlueprint||isDna?97:97);
    this.readerTitle.setFontFamily(isNotes?'Arial, sans-serif':'monospace');
    this.readerTitle.setFontSize(isComputer?22:26);
-   this.readerTitle.setColor(isNotes?'#103c53':isComputer?this.readerComputerTheme.text:isDna?'#e9feff':isBlueprint?'#ffe29b':'#f4e8d5');
-   this.readerSubtitle.setPosition(isNotes?144:isComputer?145:isBlueprint?142:138,isNotes?144:isComputer?144:isBlueprint?137:138);
+   this.readerTitle.setColor(isNotes?'#103c53':isComputer?this.readerComputerTheme.text:isDna?'#ffe29b':isBlueprint?'#ffe29b':'#f4e8d5');
+   this.readerSubtitle.setPosition(isNotes?144:isComputer?145:isBlueprint||isDna?142:138,isNotes?144:isComputer?144:isBlueprint||isDna?137:138);
    this.readerSubtitle.setFontSize(isNotes?14:13);
    this.readerSubtitle.setFontStyle(isNotes?'bold':'normal');
    this.readerSubtitle.setColor(isNotes?'#244d60':isComputer?this.readerComputerTheme.muted:isDna?'#a4e0eb':isBlueprint?'#99dcf7':'#a8dad2');
-   this.readerBody.setPosition(isNotes?144:isDna?339:isComputer?154:isBlueprint?416:321,
-    isNotes?245:isDna?255:isComputer?264:isBlueprint?252:189);
+   this.readerBody.setPosition(isNotes?144:isDna?416:isComputer?154:isBlueprint?416:321,
+    isNotes?245:isDna?258:isComputer?264:isBlueprint?252:189);
    this.readerBody.setFontFamily(isNotes?'Arial, sans-serif':'monospace');
    this.readerBody.setFontSize(isNotes?21:isComputer?18:isDna?18:isBlueprint?17:19);
-   this.readerBody.setWordWrapWidth(isNotes?672:isDna?462:isComputer?652:isBlueprint?395:492,true);
-   this.readerBody.setLineSpacing(isNotes?9:isComputer?5:isDna?9:isBlueprint?4:10);
-   this.readerBody.setResolution(isNotes||isBlueprint?3:2);
+   this.readerBody.setWordWrapWidth(isNotes?672:isDna?395:isComputer?652:isBlueprint?395:492,true);
+   this.readerBody.setLineSpacing(isNotes?9:isComputer?5:isDna?4:isBlueprint?4:10);
+   this.readerBody.setResolution(isNotes||isBlueprint||isDna?3:2);
    // Higher-resolution text for both paper and blueprint at Phaser FIT scales.
-   this.readerTitle.setResolution(isNotes||isBlueprint?3:2);
-   this.readerSubtitle.setResolution(isNotes||isBlueprint?3:2);
-   this.readerCount.setResolution(isNotes||isBlueprint?3:2);
-   this.readerNext.setResolution(isNotes||isBlueprint?3:2);
+   this.readerTitle.setResolution(isNotes||isBlueprint||isDna?3:2);
+   this.readerSubtitle.setResolution(isNotes||isBlueprint||isDna?3:2);
+   this.readerCount.setResolution(isNotes||isBlueprint||isDna?3:2);
+   this.readerNext.setResolution(isNotes||isBlueprint||isDna?3:2);
    this.readerBody.setColor(isNotes?'#143c4c':isComputer?this.readerComputerTheme.text:isDna?'#effcff':isBlueprint?'#edfaff':'#e8efe6');
-   this.readerCount.setPosition(isNotes?816:isComputer?813:isBlueprint?814:817,
-    isNotes?144:isComputer?144:isDna?138:isBlueprint?137:145);
+   this.readerCount.setPosition(isNotes?816:isComputer?813:isBlueprint||isDna?814:817,
+    isNotes?144:isComputer?144:isDna?137:isBlueprint?137:145);
    this.readerCount.setFontSize(isNotes?14:14);
    this.readerCount.setFontStyle(isNotes?'bold':'normal');
    this.readerCount.setColor(isNotes?'#244d60':isComputer?this.readerComputerTheme.muted:isDna?'#c2f7fa':'#b6dcd7');
-   this.readerNext.setPosition(isNotes?816:isComputer?815:isBlueprint?814:821,isNotes?420:isComputer?440:isBlueprint?437:443);
+   this.readerNext.setPosition(isNotes?816:isComputer?815:isBlueprint||isDna?814:821,isNotes?420:isComputer?440:isBlueprint||isDna?437:443);
    this.readerNext.setFontSize(14);
    this.readerNext.setFontStyle(isNotes?'bold':'normal');
    this.readerNext.setResolution(isNotes?4:isBlueprint?3:2);
