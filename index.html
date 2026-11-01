@@ -157,6 +157,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 .minimapHDIcon svg{display:block;width:100%;height:100%;shape-rendering:geometricPrecision}
 </style>
 <link rel="stylesheet" href="./assets/landing/v1686/landing.css?v=16.90">
+<link rel="stylesheet" href="./assets/rules/v1691/rules.css?v=16.91">
 </head>
 <body>
 <main>
@@ -230,6 +231,9 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  </div>
 </section>
 <section id="rules" aria-labelledby="rulesTitle" tabindex="-1" hidden>
+ <img class="rules-scene-bg" src="./assets/rules/v1691/rules-background.webp?v=16.91"
+  alt="" aria-hidden="true" decoding="async">
+ <div class="rules-scene-shade" aria-hidden="true"></div>
  <div class="rules-panel">
   <p class="rules-eyebrow">PLAYER GUIDE // SECTOR 2077</p>
   <div class="rules-title-panel">
@@ -237,6 +241,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
    <div class="rules-title-status" aria-hidden="true"><span>CONTROL SYSTEM</span><span>READY / 2077</span></div>
   </div>
   <p class="rules-intro">Learn the basic controls before exploring Baio's World.</p>
+  <p class="rules-desktop-warning">DESKTOP / LAPTOP ONLY — This portfolio game is designed for computers and laptops. Please use a keyboard for the best experience.</p>
   <div class="rules-grid">
    <article class="rule-item">
     <span class="rule-number">01 / MOVEMENT</span>
@@ -260,10 +265,13 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
     <p>Approach an NPC or an object, then press E or Space to interact.</p>
    </article>
   </div>
-  <p class="rules-touch">On touch devices, use the on-screen controls.</p>
+  <label class="rules-acknowledgement" for="rulesAcknowledge">
+   <input id="rulesAcknowledge" type="checkbox" autocomplete="off">
+   <span>I have read and understood the rules and controls. I understand that these gameplay instructions will not be repeated inside the game.</span>
+  </label>
   <div class="rules-actions">
-   <button id="rulesBack" type="button">← BACK</button>
-   <button id="rulesContinue" type="button">▶ START PLAYING</button>
+   <button id="rulesBack" class="rules-hud-button" type="button"><span class="rules-action-icon" aria-hidden="true">◀</span><span>BACK</span></button>
+   <button id="rulesContinue" class="rules-hud-button" type="button" disabled aria-disabled="true"><span class="rules-action-icon" aria-hidden="true">▶</span><span>START PLAYING</span></button>
   </div>
  </div>
 </section>
@@ -2652,6 +2660,16 @@ if (!window.Phaser) {
  const game=new Phaser.Game({type:Phaser.AUTO,parent:'game',width:W,height:H,backgroundColor:'#142733',pixelArt:true,render:{pixelArt:true,antialias:false},scene:[World],scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH}});
  const opening=document.getElementById('opening');
  const rules=document.getElementById('rules');
+ const rulesAcknowledge=document.getElementById('rulesAcknowledge');
+ const rulesContinueButton=document.getElementById('rulesContinue');
+ // START PLAYING is genuinely disabled (mouse, touch and keyboard) until acknowledged.
+ const syncRulesAcknowledgement=()=>{
+  const ready=rulesAcknowledge.checked;
+  rulesContinueButton.disabled=!ready;
+  rulesContinueButton.setAttribute('aria-disabled',String(!ready));
+ };
+ rulesAcknowledge.addEventListener('change',syncRulesAcknowledgement);
+ syncRulesAcknowledgement();
  const loading=document.getElementById('loading');
  const main=document.querySelector('main');
  const fullscreenToggle=document.getElementById('fullscreenToggle');
@@ -2701,7 +2719,7 @@ if (!window.Phaser) {
   document.getElementById('startGame').focus({preventScroll:true});
  });
  document.getElementById('rulesContinue').addEventListener('click',()=>{
-  if(portfolioLoadState.started)return;
+  if(portfolioLoadState.started||!rulesAcknowledge.checked)return;
   portfolioLoadState.started=true;
   portfolioLoadState.loadingShownAt=performance.now();
   rules.hidden=true;
