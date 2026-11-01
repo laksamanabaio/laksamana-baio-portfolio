@@ -2097,7 +2097,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    // push the title down or spill across the 406px panel boundary.
    this.readerBlueprintHeading=add(this.add.text(416,219,'',{
     fontFamily:'monospace',fontSize:'17px',fontStyle:'bold',
-    color:'#e7fcff',wordWrap:{width:395,useAdvancedWrap:true}
+    color:'#ffe29b',wordWrap:{width:395,useAdvancedWrap:true}
    }).setResolution(3).setScrollFactor(0).setDepth(252));
 
    // DESIGN NOTES: a dedicated, text-only digital paper reader.
@@ -2389,7 +2389,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    this.readerTitle.setPosition(isNotes?153:isComputer?240:isBlueprint?142:138,isNotes?108:isComputer?94:isBlueprint?97:97);
    this.readerTitle.setFontFamily(isNotes?'Arial, sans-serif':'monospace');
    this.readerTitle.setFontSize(isComputer?22:26);
-   this.readerTitle.setColor(isNotes?'#103c53':isComputer?this.readerComputerTheme.text:isDna?'#e9feff':isBlueprint?'#edfcff':'#f4e8d5');
+   this.readerTitle.setColor(isNotes?'#103c53':isComputer?this.readerComputerTheme.text:isDna?'#e9feff':isBlueprint?'#ffe29b':'#f4e8d5');
    this.readerSubtitle.setPosition(isNotes?153:isComputer?145:isBlueprint?142:138,isNotes?144:isComputer?144:isBlueprint?137:138);
    this.readerSubtitle.setColor(isNotes?'#487387':isComputer?this.readerComputerTheme.muted:isDna?'#a4e0eb':isBlueprint?'#99dcf7':'#a8dad2');
    this.readerBody.setPosition(isNotes?153:isDna?339:isComputer?154:isBlueprint?416:321,
