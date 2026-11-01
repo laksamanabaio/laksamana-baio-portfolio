@@ -2100,38 +2100,45 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
     color:'#ffe29b',wordWrap:{width:395,useAdvancedWrap:true}
    }).setResolution(3).setScrollFactor(0).setDepth(252));
 
-   // DESIGN NOTES: a dedicated, text-only digital paper reader.
-   // Cool ivory "e-paper", navy ink, subtle writing guides and restrained
-   // neon edges; no computer icon, diagram or decorative illustrations.
+   // DESIGN NOTES / 2077: pixel-crisp e-paper inside a Rules-inspired
+   // neon cyan HUD. Text uses shared 40px left/right margins from the
+   // popup's 104..856 frame (left x=144, right x=816).
    const paper=add(this.add.graphics().setScrollFactor(0).setDepth(251));
-   paper.fillStyle(0x020e1a,.96);paper.fillRect(0,0,W,H);
-   paper.fillStyle(0x102b40,1);paper.fillRoundedRect(103,69,754,408,11);
-   paper.lineStyle(2,0x69d6e2,.88);paper.strokeRoundedRect(103,69,754,408,11);
-   // Inset light digital sheet; all actual content remains live Phaser text.
-   paper.fillStyle(0xdbe9ea,1);paper.fillRoundedRect(117,83,726,377,7);
-   paper.lineStyle(1,0xf4ffff,.85);paper.strokeRoundedRect(118,84,724,375,6);
-   paper.fillStyle(0xabcbd3,.60);paper.fillRect(130,166,700,1);
-   paper.fillStyle(0x87adb9,.45);paper.fillRect(130,407,700,1);
-   paper.fillStyle(0x1d718b,.88);paper.fillRect(118,87,5,366);
-   paper.fillStyle(0x40c7d8,.9);paper.fillRect(130,88,74,3);
-   paper.fillStyle(0x40c7d8,.75);paper.fillRect(754,453,73,3);
-   // Faint ruled-paper baseline stays behind the text, never crossing it
-   // at high contrast or obscuring any paragraph.
-   for(let py=266;py<395;py+=32){
-    paper.fillStyle(0x629cae,.095);paper.fillRect(153,py,650,1);
+   paper.fillStyle(0x020e1a,.97);paper.fillRect(0,0,W,H);
+   // Dark navy bezel, inset stroke and cyan edge mirror Rules Before Playing.
+   paper.fillStyle(0x010711,.80);paper.fillRoundedRect(109,78,752,406,10);
+   paper.fillStyle(0x081a2c,1);paper.fillRoundedRect(100,66,760,414,10);
+   paper.fillStyle(0x102b40,1);paper.fillRoundedRect(104,70,752,406,8);
+   paper.lineStyle(2,0x70d6e2,.97);paper.strokeRoundedRect(104,70,752,406,8);
+   paper.lineStyle(1,0x27627a,.86);paper.strokeRoundedRect(110,76,740,394,5);
+   // Pale futuristic digital sheet remains the readable surface.
+   paper.fillStyle(0xe2eff1,1);paper.fillRoundedRect(117,83,726,377,7);
+   for(let row=0;row<8;row++){
+    paper.fillStyle(row%2===0?0xffffff:0x9ac4d0,row%2===0?.035:.03);
+    paper.fillRect(120,86+row*46,720,46);
+   }
+   paper.lineStyle(1,0xf6ffff,.9);paper.strokeRoundedRect(118,84,724,375,6);
+   paper.lineStyle(1,0x8eb6c2,.65);paper.strokeRoundedRect(121,87,718,369,4);
+   // Consistent content inset and quiet section separators.
+   // No decorative cyan bar above the title or beneath NEXT.
+   paper.fillStyle(0x5a9aab,.46);paper.fillRect(144,166,672,1);
+   paper.fillStyle(0x5a9aab,.46);paper.fillRect(144,407,672,1);
+   // Low contrast digital writing guides behind the actual paragraph.
+   for(let py=271;py<393;py+=31){
+    paper.fillStyle(0x629cae,.075);paper.fillRect(144,py,672,1);
    }
    this.readerDigitalPaperBackground=paper;
-   this.readerNotesHeading=add(this.add.text(153,199,'',{
+   this.readerNotesHeading=add(this.add.text(144,199,'',{
     fontFamily:'Arial, sans-serif',fontSize:'22px',fontStyle:'bold',
     color:'#16465b'
-   }).setResolution(2).setScrollFactor(0).setDepth(252));
+   }).setResolution(3).setScrollFactor(0).setDepth(252));
    this.readerNotesLabels=[
-    add(this.add.text(153,181,'DESIGN PRINCIPLE  /  PERSONAL NOTES',{
+    add(this.add.text(144,181,'DESIGN PRINCIPLE  /  PERSONAL NOTES',{
      fontFamily:'monospace',fontSize:'11px',fontStyle:'bold',color:'#4b7b8e'
-    }).setResolution(2).setScrollFactor(0).setDepth(252)),
-    add(this.add.text(153,422,'PERSONAL DESIGN LOG  /  BAIO 2077',{
+    }).setResolution(3).setScrollFactor(0).setDepth(252)),
+    add(this.add.text(144,422,'PERSONAL DESIGN LOG  /  BAIO 2077',{
      fontFamily:'monospace',fontSize:'11px',fontStyle:'bold',color:'#466d80'
-    }).setResolution(2).setScrollFactor(0).setDepth(252))
+    }).setResolution(3).setScrollFactor(0).setDepth(252))
    ];
    // Dedicated DNA MACHINE / DESIGN RESEARCH laboratory monitor.
    // Crisp vector HUD, never an image covering text; display only for lab-samples.
@@ -2329,6 +2336,14 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
     this.readerDnaHeading.setText(this.readerObject==='lab-samples'?heading:'');
     this.readerComputerHeading.setText(COMPUTER_READER_IDS.has(this.readerObject)?heading:'');
     this.readerBody.setText(split>=0?page.slice(split+2):page);
+    if(this.readerObject==='home-notebook'){
+     // Keep all eight original notes readable within the e-paper field,
+     // below the heading and above the footer divider at y=407.
+     for(const size of [21,20,19,18,17,16]){
+      this.readerBody.setFontSize(size);
+      if(this.readerBody.height<=150)break;
+     }
+    }
     if(this.readerObject==='home-blueprint'){
      // Fit the measured wrapped paragraph to the right-hand field-note card:
      // body starts at y=258 and may occupy at most 133px (bottom margin 15).
@@ -2386,29 +2401,32 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    for(const label of this.readerDnaLabels)label.setVisible(isDna);
    for(const label of this.readerComputerLabels)label.setVisible(isComputer);
    // Each reader mode resets every shared text layout and color.
-   this.readerTitle.setPosition(isNotes?153:isComputer?240:isBlueprint?142:138,isNotes?108:isComputer?94:isBlueprint?97:97);
+   this.readerTitle.setPosition(isNotes?144:isComputer?240:isBlueprint?142:138,isNotes?108:isComputer?94:isBlueprint?97:97);
    this.readerTitle.setFontFamily(isNotes?'Arial, sans-serif':'monospace');
    this.readerTitle.setFontSize(isComputer?22:26);
    this.readerTitle.setColor(isNotes?'#103c53':isComputer?this.readerComputerTheme.text:isDna?'#e9feff':isBlueprint?'#ffe29b':'#f4e8d5');
-   this.readerSubtitle.setPosition(isNotes?153:isComputer?145:isBlueprint?142:138,isNotes?144:isComputer?144:isBlueprint?137:138);
+   this.readerSubtitle.setPosition(isNotes?144:isComputer?145:isBlueprint?142:138,isNotes?144:isComputer?144:isBlueprint?137:138);
    this.readerSubtitle.setColor(isNotes?'#487387':isComputer?this.readerComputerTheme.muted:isDna?'#a4e0eb':isBlueprint?'#99dcf7':'#a8dad2');
-   this.readerBody.setPosition(isNotes?153:isDna?339:isComputer?154:isBlueprint?416:321,
+   this.readerBody.setPosition(isNotes?144:isDna?339:isComputer?154:isBlueprint?416:321,
     isNotes?245:isDna?255:isComputer?264:isBlueprint?252:189);
    this.readerBody.setFontFamily(isNotes?'Arial, sans-serif':'monospace');
    this.readerBody.setFontSize(isNotes?21:isComputer?18:isDna?18:isBlueprint?17:19);
-   this.readerBody.setWordWrapWidth(isNotes?650:isDna?462:isComputer?652:isBlueprint?395:492,true);
+   this.readerBody.setWordWrapWidth(isNotes?672:isDna?462:isComputer?652:isBlueprint?395:492,true);
    this.readerBody.setLineSpacing(isNotes?9:isComputer?5:isDna?9:isBlueprint?4:10);
-   this.readerBody.setResolution(isBlueprint?3:2);
-   // Preserve crisp high-resolution typography even at FIT canvas scales.
-   this.readerTitle.setResolution(isBlueprint?3:2);
-   this.readerSubtitle.setResolution(isBlueprint?3:2);
-   this.readerCount.setResolution(isBlueprint?3:2);
-   this.readerNext.setResolution(isBlueprint?3:2);
+   this.readerBody.setResolution(isNotes||isBlueprint?3:2);
+   // Higher-resolution text for both paper and blueprint at Phaser FIT scales.
+   this.readerTitle.setResolution(isNotes||isBlueprint?3:2);
+   this.readerSubtitle.setResolution(isNotes||isBlueprint?3:2);
+   this.readerCount.setResolution(isNotes||isBlueprint?3:2);
+   this.readerNext.setResolution(isNotes||isBlueprint?3:2);
    this.readerBody.setColor(isNotes?'#143c4c':isComputer?this.readerComputerTheme.text:isDna?'#effcff':isBlueprint?'#edfaff':'#e8efe6');
-   this.readerCount.setPosition(isNotes?807:isComputer?813:isBlueprint?814:817,
-    isNotes?135:isComputer?144:isDna?138:isBlueprint?137:145);
+   this.readerCount.setPosition(isNotes?816:isComputer?813:isBlueprint?814:817,
+    isNotes?144:isComputer?144:isDna?138:isBlueprint?137:145);
+   this.readerCount.setFontSize(isNotes?13:14);
    this.readerCount.setColor(isNotes?'#315a6b':isComputer?this.readerComputerTheme.muted:isDna?'#c2f7fa':'#b6dcd7');
-   this.readerNext.setPosition(isNotes?815:isComputer?815:isBlueprint?814:821,isNotes?437:isComputer?440:isBlueprint?437:443);
+   this.readerNext.setPosition(isNotes?816:isComputer?815:isBlueprint?814:821,isNotes?422:isComputer?440:isBlueprint?437:443);
+   this.readerNext.setFontSize(isNotes?11:14);
+   this.readerNext.setOrigin(1,isNotes?0:.5);
    this.readerNext.setColor(isNotes?'#24556a':isComputer?this.readerComputerTheme.action:isDna?'#d0f9e6':'#f5dcaa');
    // Apply selected reader measurements before page word-wrap/auto-fit.
    this.updateReaderPage();
