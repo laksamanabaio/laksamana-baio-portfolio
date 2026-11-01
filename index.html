@@ -1792,88 +1792,136 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    this.questHudObjects=this.children.list.slice(startIndex);
    if(this.dialogNpc||this.journalOpen)this.setQuestHudVisible(false);
 
-   // Simple high-resolution quest modal. Clear spacing, full-size labels,
-   // restrained neon accents and a one-line help note.
+   // HD Quest Journal: Rules Before Playing-inspired navy/neon HUD.
+   // The seven mission objects, completion flags and Q/Esc/tap behaviour
+   // remain untouched. All drawing is native high-resolution Phaser UI.
    const objects=[],add=obj=>{objects.push(obj);return obj};
    const frame=add(this.add.graphics().setScrollFactor(0).setDepth(301));
+   const cyan=0x70d6e2,brightCyan=0x96f5fa,gold=0xffe29b;
    const write=(tx,ty,body,size,color,bold=false,originX=0,mono=false)=>{
     const label=this.add.text(tx,ty,body,{
      fontFamily:mono?'monospace':'Arial, sans-serif',
      fontSize:size+'px',fontStyle:bold?'bold':'normal',color
-    }).setResolution(2).setOrigin(originX,0).setScrollFactor(0).setDepth(302);
+    }).setResolution(3).setOrigin(originX,0).setScrollFactor(0).setDepth(302);
     return add(label);
    };
-   const fill=(rx,ry,rw,rh,color,radius=6)=>{
-    frame.fillStyle(color);frame.fillRoundedRect(rx,ry,rw,rh,radius);
+   const fill=(x,y,w,h,color,radius=0)=>{
+    frame.fillStyle(color,1);
+    if(radius)frame.fillRoundedRect(x,y,w,h,radius);
+    else frame.fillRect(x,y,w,h);
    };
-   const line=(rx,ry,rw,rh,color,opacity=.75)=>{
-    frame.lineStyle(1,color,opacity);frame.strokeRoundedRect(rx,ry,rw,rh,6);
+   const border=(x,y,w,h,color=cyan,width=1,opacity=1,radius=0)=>{
+    frame.lineStyle(width,color,opacity);
+    if(radius)frame.strokeRoundedRect(x,y,w,h,radius);
+    else frame.strokeRect(x,y,w,h);
    };
-   // Opaque navy surface avoids underlying HUDs bleeding through.
-   frame.fillStyle(0x020a13,.84);frame.fillRect(0,0,W,H);
-   fill(71,34,818,472,0x071c2a,12);
-   frame.lineStyle(2,0x409aaf,.95);frame.strokeRoundedRect(71,34,818,472,12);
-   frame.lineStyle(1,0x294c61,.84);frame.strokeRoundedRect(77,40,806,460,9);
-   frame.fillStyle(0x65dce8,.90);frame.fillRect(104,43,64,3);
-   // Header: title, short explanation, count and close hint have their
-   // own horizontal regions; no overlapping accents or status indicators.
-   write(105,55,'QUEST JOURNAL',27,'#f0fbff',true);
-   write(106,96,'7 missions across 4 locations',14,'#a4cad4');
-   write(852,56,String(completed).padStart(2,'0')+' / 07',22,
-    earned?'#f4d293':'#9deee0',true,1,true);
-   write(852,98,'Q / ESC / TAP TO CLOSE',11,'#b4d5de',true,1,true);
-   fill(104,129,752,8,0x15374a,4);
-   if(completed>0)fill(104,129,752*completed/total,8,earned?0xf0c986:0x6cdec9,4);
-
-   // Exactly four calm room cards. All mission rows share a fixed 40px
-   // height; nothing floats over the card headings or neighbouring cards.
-   const renderRoom=(group,left,top,width,height,number)=>{
+   // Opaque cinematic scrim, navy shell and layered Rules-style cyan trim.
+   frame.fillStyle(0x010b16,.91);frame.fillRect(0,0,W,H);
+   fill(76,40,818,472,0x010913,9);
+   fill(67,30,826,480,0x081a2c,10);
+   fill(71,34,818,472,0x0a2637,8);
+   border(71,34,818,472,cyan,2,1,8);
+   border(77,40,806,460,0x27627a,1,.94,5);
+   border(80,43,800,454,0x7de8ed,1,.20,3);
+   // Four precise corner notches reinforce the futuristic pixel-art HUD.
+   const corner=(x,y,sx,sy)=>{
+    frame.lineStyle(2,brightCyan,.85);
+    frame.lineBetween(x,y,x+10*sx,y);
+    frame.lineBetween(x,y,x,y+10*sy);
+   };
+   corner(83,46,1,1);corner(877,46,-1,1);
+   corner(83,494,1,-1);corner(877,494,-1,-1);
+   // Subtle blueprint grid is only visible outside the opaque room cards.
+   for(let gx=104;gx<856;gx+=24){
+    frame.lineStyle(1,0x4693a7,.065);
+    frame.lineBetween(gx,153,gx,450);
+   }
+   for(let gy=156;gy<452;gy+=24){
+    frame.lineStyle(1,0x4693a7,.065);
+    frame.lineBetween(103,gy,857,gy);
+   }
+   // Header: an explicit hierarchy of title, context and numeric progress.
+   fill(103,48,754,66,0x0b3145,3);
+   fill(105,50,750,30,0x144458,2);
+   border(103,48,754,66,0x6cc8d4,1,.86,3);
+   fill(105,53,3,53,0x77ecf2);
+   write(122,54,'QUEST JOURNAL',29,'#ffe29b',true);
+   write(123,94,'7 missions across 4 locations',13,'#d2eff3',true);
+   write(840,57,String(completed).padStart(2,'0')+' / '+
+    String(total).padStart(2,'0'),23,earned?'#ffe29b':'#e9ffff',true,1,true);
+   write(840,95,'Q / ESC / TAP TO CLOSE',11,'#bde4eb',true,1,true);
+   // Exactly seven proportional progress segments represent the real missions.
+   const progressX=104,progressY=125,progressWidth=752,segmentGap=6;
+   const segmentW=(progressWidth-segmentGap*(total-1))/total;
+   for(let i=0;i<total;i++){
+    const x=progressX+i*(segmentW+segmentGap);
+    const active=i<completed;
+    fill(x,progressY,segmentW,9,active?0x72dfbf:0x143d52,2);
+    border(x,progressY,segmentW,9,active?0xa8ffe5:0x34758b,1,active?1:.74,2);
+    if(active)fill(x+4,progressY+2,segmentW-8,2,0xcaffed);
+   }
+   // Four location panels in a balanced two-column grid.
+   // Upper cards: 3 HOME objectives and 2 LAB objectives.
+   // Lower cards: one objective each, with the hint still readable.
+   const renderRoom=(group,x,y,w,h,number)=>{
     const quests=JOURNEY_STOPS.filter(task=>task.room===group.id);
     const doneCount=quests.filter(task=>visitedStops.has(task.id)).length;
-    fill(left,top,width,height,0x102a3b,7);
-    line(left,top,width,height,0x3d7384,.74);
-    frame.fillStyle(group.accent,.92);frame.fillRoundedRect(left+1,top+12,4,height-24,2);
-    write(left+17,top+11,String(number).padStart(2,'0')+'  '+group.name,17,'#edfaff',true);
-    write(left+width-15,top+14,doneCount+' / '+quests.length,13,
-     doneCount===quests.length?'#9decc9':'#bdd7df',true,1,true);
-    frame.lineStyle(1,0x356075,.78);
-    frame.lineBetween(left+17,top+37,left+width-17,top+37);
+    const allDone=doneCount===quests.length;
+    fill(x+2,y+3,w,h,0x031321,3);
+    fill(x,y,w,h,0x0a2b3f,3);
+    fill(x+2,y+2,w-4,36,0x16495b,1);
+    border(x,y,w,h,0x6cc8d4,2,.98,3);
+    border(x+4,y+4,w-8,h-8,0x2d7188,1,.65,2);
+    fill(x+2,y+2,46,2,group.accent);
+    // Short building section code and its original quest completion total.
+    write(x+17,y+9,String(number).padStart(2,'0'),13,
+     '#9ee5f3',true,0,true);
+    write(x+48,y+9,group.name,17,'#f3ffff',true);
+    write(x+w-16,y+12,doneCount+' / '+quests.length,13,
+     allDone?'#b1f4d7':'#d4eaf0',true,1,true);
+    frame.lineStyle(1,0x72bbce,.59);
+    frame.lineBetween(x+15,y+37,x+w-15,y+37);
+    // Match task content with the actual group height. All names and
+    // task hints are shown, even the single-object lower building cards.
+    const top=y+44;
+    const rowGap=quests.length===3?3:quests.length===2?7:0;
+    const rowHeight=quests.length===3?42:quests.length===2?59:40;
     quests.forEach((task,i)=>{
-     const compact=quests.length===1;
-     const rowY=top+(compact?42:45)+i*44,rowH=compact?32:40;
-     const finished=visitedStops.has(task.id);
-     fill(left+13,rowY,width-26,rowH,finished?0x19433e:0x0c2332,4);
-     const dotX=left+28,dotY=rowY+rowH/2;
-     if(finished){
-      frame.fillStyle(0x82dfb4);frame.fillCircle(dotX,dotY,8);
-      frame.lineStyle(2,0x0b3434);
-      frame.lineBetween(dotX-4,dotY,dotX-1,dotY+3);
-      frame.lineBetween(dotX-1,dotY+3,dotX+5,dotY-4);
+     const ry=top+i*(rowHeight+rowGap);
+     const done=visitedStops.has(task.id);
+     const innerX=x+13,innerW=w-26;
+     fill(innerX,ry,innerW,rowHeight,done?0x143e42:0x0b2234,3);
+     border(innerX,ry,innerW,rowHeight,done?0x72dfbf:0x346e83,1,done?.85:.52,3);
+     // Distinct done / to-do markers with shapes, not color alone.
+     const mx=x+30,my=ry+rowHeight/2;
+     if(done){
+      fill(mx-8,my-8,16,16,0x82e4bd,2);
+      frame.lineStyle(2,0x0c3434,.95);
+      frame.lineBetween(mx-4,my,mx-1,my+3);
+      frame.lineBetween(mx-1,my+3,mx+5,my-4);
      }else{
-      frame.lineStyle(1.5,0x779faf,.9);
-      frame.strokeCircle(dotX,dotY,6);
+      border(mx-7,my-7,14,14,0x80bdd0,1.5,.96,1);
      }
-     write(left+44,rowY+(compact?6:4),task.name,16,'#f2fbff',true);
-     // No tiny supporting text in single-mission cards; keep space for
-     // an unambiguous, right-aligned completion label.
-     if(!compact)write(left+44,rowY+23,finished?'Mission complete':task.hint,
-      12,finished?'#a8dfc8':'#b1cbd3');
-     write(left+width-23,rowY+(compact?9:13),finished?'DONE':'TO DO',
-      12,finished?'#96e5bc':'#aacbd4',true,1,true);
+     const nameY=ry+(rowHeight===59?8:rowHeight===42?3:2);
+     const hintY=ry+(rowHeight===59?32:rowHeight===42?23:22);
+     write(x+47,nameY,task.name,16,'#f5ffff',true);
+     write(x+47,hintY,done?'Mission complete':task.hint,12,
+      done?'#b5f1d5':'#bddce5',false);
+     write(x+w-23,ry+(rowHeight===59?20:rowHeight===42?13:12),
+      done?'DONE':'TO DO',12,done?'#b5f1d5':'#f4da9c',true,1,true);
     });
    };
-   renderRoom(JOURNEY_GROUPS[0],104,155,367,194,1);
-   renderRoom(JOURNEY_GROUPS[1],489,155,367,194,2);
-   renderRoom(JOURNEY_GROUPS[2],104,360,367,80,3);
-   renderRoom(JOURNEY_GROUPS[3],489,360,367,80,4);
-
-   // Compact single-line note; no overlapping footer under the cards.
-   fill(104,451,752,40,0x123545,5);
-   line(104,451,752,40,0x366f83,.78);
-   frame.fillStyle(0x5adce6);frame.fillRoundedRect(104,459,4,24,2);
-   write(119,462,'TIP',14,'#85eaf0',true);
-   write(162,463,'Need help? Talk to nearby NPCs with E / Space.',14,'#e4f3f7');
-
+   renderRoom(JOURNEY_GROUPS[0],104,151,367,195,1);
+   renderRoom(JOURNEY_GROUPS[1],489,151,367,195,2);
+   renderRoom(JOURNEY_GROUPS[2],104,355,367,90,3);
+   renderRoom(JOURNEY_GROUPS[3],489,355,367,90,4);
+   // Pinned guidance bar with a golden left accent and clear close hint.
+   fill(104,454,752,37,0x0c3045,3);
+   border(104,454,752,37,0x6cc8d4,1,.87,3);
+   fill(106,461,3,23,gold);
+   write(119,464,'TIP',13,'#ffe29b',true,0,true);
+   write(159,464,'Need help? Talk to nearby NPCs with E / Space.',
+    14,'#e8f7fa',true);
    // Journal can always close with Q, Escape or a screen tap.
    this.journalObjects=objects;
    for(const obj of objects)obj.setVisible(false);
