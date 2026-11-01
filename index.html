@@ -1962,11 +1962,9 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    blueprint.fillStyle(0x14465b,.48);blueprint.fillRect(127,91,706,33);
    blueprint.lineStyle(2,0x70d6e2,.92);blueprint.strokeRect(125,89,710,70);
    blueprint.lineStyle(1,0x2b7892,.87);blueprint.strokeRect(128,92,704,64);
-   blueprint.fillStyle(0x78f5f8,1);blueprint.fillRect(127,98,3,50);
-   blueprint.fillStyle(0x53bfd7,.93);blueprint.fillRect(135,91,80,3);
+   // Keep only the upper-right status ticks and the main HUD frame.
    blueprint.fillStyle(0x5bcbde,.85);
    for(let k=0;k<4;k++)blueprint.fillRect(747+k*15,102,10,3);
-   blueprint.lineStyle(1,0x70d6e2,.44);blueprint.lineBetween(141,155,821,155);
    // Rules-style inner cards: two-pixel neon borders, navy underlay and
    // subtle top highlight. Matching 16px inner margins on both cards.
    for(const card of [bpLeft,bpRight]){
@@ -1985,7 +1983,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
                          [card.x+5,card.y+card.h-7],[card.x+card.w-7,card.y+card.h-7]]){
      blueprint.fillRect(xx,yy,2,2);
     }
-    blueprint.fillStyle(0x59e4ed,.85);blueprint.fillRect(card.x+2,card.y+2,48,2);
+    // Header accents are removed; keep the structural divider and frame.
     blueprint.lineStyle(1,0x6dbfd5,.55);
     blueprint.lineBetween(card.x+16,card.y+36,card.x+card.w-16,card.y+36);
    }
@@ -2070,7 +2068,6 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
     blueprint.lineStyle(1,0x387b9f,.085);
     blueprint.lineBetween(416,yy,816,yy);
    }
-   blueprint.fillStyle(0x82f0f4,.98);blueprint.fillRect(402,181,3,17);
    // Rules-style footer: same outer clearance as the top title card.
    // Top margin 89-70=19px; bottom margin 476-457=19px.
    blueprint.fillStyle(0x041521,1);blueprint.fillRect(126,419,708,39);
@@ -2078,24 +2075,23 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    blueprint.fillStyle(0x164357,.5);blueprint.fillRect(130,419,700,13);
    blueprint.lineStyle(2,0x70d6e2,.96);blueprint.strokeRect(128,417,704,40);
    blueprint.lineStyle(1,0x296f88,.86);blueprint.strokeRect(132,421,696,32);
-   blueprint.fillStyle(0x73e5f0,.94);blueprint.fillRect(130,419,78,2);
-   for(let n=0;n<3;n++)blueprint.fillRect(144+n*9,425,6,2);
+   // Status-strip header is intentionally clean: keep only the HUD border.
    blueprint.lineStyle(1,0x51a7c4,.36);
    blueprint.lineBetween(400,437,585,437);
    this.readerBlueprintBackground=blueprint;
 
    const blueprintLabels=[
-    [144,180,'SITE PLAN / 2077',11,'#c6f4ff'],
-    [189,249,'H',11,'#deffff'],
-    [309,249,'L',11,'#deffff'],
-    [189,362,'C',11,'#deffff'],
-    [309,362,'W',11,'#deffff'],
-    [416,180,'FIELD NOTES / INTERACTIVE PORTFOLIO',10,'#a2e6f5'],
-    [144,430,'B-2077 / SITE SCHEMATIC 01',11,'#b8e9f5']
-   ].map(([xx,yy,label,size,color])=>add(this.add.text(xx,yy,label,{
+    [144,180,'SITE PLAN / 2077',11,'#c6f4ff',false],
+    [198,249,'HOME',11,'#deffff',true],
+    [318,249,'LAB',11,'#deffff',true],
+    [198,362,'HUB',11,'#deffff',true],
+    [318,362,'WORK',11,'#deffff',true],
+    [416,180,'FIELD NOTES / INTERACTIVE PORTFOLIO',11,'#a2e6f5',false],
+    [144,430,'B-2077 / SITE SCHEMATIC 01',11,'#b8e9f5',false]
+   ].map(([xx,yy,label,size,color,center])=>add(this.add.text(xx,yy,label,{
     fontFamily:'monospace',fontSize:size+'px',color,
-    fontStyle:label.length===1?'bold':'normal'
-   }).setResolution(3).setScrollFactor(0).setDepth(252)));
+    fontStyle:center?'bold':'normal'
+   }).setResolution(3).setOrigin(center?.5:0,0).setScrollFactor(0).setDepth(252)));
    this.readerBlueprintLabels=blueprintLabels;
    // Heading and paragraph have independent anchors so long prose cannot
    // push the title down or spill across the 406px panel boundary.
