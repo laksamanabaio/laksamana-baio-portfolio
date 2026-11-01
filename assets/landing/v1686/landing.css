@@ -1,4 +1,4 @@
-/* Landing v16.89: precise 40px desktop HUD margins and cleaner START control. */
+/* Landing v16.90: transparency-trimmed original title with a true 40px outer margin. */
 #opening { position:absolute; inset:0; z-index:20; display:grid; place-items:center;
   overflow:hidden; background:#030d19; color:#f4fcff; }
 #opening[hidden] { display:none; }
@@ -15,12 +15,12 @@
   font:700 clamp(9px,.8vw,13px)/1.25 monospace; letter-spacing:.07em;
   text-shadow:0 1px 4px #031321; }
 #opening .landing-title { position:absolute; z-index:3; right:40px; top:40px;
-  display:block; width:41.6%; height:auto; object-fit:contain; pointer-events:none;
+  display:block; width:40.2%; height:auto; object-fit:contain; pointer-events:none;
   filter:drop-shadow(0 7px 11px rgba(0,5,13,.56));
   animation:landingLogoFloat 5.4s ease-in-out infinite; will-change:transform; }
 @keyframes landingLogoFloat {
   0%,100% { transform:translate3d(0,0,0); }
-  50% { transform:translate3d(0,-9px,0); }
+  50% { transform:translate3d(0,9px,0); }
 }
 #opening .landing-actions { position:absolute; z-index:4; right:40px; bottom:40px;
   width:clamp(210px,31%,520px); }
