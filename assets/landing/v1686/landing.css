@@ -1,4 +1,4 @@
-/* Landing v16.88: auto-zoom background, preserving 16:9 image proportions on all desktop viewports. */
+/* Landing v16.89: precise 40px desktop HUD margins and cleaner START control. */
 #opening { position:absolute; inset:0; z-index:20; display:grid; place-items:center;
   overflow:hidden; background:#030d19; color:#f4fcff; }
 #opening[hidden] { display:none; }
@@ -9,20 +9,20 @@
   /* Scale uniformly to cover the entire viewport (automatic zoom in/out).
      Extreme aspect ratios may crop edges; the image is never stretched or flattened. */
   object-fit:cover; object-position:center center; pointer-events:none; user-select:none; }
-#opening .landing-copyright { position:absolute; z-index:2; left:2.4%; top:3.4%;
+#opening .landing-copyright { position:absolute; z-index:2; left:40px; top:40px;
   max-width:46%; padding:8px 11px; color:#e7f7f7; background:rgba(2,14,28,.48);
   border-left:2px solid rgba(110,230,239,.66);
   font:700 clamp(9px,.8vw,13px)/1.25 monospace; letter-spacing:.07em;
   text-shadow:0 1px 4px #031321; }
-#opening .landing-title { position:absolute; z-index:3; right:2.7%; top:5.8%;
-  display:block; width:52%; height:auto; object-fit:contain; pointer-events:none;
+#opening .landing-title { position:absolute; z-index:3; right:40px; top:40px;
+  display:block; width:41.6%; height:auto; object-fit:contain; pointer-events:none;
   filter:drop-shadow(0 7px 11px rgba(0,5,13,.56));
   animation:landingLogoFloat 5.4s ease-in-out infinite; will-change:transform; }
 @keyframes landingLogoFloat {
   0%,100% { transform:translate3d(0,0,0); }
   50% { transform:translate3d(0,-9px,0); }
 }
-#opening .landing-actions { position:absolute; z-index:4; right:6.1%; bottom:9%;
+#opening .landing-actions { position:absolute; z-index:4; right:40px; bottom:40px;
   width:clamp(210px,31%,520px); }
 #startGame { position:relative; display:flex; justify-content:center; align-items:center; gap:14px;
   width:100%; min-height:clamp(56px,5.8vw,90px); padding:13px 28px; cursor:pointer;
@@ -40,13 +40,11 @@
   border:1px solid rgba(130,239,241,.66);
   clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,
     12px 100%,0 calc(100% - 12px)); }
-#startGame::after { content:""; pointer-events:none; position:absolute;
-  left:8%; right:8%; bottom:6px; height:3px;
-  background:repeating-linear-gradient(90deg,#6df0ed 0 27px,transparent 27px 38px,
-    #f4d48a 38px 44px,transparent 44px 53px); opacity:.84; }
-#startGame .start-icon { display:inline-block; color:#a2f4ef; font-size:.89em;
+/* No dashed indicator below START: keep the clean HUD bevel and cyan inner outline. */
+#startGame .start-icon { display:inline-flex; align-items:center; justify-content:center;
+  color:#a2f4ef; font-size:.89em; line-height:1; transform:translateY(-2px);
   text-shadow:0 0 9px rgba(88,239,235,.75); }
-#startGame .start-label { position:relative; top:-1px; }
+#startGame .start-label { position:relative; top:0; }
 #startGame:hover { transform:translateY(-3px); background:#164154; animation-play-state:paused;
   border-color:#edda9d; box-shadow:inset 0 0 0 3px #092739,
     0 0 26px rgba(94,248,245,.52),0 7px 0 #04121e; }
@@ -67,8 +65,6 @@
 }
 @media(max-width:790px) and (orientation:landscape) {
   #opening .landing-copyright { font-size:9px; padding:5px 7px; }
-  #opening .landing-title { width:50%; top:4%; }
-  #opening .landing-actions { width:34%; bottom:7%; }
   #startGame { min-height:43px; font-size:15px; }
 }
 /* Portrait fallback keeps the complete illustration visible while giving controls room. */
@@ -76,10 +72,12 @@
   #opening .landing-stage { width:100%; height:100%; max-height:none; aspect-ratio:auto;
     background:radial-gradient(ellipse at 50% 50%,#102b42 0%,#030d19 80%); }
   #opening .landing-art { height:100%; object-fit:contain; object-position:center; }
-  #opening .landing-copyright { left:4%; right:4%; top:4%; max-width:none;
+  /* Narrow portrait screens stack the title below the copyright to avoid overlap. */
+  #opening .landing-copyright { left:40px; right:40px; top:40px; max-width:none;
     font-size:clamp(9px,2.2vw,12px); text-align:center; }
-  #opening .landing-title { left:5%; right:5%; top:15%; width:90%; max-height:25%; }
-  #opening .landing-actions { left:10%; right:10%; bottom:9%; width:80%; }
+  #opening .landing-title { left:auto; right:40px; top:clamp(110px,16dvh,180px);
+    width:calc(100% - 80px); max-height:25%; }
+  #opening .landing-actions { left:auto; right:40px; bottom:40px; width:calc(100% - 80px); }
   #startGame { min-height:64px; font-size:clamp(18px,5.2vw,26px); }
 }
 @media(prefers-reduced-motion:reduce) {
