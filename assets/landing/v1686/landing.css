@@ -45,9 +45,15 @@
   color:#a2f4ef; font-size:.89em; line-height:1; transform:translateY(-2px);
   text-shadow:0 0 9px rgba(88,239,235,.75); }
 #startGame .start-label { position:relative; top:0; }
-#startGame:hover { transform:translateY(-3px); background:#164154; animation-play-state:paused;
-  border-color:#edda9d; box-shadow:inset 0 0 0 3px #092739,
-    0 0 26px rgba(94,248,245,.52),0 7px 0 #04121e; }
+/* Neon-gold frame is steady while hovered; the standard cyan flicker returns on leave. */
+#startGame:hover { transform:translateY(-3px); background:#164154; animation:none;
+  border-color:#ffe29b; box-shadow:inset 0 0 0 3px #092739,
+    inset 0 0 0 5px rgba(255,222,144,.70),0 0 25px rgba(255,214,123,.68),0 7px 0 #04121e;
+  filter:drop-shadow(0 0 8px rgba(255,218,125,.72)) drop-shadow(0 0 17px rgba(255,220,144,.30)); }
+#startGame:hover::before {
+  border-color:#ffe29b;
+  box-shadow:inset 0 0 9px rgba(255,221,143,.45);
+}
 #startGame:focus-visible { outline:3px solid #f8e2a3; outline-offset:5px; animation-play-state:paused; }
 #startGame:active { transform:translateY(1px); }
 @keyframes startNeonFlicker {

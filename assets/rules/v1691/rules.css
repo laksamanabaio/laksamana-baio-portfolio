@@ -198,6 +198,19 @@
   outline:3px solid #f8e2a3;
   outline-offset:5px;
 }
+/* Match the golden HUD highlight of BACK for enabled START PLAYING only.
+   Hover freezes the neon flicker at a clearly visible yellow frame. */
+#rules #rulesContinue.rules-hud-button:not(:disabled):hover {
+  animation:none;
+  border-color:#ffe29b;
+  box-shadow:inset 0 0 0 3px #092739,
+    inset 0 0 0 5px rgba(255,222,144,.70),0 0 25px rgba(255,214,123,.68),0 7px 0 #04121e;
+  filter:drop-shadow(0 0 8px rgba(255,218,125,.72)) drop-shadow(0 0 17px rgba(255,220,144,.30));
+}
+#rules #rulesContinue.rules-hud-button:not(:disabled):hover::before {
+  border-color:#ffe29b;
+  box-shadow:inset 0 0 9px rgba(255,221,143,.45);
+}
 #rules .rules-actions .rules-hud-button:not(:disabled):active {transform:translateY(1px);}
 #rules #rulesContinue.rules-hud-button:disabled {
   cursor:not-allowed;
