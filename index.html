@@ -2743,7 +2743,9 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    desktop.fillStyle(pcTheme.panel,1);desktop.fillRoundedRect(128,175,704,232,6);
    desktop.lineStyle(1,pcTheme.border,.68);
    desktop.strokeRoundedRect(128,175,704,232,6);
-   if(this.place!=='home'){
+   // LAB and HOME keep the reading panel clean, without the vertical
+   // neon stripe or the long horizontal rule. Other computers unchanged.
+   if(this.place!=='home'&&this.place!=='lab'){
     desktop.fillStyle(pcTheme.accent,.91);
     desktop.fillRoundedRect(129,187,3,208,2);
     desktop.lineStyle(1,pcTheme.border,.42);
