@@ -161,6 +161,10 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 #minimapHDIcons[hidden]{display:none}
 .minimapHDIcon{position:absolute;display:block;transform:translate(-50%,-50%);line-height:0;will-change:left,top}
 .minimapHDIcon svg{display:block;width:100%;height:100%;shape-rendering:geometricPrecision}
+ /* Native browser photo rendering stays crisp even when Phaser's canvas uses pixelArt. */
+ #homeProfileHD{position:absolute;z-index:14;pointer-events:none;object-fit:cover;
+  image-rendering:auto;border-radius:2px;display:block}
+ #homeProfileHD[hidden]{display:none}
 </style>
 <link rel="stylesheet" href="./assets/landing/v1686/landing.css?v=16.93">
 <link rel="stylesheet" href="./assets/rules/v1691/rules.css?v=16.94">
@@ -217,6 +221,8 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
   </svg>
  </span>
 </div>
+<img id="homeProfileHD" src="./assets/home/profile/baio-profile-photo-hd.webp?v=17.02"
+ alt="" aria-hidden="true" decoding="async" hidden>
 <div class="touch" role="group" aria-label="Touch movement controls">
  <button type="button" data-dir="left" aria-label="Move left"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="up" aria-label="Move up"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -439,6 +445,35 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
     badge.style.height=(20*scaleY)+'px';
    }
    minimapHDLayer.hidden=false;
+  };
+
+  // Browser-resolution profile image for HOME's first About Me page.
+  // Phaser still draws the portrait frame and all other HUD elements.
+  // Only the actual photo bypasses pixelArt, nearest-neighbour canvas scaling.
+  const homeProfileHD=document.getElementById('homeProfileHD');
+  const syncHDHomeProfile=scene=>{
+   const show=!!(scene&&scene.place==='home'&&
+    scene.readerObject==='home'&&scene.readerPage===0);
+   if(!show){homeProfileHD.hidden=true;return;}
+   const canvas=scene.game&&scene.game.canvas;
+   if(!canvas)return;
+   const bounds=canvas.getBoundingClientRect();
+   const mainRect=document.querySelector('main').getBoundingClientRect();
+   if(!bounds.width||!bounds.height)return;
+   const scaleX=bounds.width/W,scaleY=bounds.height/H;
+   const key=[bounds.left-mainRect.left,bounds.top-mainRect.top,
+    bounds.width,bounds.height].map(n=>n.toFixed(2)).join('|');
+   if(scene.homeProfileHDLayoutKey!==key||homeProfileHD.hidden){
+    scene.homeProfileHDLayoutKey=key;
+    // Exact pixel coordinates of former Phaser portrait:
+    // center 251,290; width 182; height 198.
+    homeProfileHD.style.left=(bounds.left-mainRect.left+160*scaleX)+'px';
+    homeProfileHD.style.top=(bounds.top-mainRect.top+191*scaleY)+'px';
+    homeProfileHD.style.width=(182*scaleX)+'px';
+    homeProfileHD.style.height=(198*scaleY)+'px';
+    homeProfileHD.style.borderRadius=(2*Math.min(scaleX,scaleY))+'px';
+   }
+   homeProfileHD.hidden=false;
   };
   const DISTRICT_BUILDING_SIZE={width:392,height:326};
   const NPC_HINT_Y=-Math.ceil(175*NPC_CHARACTER_SCALE)-30;
@@ -805,9 +840,8 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
  class World extends Phaser.Scene{
   constructor(){super('World')}
   preload(){
-   // Real profile photo, shown on HOME's first About Me page only.
-   this.load.image('home-profile-photo-v1701',
-    './assets/home/profile/baio-profile-photo.webp?v=17.01');
+   // HOME's real profile photo is displayed in a native browser overlay
+   // instead of this pixel-art Phaser canvas, preserving HD detail.
    // Ten unique RPG-style half-body portraits, 92x116 each, packed into
    // one lightweight WebP atlas (5 columns x 2 rows) for dialogue ONLY.
    // NPCs walking in the world retain their existing sprite sheets.
@@ -2535,8 +2569,8 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
     photoFrame.lineStyle(1,pcTheme.accent,.50);
     photoFrame.strokeRect(157,188,188,204);
     this.readerHomePortraitFrame=photoFrame;
-    this.readerHomePortrait=add(this.add.image(251,290,'home-profile-photo-v1701')
-     .setDisplaySize(182,198).setScrollFactor(0).setDepth(254));
+    // Portrait pixels are rendered in #homeProfileHD outside the Phaser canvas.
+    // Retain the in-game vector frame so its placement matches the other cards.
 
     const toolGrid=add(this.add.graphics().setScrollFactor(0).setDepth(253));
     this.readerHomeToolElements.push(toolGrid);
@@ -2585,7 +2619,6 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    const page=station.pages[this.readerPage];
    const isHomePhotoPage=this.readerObject==='home'&&this.readerPage===0;
    const isHomeToolsPage=this.readerObject==='home'&&this.readerPage===4;
-   if(this.readerHomePortrait)this.readerHomePortrait.setVisible(isHomePhotoPage);
    if(this.readerHomePortraitFrame)this.readerHomePortraitFrame.setVisible(isHomePhotoPage);
    for(const obj of this.readerHomeToolElements||[])obj.setVisible(isHomeToolsPage);
    if(this.readerObject==='home-notebook'||this.readerObject==='lab-samples'||
@@ -2652,6 +2685,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    this.readerCount.setText(String(this.readerPage+1).padStart(2,'0')+
     ' / '+String(station.pages.length).padStart(2,'0'));
    this.readerNext.setText(this.readerPage+1<station.pages.length?'[ E / SPACE ] NEXT  ▸':'[ E / SPACE ] CLOSE  ✕');
+   syncHDHomeProfile(this);
   }
   openReader(id){
    if(!this.readerElements||!PORTFOLIO_STATIONS[id])return;
@@ -2735,6 +2769,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
     visitedStops.size===JOURNEY_STOPS.length&&!questFinaleTalkShown;
    for(const obj of this.readerElements)obj.setVisible(false);
    this.readerObject=null;this.readerPage=0;
+   syncHDHomeProfile(this);
    syncPopupControls(this);
    if(this.readerJustCompleted)this.createJourneyHUD(this.lastJourneyDiscovery);
    // Restore the rebuilt QUEST HUD (if the interaction completed a mission)
@@ -2947,6 +2982,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
     }
    }
    update(_,delta){
+    if(this.readerObject==='home'&&this.readerPage===0)syncHDHomeProfile(this);
     this.updateWorldLighting(delta);
    const k=this.keys;let x=0,y=0;
    if(k.A.isDown||k.LEFT.isDown||pressed.has('left'))x--;
