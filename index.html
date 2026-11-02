@@ -2743,9 +2743,9 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    desktop.fillStyle(pcTheme.panel,1);desktop.fillRoundedRect(128,175,704,232,6);
    desktop.lineStyle(1,pcTheme.border,.68);
    desktop.strokeRoundedRect(128,175,704,232,6);
-   // LAB and HOME keep the reading panel clean, without the vertical
-   // neon stripe or the long horizontal rule. Other computers unchanged.
-   if(this.place!=='home'&&this.place!=='lab'){
+   // HOME, LAB and CONTACT HUB keep the reading panel clean, without
+   // the inner vertical neon stripe or horizontal divider.
+   if(this.place!=='home'&&this.place!=='lab'&&this.place!=='hub'){
     desktop.fillStyle(pcTheme.accent,.91);
     desktop.fillRoundedRect(129,187,3,208,2);
     desktop.lineStyle(1,pcTheme.border,.42);
@@ -2758,7 +2758,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    desktop.strokeRoundedRect(128,420,704,42,5);
    this.readerComputerBackground=desktop;
    this.readerComputerLabels=[
-    deskText(154,188,this.place==='home'||this.place==='lab'?'':pcTheme.section,11,pcTheme.muted,true),
+    deskText(154,188,this.place==='home'||this.place==='lab'||this.place==='hub'?'':pcTheme.section,11,pcTheme.muted,true),
     deskText(145,434,pcTheme.footerLabel,11,pcTheme.muted,true)
    ];
    this.readerComputerHeading=add(this.add.text(154,this.place==='home'?191:224,'',{
@@ -2932,13 +2932,13 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    for(const label of this.readerComputerLabels)label.setVisible(isComputer);
    // Each reader mode resets every shared text layout and color.
    this.readerTitle.setPosition(isNotes?144:isComputer?240:isBlueprint||isDna?142:138,
-    isNotes?108:isComputer?((id==='home'||id==='lab')?107:94):isBlueprint||isDna?97:97);
-   // HOME and LAB titles share their icon/divider's y=107 centerline.
-   this.readerTitle.setOrigin(0,(id==='home'||id==='lab')?.5:0);
+    isNotes?108:isComputer?((id==='home'||id==='lab'||id==='hub')?107:94):isBlueprint||isDna?97:97);
+   // HOME, LAB and CONTACT HUB titles share their icon/divider's y=107 centerline.
+   this.readerTitle.setOrigin(0,(id==='home'||id==='lab'||id==='hub')?.5:0);
    this.readerTitle.setFontFamily(isNotes?'Arial, sans-serif':'monospace');
    this.readerTitle.setFontSize(isComputer?22:26);
    this.readerTitle.setColor(isNotes?'#103c53':isComputer?this.readerComputerTheme.text:isDna?'#ffe29b':isBlueprint?'#ffe29b':'#f4e8d5');
-   this.readerSubtitle.setPosition(isNotes?144:isComputer?(id==='home'||id==='lab'?128:145):isBlueprint||isDna?142:138,
+   this.readerSubtitle.setPosition(isNotes?144:isComputer?(id==='home'||id==='lab'||id==='hub'?128:145):isBlueprint||isDna?142:138,
     isNotes?144:isComputer?144:isBlueprint||isDna?137:138);
    this.readerSubtitle.setFontSize(isNotes?14:13);
    this.readerSubtitle.setFontStyle(isNotes?'bold':'normal');
@@ -2956,7 +2956,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    this.readerCount.setResolution(isNotes||isBlueprint||isDna?3:2);
    this.readerNext.setResolution(isNotes||isBlueprint||isDna?3:2);
    this.readerBody.setColor(isNotes?'#143c4c':isComputer?this.readerComputerTheme.text:isDna?'#effcff':isBlueprint?'#edfaff':'#e8efe6');
-   this.readerCount.setPosition(isNotes?816:isComputer?(id==='home'||id==='lab'?832:813):isBlueprint||isDna?814:817,
+   this.readerCount.setPosition(isNotes?816:isComputer?(id==='home'||id==='lab'||id==='hub'?832:813):isBlueprint||isDna?814:817,
     isNotes?144:isComputer?144:isDna?137:isBlueprint?137:145);
    this.readerCount.setFontSize(isNotes?14:14);
    this.readerCount.setFontStyle(isNotes?'bold':'normal');
