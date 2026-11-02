@@ -198,6 +198,33 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 .labCareerRole{color:#ffe3ad;font:bold 13px/18px monospace;margin-top:1px}
 .labCareerDescription{color:#e1f1f2;font:12.4px/16px monospace;margin-top:6px;
  white-space:normal;overflow-wrap:break-word}
+
+/* Contact Hub: accessible high-resolution digital calling card. */
+#contactHD{position:absolute;z-index:35;width:704px;height:232px;
+ box-sizing:border-box;padding:16px 25px 12px;transform-origin:top left;
+ font-family:monospace;color:#fff0ff;pointer-events:none}
+#contactHD[hidden]{display:none}
+.contactEyebrow{font:bold 11px/15px monospace;letter-spacing:.12em;color:#eba7fa}
+.contactHeading{font:bold 21px/26px monospace;margin:5px 0 8px;color:#fff2ff}
+.contactDescription{font:13.5px/19px monospace;margin:0;color:#f1e0f5;max-width:655px}
+.contactTags{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.contactTags[hidden]{display:none}
+.contactTag{padding:5px 9px;border:1px solid #aa79c8;border-radius:4px;
+ background:#382447;color:#f5d4ff;font:bold 10px/14px monospace}
+.contactChannels{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.contactChannels[hidden]{display:none}
+.contactChannel{display:flex;align-items:center;gap:12px;box-sizing:border-box;
+ min-height:56px;padding:9px 12px;border:1px solid #b77ed4;border-radius:6px;
+ background:#39264b;text-decoration:none;color:#fff1ff;pointer-events:auto}
+.contactChannel:hover,.contactChannel:focus-visible{background:#543368;
+ border-color:#f8c9ff;outline:1px solid #f8c9ff;outline-offset:1px}
+.contactSymbol{font:24px/1 monospace;color:#ecb4fb}
+.contactChannelText{display:flex;flex-direction:column;gap:3px}
+.contactChannelLabel{font:bold 10px/13px monospace;color:#e8b5fb}
+.contactChannelDetail{font:12px/15px monospace;color:#fff8ff}
+.contactClosing{font:bold 11px/16px monospace;letter-spacing:.075em;
+ margin-top:11px;color:#ecc0fa}
+.contactClosing[hidden]{display:none}
 </style>
 <link rel="stylesheet" href="./assets/landing/v1686/landing.css?v=16.93">
 <link rel="stylesheet" href="./assets/rules/v1691/rules.css?v=16.94">
@@ -282,6 +309,26 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
   <div class="labCareerDescription" id="labCareerDescription"></div>
  </div>
 </div>
+<!-- Contact Hub reader, drawn above pixel-art canvas for sharp readable content. -->
+<section id="contactHD" aria-label="Contact Laksamana Baio" hidden>
+ <div class="contactEyebrow" id="contactEyebrow"></div>
+ <h2 class="contactHeading" id="contactHeading"></h2>
+ <p class="contactDescription" id="contactDescription"></p>
+ <div class="contactTags" id="contactTags" hidden></div>
+ <div class="contactChannels" id="contactChannels" hidden>
+  <a class="contactChannel" href="mailto:baiqcakrap.bc@gmail.com" aria-label="Send an email to Laksamana Baio">
+   <span class="contactSymbol" aria-hidden="true">✉</span>
+   <span class="contactChannelText"><span class="contactChannelLabel">EMAIL ME</span>
+    <span class="contactChannelDetail">baiqcakrap.bc@gmail.com</span></span>
+  </a>
+  <a class="contactChannel" href="https://wa.me/6285804119744" target="_blank" rel="noopener noreferrer" aria-label="Message Laksamana Baio on WhatsApp">
+   <span class="contactSymbol" aria-hidden="true">✆</span>
+   <span class="contactChannelText"><span class="contactChannelLabel">WHATSAPP</span>
+    <span class="contactChannelDetail">+62 858-0411-9744</span></span>
+  </a>
+ </div>
+ <div class="contactClosing" id="contactClosing" hidden></div>
+</section>
 <div class="touch" role="group" aria-label="Touch movement controls">
  <button type="button" data-dir="left" aria-label="Move left"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="up" aria-label="Move up"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -632,6 +679,69 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
     labCareerHD.style.transform='scale('+sx+','+sy+')';
    }
    labCareerHD.hidden=false;
+  };
+  // Contact Hub native overlay: uses existing reader pages as the single
+  // copywriting source and follows the 960x540 game canvas on resize.
+  const contactHD=document.getElementById('contactHD');
+  const contactParts={
+   eyebrow:document.getElementById('contactEyebrow'),
+   heading:document.getElementById('contactHeading'),
+   description:document.getElementById('contactDescription'),
+   tags:document.getElementById('contactTags'),
+   channels:document.getElementById('contactChannels'),
+   closing:document.getElementById('contactClosing')
+  };
+  const contactTagsByPage=[
+   ['WEBSITES & SOFTWARE','UI/UX & PRODUCT','GRAPHIC DESIGN'],
+   ['FULL-TIME','REMOTE','OPEN TO RELOCATION'],[],[]
+  ];
+  const contactEyebrows=[
+   '01 / FREELANCE SERVICES','02 / CAREER OPPORTUNITIES',
+   '03 / DIRECT CONTACT','04 / FINAL MESSAGE'
+  ];
+  const syncHDContact=scene=>{
+   const show=!!(scene&&scene.place==='hub'&&scene.readerObject==='hub'&&
+    PORTFOLIO_STATIONS.hub.pages[scene.readerPage]);
+   if(!show){contactHD.hidden=true;return;}
+   const index=scene.readerPage;
+   if(contactHD.dataset.page!==String(index)){
+    contactHD.dataset.page=String(index);
+    const page=PORTFOLIO_STATIONS.hub.pages[index];
+    const sep=page.indexOf('\n\n');
+    const heading=sep===-1?page:page.slice(0,sep);
+    const body=sep===-1?'':page.slice(sep+2);
+    contactParts.eyebrow.textContent=contactEyebrows[index];
+    contactParts.heading.textContent=heading;
+    contactParts.description.textContent=index===2||index===3?
+     body.split('\n\n')[0]:body;
+    contactParts.tags.replaceChildren();
+    for(const value of contactTagsByPage[index]){
+     const chip=document.createElement('span');
+     chip.className='contactTag';chip.textContent=value;
+     contactParts.tags.appendChild(chip);
+    }
+    contactParts.tags.hidden=contactTagsByPage[index].length===0;
+    contactParts.channels.hidden=index!==2;
+    contactParts.closing.textContent=index===3?'SEE YOU IN THE NEXT QUEST!':
+     index===2?'FREELANCE  ·  FULL-TIME  ·  COLLABORATIONS':'';
+    contactParts.closing.hidden=index!==2&&index!==3;
+   }
+   const canvas=scene.game&&scene.game.canvas;
+   if(!canvas){contactHD.hidden=true;return;}
+   const bounds=canvas.getBoundingClientRect();
+   const root=document.querySelector('main').getBoundingClientRect();
+   if(!bounds.width||!bounds.height){contactHD.hidden=true;return;}
+   const sx=bounds.width/W,sy=bounds.height/H;
+   const x=bounds.left-root.left+128*sx;
+   const y=bounds.top-root.top+175*sy;
+   const key=[x,y,sx,sy].map(n=>n.toFixed(4)).join('|');
+   if(scene.contactHDLayoutKey!==key||contactHD.hidden){
+    scene.contactHDLayoutKey=key;
+    contactHD.style.left=x+'px';
+    contactHD.style.top=y+'px';
+    contactHD.style.transform='scale('+sx+','+sy+')';
+   }
+   contactHD.hidden=false;
   };
   const DISTRICT_BUILDING_SIZE={width:392,height:326};
   const NPC_HINT_Y=-Math.ceil(175*NPC_CHARACTER_SCALE)-30;
@@ -984,10 +1094,12 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
   "subtitle": "CONTACT HUB / RECEPTION COUNTER",
   "accent": 12166378,
   "pages": [
-   "LET'S CONNECT\n\nI'm interested in thoughtful digital products, meaningful design challenges, and opportunities to collaborate with international teams.",
-   "CONTACT DETAILS COMING SOON\n\nDirect email and professional profile links will be added here once they are confirmed. Thanks for taking the time to explore my portfolio."
+    "FREELANCE SERVICES\n\nI take on freelance projects across websites, software interfaces, UI/UX design, and graphic design. From first ideas to polished deliverables, I combine research, visual thinking, and practical execution. When useful, Bobby, my personal AI assistant, helps with coding, prototyping, and technical exploration. This lets me tackle a wider range of digital challenges while keeping thoughtful, human-centered design at the heart of the work.",
+    "OPEN TO OPPORTUNITIES\n\nI'm currently looking for full-time opportunities, especially remote roles where I can collaborate with teams across borders. I'm based in Indonesia, but I'm also open to relocating internationally for the right position. Whether you're building a product, growing a team, or looking for a versatile designer who connects creativity and technology, I'd love to explore how I can contribute.",
+    "GET IN TOUCH\n\nHave a freelance project, a full-time opportunity, or an idea worth discussing? I'd love to hear from you. You can reach me by email or WhatsApp.\n\nEMAIL: baiqcakrap.bc@gmail.com\nWHATSAPP: +62 858-0411-9744",
+    "THANK YOU FOR PLAYING\n\nThank you for exploring my game portfolio! I built this world to tell my story through something you can play, not just scroll. I hope the journey helped you understand who I am, how I think, and what I love to create. If anything sparked your interest, I'd be happy to connect and build something meaningful together.\n\nSEE YOU IN THE NEXT QUEST!"
   ]
- },
+},
  "workshop-engine": {
   "label": "PROTOTYPE WORKBENCH",
   "verb": "Inspect Prototype Workbench",
@@ -2842,10 +2954,10 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
     this.readerNotesHeading.setText(this.readerObject==='home-notebook'?heading:'');
     this.readerBlueprintHeading.setText(this.readerObject==='home-blueprint'?heading:'');
     this.readerDnaHeading.setText(this.readerObject==='lab-samples'?heading:'');
-    this.readerComputerHeading.setText(this.readerObject==='lab'?'':COMPUTER_READER_IDS.has(this.readerObject)?heading:'');
+    this.readerComputerHeading.setText(this.readerObject==='lab'||this.readerObject==='hub'?'':COMPUTER_READER_IDS.has(this.readerObject)?heading:'');
     this.readerComputerHeading.setPosition(isHomePhotoPage?372:154,this.readerObject==='home'?191:224);
     this.readerComputerHeading.setWordWrapWidth(isHomePhotoPage?438:655,true);
-    this.readerBody.setText(this.readerObject==='lab'?'':split>=0?page.slice(split+2):page);
+    this.readerBody.setText(this.readerObject==='lab'||this.readerObject==='hub'?'':split>=0?page.slice(split+2):page);
     if(this.readerObject==='home-notebook'){
      // Keep all eight original notes readable within the e-paper field,
      // below the heading and above the footer divider at y=407.
@@ -2901,6 +3013,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    syncHDHomeProfile(this);
    syncHDHomeToolIcons(this);
    syncHDLabCareer(this);
+   syncHDContact(this);
   }
   openReader(id){
    if(!this.readerElements||!PORTFOLIO_STATIONS[id])return;
@@ -2987,6 +3100,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    syncHDHomeProfile(this);
    syncHDHomeToolIcons(this);
    syncHDLabCareer(this);
+   syncHDContact(this);
    syncPopupControls(this);
    if(this.readerJustCompleted)this.createJourneyHUD(this.lastJourneyDiscovery);
    // Restore the rebuilt QUEST HUD (if the interaction completed a mission)
@@ -3204,6 +3318,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
      if(this.readerPage===4)syncHDHomeToolIcons(this);
     }
     if(this.readerObject==='lab')syncHDLabCareer(this);
+    if(this.readerObject==='hub')syncHDContact(this);
     this.updateWorldLighting(delta);
    const k=this.keys;let x=0,y=0;
    if(k.A.isDown||k.LEFT.isDown||pressed.has('left'))x--;
