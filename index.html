@@ -652,7 +652,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    panel:0x0b293d,footer:0x102d40,accent:0x62dfff,accent2:0xffbb6b,
    text:'#f0fcff',muted:'#b7dce8',heading:'#a3eaff',action:'#ffcb83',
    section:'PROFILE  /  PERSONAL STORY',
-   footerLabel:'HOME OS  /  PERSONAL DESKTOP'
+   footerLabel:'LAKSAMANA BAIO / PROFILE'
   },
   lab:{
    backdrop:0x031a21,frame:0x092b33,border:0x6ee8e8,titleBar:0x124451,
@@ -2435,16 +2435,18 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    // and give the title enough room after each icon.
    desktop.lineStyle(1.8,pcTheme.accent2,.96);
    if(this.place==='home'){
-    // Balanced house silhouette: 17px roof width, 18px total height.
+    // Widen the HOME icon from 17px to 23px without changing its
+    // 18px height. Center the roof and door at x=216.5, aligned with
+    // the divider and ABOUT ME title along the same y=107 centerline.
     desktop.lineStyle(2,pcTheme.accent2,.98);
-    desktop.lineBetween(208,106,216.5,98);
-    desktop.lineBetween(216.5,98,225,106);
-    desktop.lineBetween(211,105,211,116);
-    desktop.lineBetween(211,116,222,116);
-    desktop.lineBetween(222,116,222,105);
-    desktop.lineBetween(215,116,215,110);
-    desktop.lineBetween(215,110,218,110);
-    desktop.lineBetween(218,110,218,116);
+    desktop.lineBetween(205,106,216.5,98);
+    desktop.lineBetween(216.5,98,228,106);
+    desktop.lineBetween(208,105,208,116);
+    desktop.lineBetween(208,116,225,116);
+    desktop.lineBetween(225,116,225,105);
+    desktop.lineBetween(214,116,214,109);
+    desktop.lineBetween(214,109,219,109);
+    desktop.lineBetween(219,109,219,116);
    }else if(this.place==='lab'){
     desktop.lineBetween(211,102,221,107);
     desktop.lineBetween(211,112,221,107);
@@ -2469,14 +2471,18 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    }
    desktop.lineStyle(1,pcTheme.border,.47);
    desktop.lineBetween(128,165,832,165);
-   // Full-width reading area with a restrained colored left-side stripe.
+   // Full-width reading area. HOME is intentionally clear of the
+   // vertical neon stripe and obsolete section divider; its content
+   // starts higher to leave room for the future profile introduction.
    desktop.fillStyle(pcTheme.panel,1);desktop.fillRoundedRect(128,175,704,232,6);
    desktop.lineStyle(1,pcTheme.border,.68);
    desktop.strokeRoundedRect(128,175,704,232,6);
-   desktop.fillStyle(pcTheme.accent,.91);
-   desktop.fillRoundedRect(129,187,3,208,2);
-   desktop.lineStyle(1,pcTheme.border,.42);
-   desktop.lineBetween(153,210,807,210);
+   if(this.place!=='home'){
+    desktop.fillStyle(pcTheme.accent,.91);
+    desktop.fillRoundedRect(129,187,3,208,2);
+    desktop.lineStyle(1,pcTheme.border,.42);
+    desktop.lineBetween(153,210,807,210);
+   }
    // Distinct color footer keeps a shared navigation hotspot.
    desktop.fillStyle(pcTheme.footer,1);
    desktop.fillRoundedRect(128,420,704,42,5);
@@ -2484,10 +2490,10 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    desktop.strokeRoundedRect(128,420,704,42,5);
    this.readerComputerBackground=desktop;
    this.readerComputerLabels=[
-    deskText(154,188,pcTheme.section,11,pcTheme.muted,true),
+    deskText(154,188,this.place==='home'?'':pcTheme.section,11,pcTheme.muted,true),
     deskText(145,434,pcTheme.footerLabel,11,pcTheme.muted,true)
    ];
-   this.readerComputerHeading=add(this.add.text(154,224,'',{
+   this.readerComputerHeading=add(this.add.text(154,this.place==='home'?191:224,'',{
     fontFamily:'monospace',fontSize:'18px',fontStyle:'bold',
     color:pcTheme.heading,wordWrap:{width:655,useAdvancedWrap:true}
    }).setResolution(2).setScrollFactor(0).setDepth(252));
@@ -2560,7 +2566,8 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
      // without reducing ordinary pages to unnecessarily tiny text.
      for(const size of [18,17,16,15]){
       this.readerBody.setFontSize(size);
-      if(this.readerBody.height<=140)break;
+      // HOME has a taller reading area after removing the section label.
+      if(this.readerBody.height<=(this.readerObject==='home'?162:140))break;
      }
     }
    }else{
@@ -2603,16 +2610,20 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    for(const label of this.readerDnaLabels)label.setVisible(isDna);
    for(const label of this.readerComputerLabels)label.setVisible(isComputer);
    // Each reader mode resets every shared text layout and color.
-   this.readerTitle.setPosition(isNotes?144:isComputer?240:isBlueprint||isDna?142:138,isNotes?108:isComputer?94:isBlueprint||isDna?97:97);
+   this.readerTitle.setPosition(isNotes?144:isComputer?240:isBlueprint||isDna?142:138,
+    isNotes?108:isComputer?(id==='home'?107:94):isBlueprint||isDna?97:97);
+   // HOME title and icon/divider share the y=107 centerline.
+   this.readerTitle.setOrigin(0,id==='home'?.5:0);
    this.readerTitle.setFontFamily(isNotes?'Arial, sans-serif':'monospace');
    this.readerTitle.setFontSize(isComputer?22:26);
    this.readerTitle.setColor(isNotes?'#103c53':isComputer?this.readerComputerTheme.text:isDna?'#ffe29b':isBlueprint?'#ffe29b':'#f4e8d5');
-   this.readerSubtitle.setPosition(isNotes?144:isComputer?145:isBlueprint||isDna?142:138,isNotes?144:isComputer?144:isBlueprint||isDna?137:138);
+   this.readerSubtitle.setPosition(isNotes?144:isComputer?(id==='home'?128:145):isBlueprint||isDna?142:138,
+    isNotes?144:isComputer?144:isBlueprint||isDna?137:138);
    this.readerSubtitle.setFontSize(isNotes?14:13);
    this.readerSubtitle.setFontStyle(isNotes?'bold':'normal');
    this.readerSubtitle.setColor(isNotes?'#244d60':isComputer?this.readerComputerTheme.muted:isDna?'#a4e0eb':isBlueprint?'#99dcf7':'#a8dad2');
    this.readerBody.setPosition(isNotes?144:isDna?416:isComputer?154:isBlueprint?416:321,
-    isNotes?245:isDna?258:isComputer?264:isBlueprint?252:189);
+    isNotes?245:isDna?258:isComputer?(id==='home'?228:264):isBlueprint?252:189);
    this.readerBody.setFontFamily(isNotes?'Arial, sans-serif':'monospace');
    this.readerBody.setFontSize(isNotes?21:isComputer?18:isDna?18:isBlueprint?17:19);
    this.readerBody.setWordWrapWidth(isNotes?672:isDna?395:isComputer?652:isBlueprint?395:492,true);
