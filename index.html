@@ -2932,9 +2932,9 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    for(const label of this.readerComputerLabels)label.setVisible(isComputer);
    // Each reader mode resets every shared text layout and color.
    this.readerTitle.setPosition(isNotes?144:isComputer?240:isBlueprint||isDna?142:138,
-    isNotes?108:isComputer?(id==='home'?107:94):isBlueprint||isDna?97:97);
-   // HOME title and icon/divider share the y=107 centerline.
-   this.readerTitle.setOrigin(0,id==='home'?.5:0);
+    isNotes?108:isComputer?((id==='home'||id==='lab')?107:94):isBlueprint||isDna?97:97);
+   // HOME and LAB titles share their icon/divider's y=107 centerline.
+   this.readerTitle.setOrigin(0,(id==='home'||id==='lab')?.5:0);
    this.readerTitle.setFontFamily(isNotes?'Arial, sans-serif':'monospace');
    this.readerTitle.setFontSize(isComputer?22:26);
    this.readerTitle.setColor(isNotes?'#103c53':isComputer?this.readerComputerTheme.text:isDna?'#ffe29b':isBlueprint?'#ffe29b':'#f4e8d5');
