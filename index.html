@@ -852,7 +852,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    panel:0x092d39,footer:0x123c43,accent:0x7cf0f1,accent2:0xa6f5bb,
    text:'#efffff',muted:'#b6e9ec',heading:'#affbf1',action:'#a8f7cb',
    section:'RESEARCH  /  EXPERIENCE RECORDS',
-   footerLabel:'LAB OS  /  RESEARCH TERMINAL'
+   footerLabel:'LAKSAMANA BAIO / EXPERIENCES'
   },
   workshop:{
    backdrop:0x171019,frame:0x221820,border:0xf3a556,titleBar:0x422821,
@@ -2938,7 +2938,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    this.readerTitle.setFontFamily(isNotes?'Arial, sans-serif':'monospace');
    this.readerTitle.setFontSize(isComputer?22:26);
    this.readerTitle.setColor(isNotes?'#103c53':isComputer?this.readerComputerTheme.text:isDna?'#ffe29b':isBlueprint?'#ffe29b':'#f4e8d5');
-   this.readerSubtitle.setPosition(isNotes?144:isComputer?(id==='home'?128:145):isBlueprint||isDna?142:138,
+   this.readerSubtitle.setPosition(isNotes?144:isComputer?(id==='home'||id==='lab'?128:145):isBlueprint||isDna?142:138,
     isNotes?144:isComputer?144:isBlueprint||isDna?137:138);
    this.readerSubtitle.setFontSize(isNotes?14:13);
    this.readerSubtitle.setFontStyle(isNotes?'bold':'normal');
@@ -2956,7 +2956,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    this.readerCount.setResolution(isNotes||isBlueprint||isDna?3:2);
    this.readerNext.setResolution(isNotes||isBlueprint||isDna?3:2);
    this.readerBody.setColor(isNotes?'#143c4c':isComputer?this.readerComputerTheme.text:isDna?'#effcff':isBlueprint?'#edfaff':'#e8efe6');
-   this.readerCount.setPosition(isNotes?816:isComputer?813:isBlueprint||isDna?814:817,
+   this.readerCount.setPosition(isNotes?816:isComputer?(id==='lab'?832:813):isBlueprint||isDna?814:817,
     isNotes?144:isComputer?144:isDna?137:isBlueprint?137:145);
    this.readerCount.setFontSize(isNotes?14:14);
    this.readerCount.setFontStyle(isNotes?'bold':'normal');
