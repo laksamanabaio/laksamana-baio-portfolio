@@ -2956,7 +2956,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    this.readerCount.setResolution(isNotes||isBlueprint||isDna?3:2);
    this.readerNext.setResolution(isNotes||isBlueprint||isDna?3:2);
    this.readerBody.setColor(isNotes?'#143c4c':isComputer?this.readerComputerTheme.text:isDna?'#effcff':isBlueprint?'#edfaff':'#e8efe6');
-   this.readerCount.setPosition(isNotes?816:isComputer?(id==='lab'?832:813):isBlueprint||isDna?814:817,
+   this.readerCount.setPosition(isNotes?816:isComputer?(id==='home'||id==='lab'?832:813):isBlueprint||isDna?814:817,
     isNotes?144:isComputer?144:isDna?137:isBlueprint?137:145);
    this.readerCount.setFontSize(isNotes?14:14);
    this.readerCount.setFontStyle(isNotes?'bold':'normal');
