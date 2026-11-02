@@ -165,11 +165,10 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  #homeProfileHD{position:absolute;z-index:14;pointer-events:none;object-fit:cover;
   image-rendering:auto;border-radius:2px;display:block}
  #homeProfileHD[hidden]{display:none}
-/* Browser-rendered vector app icons remain crisp at any canvas scale. */
-#homeToolIconsHD{position:absolute;inset:0;z-index:14;pointer-events:none}
-#homeToolIconsHD[hidden]{display:none}
-.homeToolHDIcon{position:absolute;display:block;line-height:0}
-.homeToolHDIcon img{display:block;width:100%;height:100%;object-fit:contain;image-rendering:auto}
+/* Six native browser icons: same sharp rendering path as the HD HOME portrait. */
+.homeToolHDIcon{position:absolute;display:block;z-index:32;pointer-events:none;
+ width:auto;height:auto;object-fit:contain;image-rendering:auto}
+.homeToolHDIcon[hidden]{display:none}
 </style>
 <link rel="stylesheet" href="./assets/landing/v1686/landing.css?v=16.93">
 <link rel="stylesheet" href="./assets/rules/v1691/rules.css?v=16.94">
@@ -230,21 +229,13 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  alt="" aria-hidden="true" decoding="async" hidden>
 <!-- SVG app logos are overlaid on HOME page 05, not pixelated in Phaser. -->
 
-<!-- Native-resolution uploaded PNG icons, rendered above Phaser to avoid pixelArt sampling. -->
-<div id="homeToolIconsHD" hidden aria-hidden="true">
- <span class="homeToolHDIcon" data-tool="figma">
-  <img src="./assets/home/tools/v1703/figma.png?v=17.03" width="128" height="128" alt="" decoding="async">
- </span>
- <span class="homeToolHDIcon" data-tool="xd">
-  <img src="./assets/home/tools/v1703/adobe-xd.png?v=17.03" width="128" height="128" alt="" decoding="async">
- </span>
- <span class="homeToolHDIcon" data-tool="ps">
-  <img src="./assets/home/tools/v1703/photoshop.png?v=17.03" width="128" height="128" alt="" decoding="async">
- </span>
- <span class="homeToolHDIcon" data-tool="ai">
-  <img src="./assets/home/tools/v1703/illustrator.png?v=17.03" width="128" height="128" alt="" decoding="async">
- </span>
-</div>
+<!-- User-supplied tool icons; individual HD overlays avoid Phaser pixelArt. -->
+<img class="homeToolHDIcon" data-tool="figma" src="./assets/home/tools/v1703/figma.png?v=17.04" width="128" height="128" alt="" aria-hidden="true" decoding="async" hidden>
+<img class="homeToolHDIcon" data-tool="xd" src="./assets/home/tools/v1703/adobe-xd.png?v=17.04" width="128" height="128" alt="" aria-hidden="true" decoding="async" hidden>
+<img class="homeToolHDIcon" data-tool="ps" src="./assets/home/tools/v1703/photoshop.png?v=17.04" width="128" height="128" alt="" aria-hidden="true" decoding="async" hidden>
+<img class="homeToolHDIcon" data-tool="ai" src="./assets/home/tools/v1703/illustrator.png?v=17.04" width="128" height="128" alt="" aria-hidden="true" decoding="async" hidden>
+<img class="homeToolHDIcon" data-tool="vscode" src="./assets/home/tools/v1704/vscode.png?v=17.04" width="128" height="128" alt="" aria-hidden="true" decoding="async" hidden>
+<img class="homeToolHDIcon" data-tool="bobby" src="./assets/home/tools/v1704/bobby-ai.png?v=17.04" width="128" height="128" alt="" aria-hidden="true" decoding="async" hidden>
 <div class="touch" role="group" aria-label="Touch movement controls">
  <button type="button" data-dir="left" aria-label="Move left"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="up" aria-label="Move up"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -501,39 +492,52 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
   // Coordinates match the four existing HOME tool cards (in 960x540 space).
   // Keep these SVG icons in the browser layer so Phaser pixelArt does not
   // apply nearest-neighbor filtering on the icons when the game is scaled.
-  const homeToolIconsHD=document.getElementById('homeToolIconsHD');
-  const homeToolIconCoords={
-   figma:[166,286],xd:[500,286],ps:[166,349],ai:[500,349]
-  };
+  // Each icon is an independent <img> like #homeProfileHD. No wrapper
+  // visibility state and no Phaser nearest-neighbour pixelation.
   const homeToolIconEls=Object.fromEntries(
-   [...homeToolIconsHD.querySelectorAll('[data-tool]')]
+   [...document.querySelectorAll('img.homeToolHDIcon[data-tool]')]
     .map(el=>[el.dataset.tool,el])
   );
+  // 2 columns × 3 rows within HOME's existing 704×232 content panel.
+  const homeToolIconCoords={
+   figma:[166,268],xd:[500,268],
+   ps:[166,314],ai:[500,314],
+   vscode:[166,360],bobby:[500,360]
+  };
   const syncHDHomeToolIcons=scene=>{
    const show=!!(scene&&scene.place==='home'&&
     scene.readerObject==='home'&&scene.readerPage===4);
-   if(!show){homeToolIconsHD.hidden=true;return;}
+   if(!show){
+    for(const el of Object.values(homeToolIconEls))el.hidden=true;
+    return;
+   }
    const canvas=scene.game&&scene.game.canvas;
-   if(!canvas){homeToolIconsHD.hidden=true;return;}
+   if(!canvas){
+    for(const el of Object.values(homeToolIconEls))el.hidden=true;
+    return;
+   }
    const bounds=canvas.getBoundingClientRect();
-   const mainRect=document.querySelector('main').getBoundingClientRect();
-   if(!bounds.width||!bounds.height){homeToolIconsHD.hidden=true;return;}
+   const root=document.querySelector('main').getBoundingClientRect();
+   if(!bounds.width||!bounds.height){
+    for(const el of Object.values(homeToolIconEls))el.hidden=true;
+    return;
+   }
    const scaleX=bounds.width/W,scaleY=bounds.height/H;
-   const x0=bounds.left-mainRect.left,y0=bounds.top-mainRect.top;
-   const layoutKey=[x0,y0,bounds.width,bounds.height]
+   const offsetX=bounds.left-root.left,offsetY=bounds.top-root.top;
+   const key=[offsetX,offsetY,bounds.width,bounds.height]
     .map(n=>n.toFixed(2)).join('|');
-   if(scene.homeToolHDLayoutKey!==layoutKey||homeToolIconsHD.hidden){
-    scene.homeToolHDLayoutKey=layoutKey;
-    for(const [key,[x,y]] of Object.entries(homeToolIconCoords)){
-     const el=homeToolIconEls[key];
+   if(scene.homeToolHDLayoutKey!==key||Object.values(homeToolIconEls).some(el=>el.hidden)){
+    scene.homeToolHDLayoutKey=key;
+    for(const [name,[x,y]] of Object.entries(homeToolIconCoords)){
+     const el=homeToolIconEls[name];
      if(!el)continue;
-     el.style.left=(x0+x*scaleX)+'px';
-     el.style.top=(y0+y*scaleY)+'px';
-     el.style.width=(34*scaleX)+'px';
-     el.style.height=(34*scaleY)+'px';
+     el.style.left=(offsetX+x*scaleX)+'px';
+     el.style.top=(offsetY+y*scaleY)+'px';
+     el.style.width=(33*scaleX)+'px';
+     el.style.height=(33*scaleY)+'px';
     }
    }
-   homeToolIconsHD.hidden=false;
+   for(const el of Object.values(homeToolIconEls))el.hidden=false;
   };
   const DISTRICT_BUILDING_SIZE={width:392,height:326};
   const NPC_HINT_Y=-Math.ceil(175*NPC_CHARACTER_SCALE)-30;
@@ -2634,16 +2638,19 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
 
     const toolGrid=add(this.add.graphics().setScrollFactor(0).setDepth(253));
     this.readerHomeToolElements.push(toolGrid);
-    const tools=['FIGMA','ADOBE XD','PHOTOSHOP','ILLUSTRATOR'];
+    const tools=[
+     'FIGMA','ADOBE XD','PHOTOSHOP','ILLUSTRATOR',
+     'VISUAL STUDIO CODE','BOBBY AI PERSONAL ASSISTANT'
+    ];
     for(let i=0;i<tools.length;i++){
-     const x=i%2?488:154,y=i<2?276:339;
+     const x=i%2?488:154,y=264+Math.floor(i/2)*46;
      toolGrid.fillStyle(0x102f42,.98);
-     toolGrid.fillRoundedRect(x,y,316,52,5);
+     toolGrid.fillRoundedRect(x,y,316,41,5);
      toolGrid.lineStyle(1,pcTheme.border,.55);
-     toolGrid.strokeRoundedRect(x,y,316,52,5);
-     // Icon is browser SVG. Phaser draws only the original label and card.
-     const name=add(this.add.text(x+57,y+26,tools[i],{
-      fontFamily:'monospace',fontSize:'17px',fontStyle:'bold',color:'#e9f8ff'
+     toolGrid.strokeRoundedRect(x,y,316,41,5);
+     // The real 128x128 user-provided PNG sits on its own browser layer.
+     const name=add(this.add.text(x+57,y+20.5,tools[i],{
+      fontFamily:'monospace',fontSize:'15px',fontStyle:'bold',color:'#e9f8ff'
      }).setOrigin(0,.5).setResolution(3).setScrollFactor(0).setDepth(254));
      this.readerHomeToolElements.push(name);
     }
