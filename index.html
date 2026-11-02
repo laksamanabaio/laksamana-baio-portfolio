@@ -684,12 +684,13 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
   "subtitle": "HOME / PERSONAL DESKTOP",
   "accent": 8243908,
   "pages": [
-   "HELLO, I'M BAIO\n\nI'm Laksamana Baio, a designer with five years of UI/UX experience. My focus is creating clear, thoughtful digital experiences that balance usefulness and visual craft.",
-   "MY JOURNEY\n\nMy background includes UI/UX and graphic design. Moving between product experiences and visual communication has shaped how I think about both function and expression.",
-   "HOW I APPROACH DESIGN\n\nI start with the problem and the people behind it. I value simple interactions, strong visual hierarchy, and refining ideas through feedback and iteration.",
-   "WHAT'S NEXT\n\nI'm looking to grow through product design opportunities with international teams. This interactive portfolio reflects my curiosity about storytelling, systems, and playful experiences."
+    "HI, I'M BAIO\n\nMy name is Baiq Cakra Prakasa, though most people know me as Laksamana Baio. I'm a UI/UX, graphic, and prompt designer, and a Product Design graduate of Institut Teknologi Bandung in Indonesia.",
+    "MY DESIGN JOURNEY\n\nI spent five years in UI/UX design, most recently as a Lead UI/UX Designer, and have one year of graphic design experience as of 2026. My work focuses on turning complex software requirements into intuitive, visually cohesive experiences for web and mobile. I combine user-centered research, prototyping, and design systems with collaboration across multidisciplinary teams to create scalable digital products.",
+    "DESIGN BEYOND THE CANVAS\n\nToday, I work alongside Bobby, my personal AI assistant, to explore what's possible beyond visual design. From planning and coding to troubleshooting and refining interactions, AI helps me turn ideas into working experiences. This playable portfolio is one example of how I use design thinking, curiosity, and AI-assisted development together.",
+    "WHAT I BRING\n\nSTRATEGY: Roadmapping, Agile/Scrum, product management, and stakeholder management.\nDESIGN: UI/UX design and research, product design, graphic design, and illustration.\nVALIDATION: Market research, wireframing, prototyping, A/B testing, and usability testing.\nCOLLABORATION: Cross-functional teamwork.",
+    "TOOLS OF THE TRADE\n\nMy go-to apps for creating interfaces and visual stories."
   ]
- },
+},
  "lab": {
   "label": "CAREER TERMINAL",
   "verb": "Explore Experience",
@@ -804,6 +805,9 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
  class World extends Phaser.Scene{
   constructor(){super('World')}
   preload(){
+   // Real profile photo, shown on HOME's first About Me page only.
+   this.load.image('home-profile-photo-v1701',
+    './assets/home/profile/baio-profile-photo.webp?v=17.01');
    // Ten unique RPG-style half-body portraits, 92x116 each, packed into
    // one lightweight WebP atlas (5 columns x 2 rows) for dialogue ONLY.
    // NPCs walking in the world retain their existing sprite sheets.
@@ -2517,6 +2521,59 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
     fontFamily:'monospace',fontSize:'14px',color:'#f5dcaa'
    }).setResolution(2).setOrigin(1,.5).setScrollFactor(0).setDepth(252));
 
+   // HOME-exclusive photo and software cards; retain one shared reader
+   // without putting these visuals on Lab, Workshop, or Contact Hub.
+   this.readerHomePortrait=null;
+   this.readerHomePortraitFrame=null;
+   this.readerHomeToolElements=[];
+   if(this.place==='home'){
+    const photoFrame=add(this.add.graphics().setScrollFactor(0).setDepth(253));
+    photoFrame.fillStyle(0x061a29,1);
+    photoFrame.fillRoundedRect(151,182,200,216,5);
+    photoFrame.lineStyle(2,pcTheme.border,.95);
+    photoFrame.strokeRoundedRect(154,185,194,210,4);
+    photoFrame.lineStyle(1,pcTheme.accent,.50);
+    photoFrame.strokeRect(157,188,188,204);
+    this.readerHomePortraitFrame=photoFrame;
+    this.readerHomePortrait=add(this.add.image(251,290,'home-profile-photo-v1701')
+     .setDisplaySize(182,198).setScrollFactor(0).setDepth(254));
+
+    const toolGrid=add(this.add.graphics().setScrollFactor(0).setDepth(253));
+    this.readerHomeToolElements.push(toolGrid);
+    const tools=[
+     {name:'FIGMA',abbr:'',kind:'figma',bg:0x173a48,fg:'#f8f9ff'},
+     {name:'ADOBE XD',abbr:'Xd',kind:'xd',bg:0x32133f,fg:'#ff94f8'},
+     {name:'PHOTOSHOP',abbr:'Ps',kind:'ps',bg:0x102c53,fg:'#75c6ff'},
+     {name:'ILLUSTRATOR',abbr:'Ai',kind:'ai',bg:0x47280f,fg:'#ffc176'}
+    ];
+    for(let i=0;i<tools.length;i++){
+     const t=tools[i],x=i%2?488:154,y=i<2?276:339;
+     toolGrid.fillStyle(0x102f42,.98);
+     toolGrid.fillRoundedRect(x,y,316,52,5);
+     toolGrid.lineStyle(1,pcTheme.border,.55);
+     toolGrid.strokeRoundedRect(x,y,316,52,5);
+     if(t.kind==='figma'){
+      // Five recognisable Figma vector marks.
+      toolGrid.fillStyle(0xf24e1e);toolGrid.fillRoundedRect(x+13,y+10,13,13,3);
+      toolGrid.fillStyle(0xff7262);toolGrid.fillRoundedRect(x+26,y+10,13,13,6);
+      toolGrid.fillStyle(0xa259ff);toolGrid.fillRoundedRect(x+13,y+23,13,13,3);
+      toolGrid.fillStyle(0x1abcfe);toolGrid.fillRoundedRect(x+26,y+23,13,13,6);
+      toolGrid.fillStyle(0x0acf83);toolGrid.fillRoundedRect(x+13,y+36,13,9,5);
+     }else{
+      toolGrid.fillStyle(t.bg);toolGrid.fillRoundedRect(x+12,y+10,34,32,4);
+      toolGrid.lineStyle(1,t.kind==='xd'?0xd76ee9:t.kind==='ps'?0x3b9beb:0xe9a34f,1);
+      toolGrid.strokeRoundedRect(x+12,y+10,34,32,4);
+      const abbr=add(this.add.text(x+29,y+26,t.abbr,{
+       fontFamily:'Arial, sans-serif',fontSize:'19px',fontStyle:'bold',color:t.fg
+      }).setOrigin(.5,.5).setResolution(3).setScrollFactor(0).setDepth(254));
+      this.readerHomeToolElements.push(abbr);
+     }
+     const name=add(this.add.text(x+57,y+26,t.name,{
+      fontFamily:'monospace',fontSize:'17px',fontStyle:'bold',color:'#e9f8ff'
+     }).setOrigin(0,.5).setResolution(3).setScrollFactor(0).setDepth(254));
+     this.readerHomeToolElements.push(name);
+    }
+   }
    this.readerElements=elements;
    for(const obj of elements)obj.setVisible(false);
   }
@@ -2526,6 +2583,11 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    this.readerTitle.setText(station.title);
    this.readerSubtitle.setText(station.subtitle);
    const page=station.pages[this.readerPage];
+   const isHomePhotoPage=this.readerObject==='home'&&this.readerPage===0;
+   const isHomeToolsPage=this.readerObject==='home'&&this.readerPage===4;
+   if(this.readerHomePortrait)this.readerHomePortrait.setVisible(isHomePhotoPage);
+   if(this.readerHomePortraitFrame)this.readerHomePortraitFrame.setVisible(isHomePhotoPage);
+   for(const obj of this.readerHomeToolElements||[])obj.setVisible(isHomeToolsPage);
    if(this.readerObject==='home-notebook'||this.readerObject==='lab-samples'||
       this.readerObject==='home-blueprint'||COMPUTER_READER_IDS.has(this.readerObject)){
     // Keep every word on the original pages; separate each first-line
@@ -2535,6 +2597,8 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
     this.readerBlueprintHeading.setText(this.readerObject==='home-blueprint'?heading:'');
     this.readerDnaHeading.setText(this.readerObject==='lab-samples'?heading:'');
     this.readerComputerHeading.setText(COMPUTER_READER_IDS.has(this.readerObject)?heading:'');
+    this.readerComputerHeading.setPosition(isHomePhotoPage?372:154,this.readerObject==='home'?191:224);
+    this.readerComputerHeading.setWordWrapWidth(isHomePhotoPage?438:655,true);
     this.readerBody.setText(split>=0?page.slice(split+2):page);
     if(this.readerObject==='home-notebook'){
      // Keep all eight original notes readable within the e-paper field,
@@ -2562,12 +2626,20 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
      }
     }
     if(COMPUTER_READER_IDS.has(this.readerObject)){
-     // Fit the longest genuine portfolio paragraphs within the reader
-     // without reducing ordinary pages to unnecessarily tiny text.
-     for(const size of [18,17,16,15]){
+     // Adapt only HOME's first and last pages for the profile image and app icons.
+     // The other computer readers retain their established typography.
+     if(this.readerObject==='home'){
+      this.readerBody.setPosition(isHomePhotoPage?372:154,
+       isHomePhotoPage?232:isHomeToolsPage?231:228);
+      this.readerBody.setWordWrapWidth(isHomePhotoPage?434:652,true);
+      this.readerBody.setLineSpacing(isHomePhotoPage?7:5);
+     }
+     const sizes=isHomePhotoPage?[17,16,15,14]:[18,17,16,15,14];
+     const maxHeight=isHomePhotoPage?152:isHomeToolsPage?45:
+      this.readerObject==='home'?162:140;
+     for(const size of sizes){
       this.readerBody.setFontSize(size);
-      // HOME has a taller reading area after removing the section label.
-      if(this.readerBody.height<=(this.readerObject==='home'?162:140))break;
+      if(this.readerBody.height<=maxHeight)break;
      }
     }
    }else{
