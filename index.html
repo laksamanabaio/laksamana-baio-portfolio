@@ -271,7 +271,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
   <div class="labCareerLogoBox"><img id="labCareerLogo" alt="" width="584" height="584" decoding="async"></div>
   <div class="labCareerFacts">
    <div><b>PERIOD</b><span id="labCareerPeriod"></span></div>
-   <div><b>PROJECTS</b><span id="labCareerProjects"></span></div>
+   <div><b id="labCareerProjectsLabel">PROJECTS</b><span id="labCareerProjects"></span></div>
    <div><b>LANGUAGE</b><span id="labCareerLanguage"></span></div>
   </div>
  </div>
@@ -593,6 +593,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    role:document.getElementById('labCareerRole'),
    period:document.getElementById('labCareerPeriod'),
    projects:document.getElementById('labCareerProjects'),
+   projectsLabel:document.getElementById('labCareerProjectsLabel'),
    language:document.getElementById('labCareerLanguage'),
    description:document.getElementById('labCareerDescription')
   };
@@ -610,6 +611,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
     labCareerParts.company.textContent=entry.name.toUpperCase();
     labCareerParts.role.textContent=entry.role;
     labCareerParts.period.textContent=entry.period;
+    labCareerParts.projectsLabel.textContent=entry.id==='league'?'FOCUS':'PROJECTS';
     labCareerParts.projects.textContent=entry.projects;
     labCareerParts.language.textContent=entry.language;
     labCareerParts.description.textContent=entry.description;
