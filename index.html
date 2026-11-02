@@ -169,7 +169,7 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 #homeToolIconsHD{position:absolute;inset:0;z-index:14;pointer-events:none}
 #homeToolIconsHD[hidden]{display:none}
 .homeToolHDIcon{position:absolute;display:block;line-height:0}
-.homeToolHDIcon svg{display:block;width:100%;height:100%;shape-rendering:geometricPrecision}
+.homeToolHDIcon img{display:block;width:100%;height:100%;object-fit:contain;image-rendering:auto}
 </style>
 <link rel="stylesheet" href="./assets/landing/v1686/landing.css?v=16.93">
 <link rel="stylesheet" href="./assets/rules/v1691/rules.css?v=16.94">
@@ -229,33 +229,20 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 <img id="homeProfileHD" src="./assets/home/profile/baio-profile-photo-hd.webp?v=17.02"
  alt="" aria-hidden="true" decoding="async" hidden>
 <!-- SVG app logos are overlaid on HOME page 05, not pixelated in Phaser. -->
+
+<!-- Native-resolution uploaded PNG icons, rendered above Phaser to avoid pixelArt sampling. -->
 <div id="homeToolIconsHD" hidden aria-hidden="true">
  <span class="homeToolHDIcon" data-tool="figma">
-  <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" focusable="false">
-   <path fill="#F24E1E" d="M6 2h12v11H6a5.5 5.5 0 0 1 0-11z"/>
-   <path fill="#FF7262" d="M18 2h6a5.5 5.5 0 1 1 0 11h-6z"/>
-   <path fill="#A259FF" d="M6 13h12v11H6a5.5 5.5 0 0 1 0-11z"/>
-   <circle cx="24" cy="18.5" r="5.5" fill="#1ABCFE"/>
-   <path fill="#0ACF83" d="M6 24h12v5.5a5.5 5.5 0 1 1-11 0V24z"/>
-  </svg>
+  <img src="./assets/home/tools/v1703/figma.png?v=17.03" width="128" height="128" alt="" decoding="async">
  </span>
  <span class="homeToolHDIcon" data-tool="xd">
-  <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" focusable="false">
-   <rect x="1" y="1" width="34" height="34" rx="4" fill="#32133F" stroke="#D76EE9" stroke-width="1.25"/>
-   <text x="18" y="25" font-family="Arial,Helvetica,sans-serif" font-size="21" font-weight="700" fill="#FF94F8" text-anchor="middle">Xd</text>
-  </svg>
+  <img src="./assets/home/tools/v1703/adobe-xd.png?v=17.03" width="128" height="128" alt="" decoding="async">
  </span>
  <span class="homeToolHDIcon" data-tool="ps">
-  <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" focusable="false">
-   <rect x="1" y="1" width="34" height="34" rx="4" fill="#102C53" stroke="#3B9BEB" stroke-width="1.25"/>
-   <text x="18" y="25" font-family="Arial,Helvetica,sans-serif" font-size="21" font-weight="700" fill="#75C6FF" text-anchor="middle">Ps</text>
-  </svg>
+  <img src="./assets/home/tools/v1703/photoshop.png?v=17.03" width="128" height="128" alt="" decoding="async">
  </span>
  <span class="homeToolHDIcon" data-tool="ai">
-  <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" focusable="false">
-   <rect x="1" y="1" width="34" height="34" rx="4" fill="#47280F" stroke="#E9A34F" stroke-width="1.25"/>
-   <text x="18" y="25" font-family="Arial,Helvetica,sans-serif" font-size="21" font-weight="700" fill="#FFC176" text-anchor="middle">Ai</text>
-  </svg>
+  <img src="./assets/home/tools/v1703/illustrator.png?v=17.03" width="128" height="128" alt="" decoding="async">
  </span>
 </div>
 <div class="touch" role="group" aria-label="Touch movement controls">
