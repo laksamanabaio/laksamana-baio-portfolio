@@ -165,6 +165,11 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  #homeProfileHD{position:absolute;z-index:14;pointer-events:none;object-fit:cover;
   image-rendering:auto;border-radius:2px;display:block}
  #homeProfileHD[hidden]{display:none}
+/* Browser-rendered vector app icons remain crisp at any canvas scale. */
+#homeToolIconsHD{position:absolute;inset:0;z-index:14;pointer-events:none}
+#homeToolIconsHD[hidden]{display:none}
+.homeToolHDIcon{position:absolute;display:block;line-height:0}
+.homeToolHDIcon svg{display:block;width:100%;height:100%;shape-rendering:geometricPrecision}
 </style>
 <link rel="stylesheet" href="./assets/landing/v1686/landing.css?v=16.93">
 <link rel="stylesheet" href="./assets/rules/v1691/rules.css?v=16.94">
@@ -223,6 +228,36 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 </div>
 <img id="homeProfileHD" src="./assets/home/profile/baio-profile-photo-hd.webp?v=17.02"
  alt="" aria-hidden="true" decoding="async" hidden>
+<!-- SVG app logos are overlaid on HOME page 05, not pixelated in Phaser. -->
+<div id="homeToolIconsHD" hidden aria-hidden="true">
+ <span class="homeToolHDIcon" data-tool="figma">
+  <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" focusable="false">
+   <path fill="#F24E1E" d="M6 2h12v11H6a5.5 5.5 0 0 1 0-11z"/>
+   <path fill="#FF7262" d="M18 2h6a5.5 5.5 0 1 1 0 11h-6z"/>
+   <path fill="#A259FF" d="M6 13h12v11H6a5.5 5.5 0 0 1 0-11z"/>
+   <circle cx="24" cy="18.5" r="5.5" fill="#1ABCFE"/>
+   <path fill="#0ACF83" d="M6 24h12v5.5a5.5 5.5 0 1 1-11 0V24z"/>
+  </svg>
+ </span>
+ <span class="homeToolHDIcon" data-tool="xd">
+  <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" focusable="false">
+   <rect x="1" y="1" width="34" height="34" rx="4" fill="#32133F" stroke="#D76EE9" stroke-width="1.25"/>
+   <text x="18" y="25" font-family="Arial,Helvetica,sans-serif" font-size="21" font-weight="700" fill="#FF94F8" text-anchor="middle">Xd</text>
+  </svg>
+ </span>
+ <span class="homeToolHDIcon" data-tool="ps">
+  <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" focusable="false">
+   <rect x="1" y="1" width="34" height="34" rx="4" fill="#102C53" stroke="#3B9BEB" stroke-width="1.25"/>
+   <text x="18" y="25" font-family="Arial,Helvetica,sans-serif" font-size="21" font-weight="700" fill="#75C6FF" text-anchor="middle">Ps</text>
+  </svg>
+ </span>
+ <span class="homeToolHDIcon" data-tool="ai">
+  <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" focusable="false">
+   <rect x="1" y="1" width="34" height="34" rx="4" fill="#47280F" stroke="#E9A34F" stroke-width="1.25"/>
+   <text x="18" y="25" font-family="Arial,Helvetica,sans-serif" font-size="21" font-weight="700" fill="#FFC176" text-anchor="middle">Ai</text>
+  </svg>
+ </span>
+</div>
 <div class="touch" role="group" aria-label="Touch movement controls">
  <button type="button" data-dir="left" aria-label="Move left"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  <button type="button" data-dir="up" aria-label="Move up"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -474,6 +509,44 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
     homeProfileHD.style.borderRadius=(2*Math.min(scaleX,scaleY))+'px';
    }
    homeProfileHD.hidden=false;
+  };
+
+  // Coordinates match the four existing HOME tool cards (in 960x540 space).
+  // Keep these SVG icons in the browser layer so Phaser pixelArt does not
+  // apply nearest-neighbor filtering on the icons when the game is scaled.
+  const homeToolIconsHD=document.getElementById('homeToolIconsHD');
+  const homeToolIconCoords={
+   figma:[166,286],xd:[500,286],ps:[166,349],ai:[500,349]
+  };
+  const homeToolIconEls=Object.fromEntries(
+   [...homeToolIconsHD.querySelectorAll('[data-tool]')]
+    .map(el=>[el.dataset.tool,el])
+  );
+  const syncHDHomeToolIcons=scene=>{
+   const show=!!(scene&&scene.place==='home'&&
+    scene.readerObject==='home'&&scene.readerPage===4);
+   if(!show){homeToolIconsHD.hidden=true;return;}
+   const canvas=scene.game&&scene.game.canvas;
+   if(!canvas){homeToolIconsHD.hidden=true;return;}
+   const bounds=canvas.getBoundingClientRect();
+   const mainRect=document.querySelector('main').getBoundingClientRect();
+   if(!bounds.width||!bounds.height){homeToolIconsHD.hidden=true;return;}
+   const scaleX=bounds.width/W,scaleY=bounds.height/H;
+   const x0=bounds.left-mainRect.left,y0=bounds.top-mainRect.top;
+   const layoutKey=[x0,y0,bounds.width,bounds.height]
+    .map(n=>n.toFixed(2)).join('|');
+   if(scene.homeToolHDLayoutKey!==layoutKey||homeToolIconsHD.hidden){
+    scene.homeToolHDLayoutKey=layoutKey;
+    for(const [key,[x,y]] of Object.entries(homeToolIconCoords)){
+     const el=homeToolIconEls[key];
+     if(!el)continue;
+     el.style.left=(x0+x*scaleX)+'px';
+     el.style.top=(y0+y*scaleY)+'px';
+     el.style.width=(34*scaleX)+'px';
+     el.style.height=(34*scaleY)+'px';
+    }
+   }
+   homeToolIconsHD.hidden=false;
   };
   const DISTRICT_BUILDING_SIZE={width:392,height:326};
   const NPC_HINT_Y=-Math.ceil(175*NPC_CHARACTER_SCALE)-30;
@@ -2574,35 +2647,15 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
 
     const toolGrid=add(this.add.graphics().setScrollFactor(0).setDepth(253));
     this.readerHomeToolElements.push(toolGrid);
-    const tools=[
-     {name:'FIGMA',abbr:'',kind:'figma',bg:0x173a48,fg:'#f8f9ff'},
-     {name:'ADOBE XD',abbr:'Xd',kind:'xd',bg:0x32133f,fg:'#ff94f8'},
-     {name:'PHOTOSHOP',abbr:'Ps',kind:'ps',bg:0x102c53,fg:'#75c6ff'},
-     {name:'ILLUSTRATOR',abbr:'Ai',kind:'ai',bg:0x47280f,fg:'#ffc176'}
-    ];
+    const tools=['FIGMA','ADOBE XD','PHOTOSHOP','ILLUSTRATOR'];
     for(let i=0;i<tools.length;i++){
-     const t=tools[i],x=i%2?488:154,y=i<2?276:339;
+     const x=i%2?488:154,y=i<2?276:339;
      toolGrid.fillStyle(0x102f42,.98);
      toolGrid.fillRoundedRect(x,y,316,52,5);
      toolGrid.lineStyle(1,pcTheme.border,.55);
      toolGrid.strokeRoundedRect(x,y,316,52,5);
-     if(t.kind==='figma'){
-      // Five recognisable Figma vector marks.
-      toolGrid.fillStyle(0xf24e1e);toolGrid.fillRoundedRect(x+13,y+10,13,13,3);
-      toolGrid.fillStyle(0xff7262);toolGrid.fillRoundedRect(x+26,y+10,13,13,6);
-      toolGrid.fillStyle(0xa259ff);toolGrid.fillRoundedRect(x+13,y+23,13,13,3);
-      toolGrid.fillStyle(0x1abcfe);toolGrid.fillRoundedRect(x+26,y+23,13,13,6);
-      toolGrid.fillStyle(0x0acf83);toolGrid.fillRoundedRect(x+13,y+36,13,9,5);
-     }else{
-      toolGrid.fillStyle(t.bg);toolGrid.fillRoundedRect(x+12,y+10,34,32,4);
-      toolGrid.lineStyle(1,t.kind==='xd'?0xd76ee9:t.kind==='ps'?0x3b9beb:0xe9a34f,1);
-      toolGrid.strokeRoundedRect(x+12,y+10,34,32,4);
-      const abbr=add(this.add.text(x+29,y+26,t.abbr,{
-       fontFamily:'Arial, sans-serif',fontSize:'19px',fontStyle:'bold',color:t.fg
-      }).setOrigin(.5,.5).setResolution(3).setScrollFactor(0).setDepth(254));
-      this.readerHomeToolElements.push(abbr);
-     }
-     const name=add(this.add.text(x+57,y+26,t.name,{
+     // Icon is browser SVG. Phaser draws only the original label and card.
+     const name=add(this.add.text(x+57,y+26,tools[i],{
       fontFamily:'monospace',fontSize:'17px',fontStyle:'bold',color:'#e9f8ff'
      }).setOrigin(0,.5).setResolution(3).setScrollFactor(0).setDepth(254));
      this.readerHomeToolElements.push(name);
@@ -2686,6 +2739,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
     ' / '+String(station.pages.length).padStart(2,'0'));
    this.readerNext.setText(this.readerPage+1<station.pages.length?'[ E / SPACE ] NEXT  ▸':'[ E / SPACE ] CLOSE  ✕');
    syncHDHomeProfile(this);
+   syncHDHomeToolIcons(this);
   }
   openReader(id){
    if(!this.readerElements||!PORTFOLIO_STATIONS[id])return;
@@ -2770,6 +2824,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    for(const obj of this.readerElements)obj.setVisible(false);
    this.readerObject=null;this.readerPage=0;
    syncHDHomeProfile(this);
+   syncHDHomeToolIcons(this);
    syncPopupControls(this);
    if(this.readerJustCompleted)this.createJourneyHUD(this.lastJourneyDiscovery);
    // Restore the rebuilt QUEST HUD (if the interaction completed a mission)
@@ -2982,7 +3037,10 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
     }
    }
    update(_,delta){
-    if(this.readerObject==='home'&&this.readerPage===0)syncHDHomeProfile(this);
+    if(this.readerObject==='home'){
+     if(this.readerPage===0)syncHDHomeProfile(this);
+     if(this.readerPage===4)syncHDHomeToolIcons(this);
+    }
     this.updateWorldLighting(delta);
    const k=this.keys;let x=0,y=0;
    if(k.A.isDown||k.LEFT.isDown||pressed.has('left'))x--;
