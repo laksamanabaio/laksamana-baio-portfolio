@@ -1122,7 +1122,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    panel:0x291e24,footer:0x342521,accent:0xffb862,accent2:0xff874d,
    text:'#fff8ef',muted:'#f0d3bc',heading:'#ffd5a0',action:'#ffcf84',
    section:'PROJECTS  /  FABRICATION LOG',
-   footerLabel:'WORKSHOP OS  /  PROJECT DISPLAY'
+   footerLabel:'LAKSAMANA BAIO / PROJECTS'
   },
   hub:{
    backdrop:0x110d20,frame:0x201532,border:0xb477f5,titleBar:0x342149,
@@ -3201,13 +3201,13 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    for(const label of this.readerComputerLabels)label.setVisible(isComputer);
    // Each reader mode resets every shared text layout and color.
    this.readerTitle.setPosition(isNotes?144:isComputer?240:isBlueprint||isDna?142:138,
-    isNotes?108:isComputer?((id==='home'||id==='lab'||id==='hub')?107:94):isBlueprint||isDna?97:97);
-   // HOME, LAB and CONTACT HUB titles share their icon/divider's y=107 centerline.
-   this.readerTitle.setOrigin(0,(id==='home'||id==='lab'||id==='hub')?.5:0);
+    isNotes?108:isComputer?((id==='home'||id==='lab'||id==='hub'||id==='workshop')?107:94):isBlueprint||isDna?97:97);
+   // All four computer titles share their icon/divider's y=107 centerline.
+   this.readerTitle.setOrigin(0,(id==='home'||id==='lab'||id==='hub'||id==='workshop')?.5:0);
    this.readerTitle.setFontFamily(isNotes?'Arial, sans-serif':'monospace');
    this.readerTitle.setFontSize(isComputer?22:26);
    this.readerTitle.setColor(isNotes?'#103c53':isComputer?this.readerComputerTheme.text:isDna?'#ffe29b':isBlueprint?'#ffe29b':'#f4e8d5');
-   this.readerSubtitle.setPosition(isNotes?144:isComputer?(id==='home'||id==='lab'||id==='hub'?128:145):isBlueprint||isDna?142:138,
+   this.readerSubtitle.setPosition(isNotes?144:isComputer?(id==='home'||id==='lab'||id==='hub'||id==='workshop'?128:145):isBlueprint||isDna?142:138,
     isNotes?144:isComputer?144:isBlueprint||isDna?137:138);
    this.readerSubtitle.setFontSize(isNotes?14:13);
    this.readerSubtitle.setFontStyle(isNotes?'bold':'normal');
@@ -3225,7 +3225,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    this.readerCount.setResolution(isNotes||isBlueprint||isDna?3:2);
    this.readerNext.setResolution(isNotes||isBlueprint||isDna?3:2);
    this.readerBody.setColor(isNotes?'#143c4c':isComputer?this.readerComputerTheme.text:isDna?'#effcff':isBlueprint?'#edfaff':'#e8efe6');
-   this.readerCount.setPosition(isNotes?816:isComputer?(id==='home'||id==='lab'||id==='hub'?832:813):isBlueprint||isDna?814:817,
+   this.readerCount.setPosition(isNotes?816:isComputer?(id==='home'||id==='lab'||id==='hub'||id==='workshop'?832:813):isBlueprint||isDna?814:817,
     isNotes?144:isComputer?144:isDna?137:isBlueprint?137:145);
    this.readerCount.setFontSize(isNotes?14:14);
    this.readerCount.setFontStyle(isNotes?'bold':'normal');
