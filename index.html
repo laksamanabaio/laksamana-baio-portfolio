@@ -225,6 +225,44 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 .contactClosing{font:bold 11px/16px monospace;letter-spacing:.075em;
  margin-top:11px;color:#ecc0fa}
 .contactClosing[hidden]{display:none}
+
+/* WORKSHOP / PROJECTS: crisp page-specific portfolio copy and action cards. */
+#workshopHD{position:absolute;z-index:36;box-sizing:border-box;
+ width:704px;height:232px;padding:16px 25px 14px;
+ transform-origin:top left;pointer-events:none;color:#fff4e5;
+ font-family:monospace}
+#workshopHD[hidden]{display:none}
+.workshopKicker{font:bold 11px/15px monospace;letter-spacing:.11em;color:#ffbd7f}
+.workshopHeading{font:bold 21px/26px monospace;color:#fff2df;margin:5px 0 8px}
+.workshopDescription{font:13.25px/18.5px monospace;margin:0;
+ max-width:653px;color:#f7e7d9;white-space:normal}
+.workshopPills{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}
+.workshopPills[hidden]{display:none}
+.workshopPill{font:bold 10px/14px monospace;letter-spacing:.045em;
+ color:#ffd8ae;border:1px solid #c58b5c;border-radius:4px;
+ padding:4px 8px;background:#3e2a25}
+.workshopConstruction{margin-top:16px;padding:11px 14px;display:flex;
+ align-items:center;gap:15px;border:1px dashed #ffb86f;border-radius:5px;
+ background:repeating-linear-gradient(135deg,#35231d,#35231d 13px,#3b291f 13px,#3b291f 26px)}
+.workshopConstruction[hidden]{display:none}
+.workshopConstructionIcon{font:bold 27px/30px monospace;color:#ffbf6d}
+.workshopConstructionText{font:bold 13px/18px monospace;color:#ffe0ad}
+.workshopConstructionText small{display:block;font:11px/16px monospace;color:#efd4c0}
+.workshopActionRow{position:absolute;bottom:15px;left:25px;right:25px;
+ display:flex;gap:12px;align-items:center}
+.workshopActionRow[hidden]{display:none}
+.workshopAction{box-sizing:border-box;display:inline-flex;align-items:center;
+ justify-content:center;gap:9px;padding:10px 16px;border:1px solid #ffc58a;
+ background:#633d29;border-radius:5px;color:#fff0da;text-decoration:none;
+ font:bold 12px/17px monospace;letter-spacing:.04em;
+ pointer-events:auto;cursor:pointer}
+#workshopPdfLink[hidden],#workshopFigmaLink[hidden]{display:none}
+.workshopAction:hover,.workshopAction:focus-visible{
+ background:#865033;border-color:#ffe1b6;outline:1px solid #ffe0b6;
+ outline-offset:2px}
+.workshopAction[aria-disabled="true"]{opacity:.55;cursor:not-allowed;
+ pointer-events:none}
+.workshopActionNote{font:11px/15px monospace;color:#efc9aa;max-width:270px}
 </style>
 <link rel="stylesheet" href="./assets/landing/v1686/landing.css?v=16.93">
 <link rel="stylesheet" href="./assets/rules/v1691/rules.css?v=16.94">
@@ -328,6 +366,32 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
   </a>
  </div>
  <div class="contactClosing" id="contactClosing" hidden></div>
+</section>
+
+<!-- Workshop portfolio pages: native text and real navigation/download links. -->
+<section id="workshopHD" aria-label="Workshop selected projects" hidden>
+ <div class="workshopKicker" id="workshopKicker"></div>
+ <h2 class="workshopHeading" id="workshopHeading"></h2>
+ <p class="workshopDescription" id="workshopDescription"></p>
+ <div class="workshopPills" id="workshopPills" hidden></div>
+ <div class="workshopConstruction" id="workshopConstruction" hidden>
+  <span class="workshopConstructionIcon" aria-hidden="true">⚒</span>
+  <span class="workshopConstructionText">CASE STUDY UNDER CONSTRUCTION
+   <small>Nosebleed World — preview not available yet</small>
+  </span>
+ </div>
+ <div class="workshopActionRow" id="workshopActionRow" hidden>
+  <a id="workshopPdfLink" class="workshopAction" href="./assets/workshop/Laksamana%20Baio%20-%20Graphic%20Design%20-%202026.pdf"
+   download="Laksamana-Baio-Graphic-Design-2026.pdf" hidden>
+   <span aria-hidden="true">↓</span> DOWNLOAD PDF
+  </a>
+  <a id="workshopFigmaLink" class="workshopAction"
+   href="https://www.figma.com/proto/dv72DwWnBEH0FdwcfC62Nk/Laksamana-Baio-Online-Portfolio?node-id=269-2&amp;t=spsVNgxCirVDbjkw-0&amp;scaling=scale-down&amp;content-scaling=fixed&amp;page-id=0%3A1&amp;starting-point-node-id=269%3A2"
+   target="_blank" rel="noopener noreferrer" hidden>
+   <span aria-hidden="true">↗</span> OPEN FIGMA PORTFOLIO
+  </a>
+  <span class="workshopActionNote" id="workshopActionNote"></span>
+ </div>
 </section>
 <div class="touch" role="group" aria-label="Touch movement controls">
  <button type="button" data-dir="left" aria-label="Move left"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20V4 M5 11l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -743,6 +807,95 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    }
    contactHD.hidden=false;
   };
+
+  const workshopHD=document.getElementById('workshopHD');
+  const workshopParts={
+   kicker:document.getElementById('workshopKicker'),
+   heading:document.getElementById('workshopHeading'),
+   description:document.getElementById('workshopDescription'),
+   pills:document.getElementById('workshopPills'),
+   construction:document.getElementById('workshopConstruction'),
+   actionRow:document.getElementById('workshopActionRow'),
+   pdf:document.getElementById('workshopPdfLink'),
+   figma:document.getElementById('workshopFigmaLink'),
+   note:document.getElementById('workshopActionNote')
+  };
+  const workshopKickers=[
+   '01 / ABOUT THIS PORTFOLIO','02 / FEATURED CASE STUDY',
+   '03 / GRAPHIC DESIGN ARCHIVE','04 / EARLIER DESIGN WORK'
+  ];
+  const workshopTags=[
+   ['BUILT IN 2 WEEKS','MORE WORK VIA EXTERNAL LINKS'],[],
+   ['2026','7-PAGE PDF','SELECTED FROM 50+ PROJECTS'],
+   ['BEFORE 2025','UI/UX & DIGITAL DESIGN']
+  ];
+  // Enable the download only after its actual PDF is present in GitHub Pages.
+  // This avoids sending visitors to a broken download while awaiting upload.
+  let workshopPdfChecked=false,workshopPdfAvailable=false;
+  const checkWorkshopPdf=()=>{
+   if(workshopPdfChecked)return;
+   workshopPdfChecked=true;
+   fetch(workshopParts.pdf.getAttribute('href'),{method:'HEAD',cache:'no-store'})
+    .then(response=>{
+     workshopPdfAvailable=response.ok;
+     if(workshopPdfAvailable)workshopParts.pdf.removeAttribute('aria-disabled');
+     workshopParts.note.textContent=workshopPdfAvailable?
+      'PDF · 7 curated pages · opens as a download':
+      'PDF upload pending — please check back soon.';
+    })
+    .catch(()=>{
+     workshopParts.note.textContent='PDF upload pending — please check back soon.';
+    });
+  };
+  const syncHDWorkshop=scene=>{
+   const show=!!(scene&&scene.place==='workshop'&&scene.readerObject==='workshop'&&
+    PORTFOLIO_STATIONS.workshop.pages[scene.readerPage]);
+   if(!show){workshopHD.hidden=true;return;}
+   const index=scene.readerPage;
+   if(workshopHD.dataset.page!==String(index)){
+    workshopHD.dataset.page=String(index);
+    const page=PORTFOLIO_STATIONS.workshop.pages[index];
+    const split=page.indexOf('\n\n');
+    workshopParts.kicker.textContent=workshopKickers[index];
+    workshopParts.heading.textContent=split>=0?page.slice(0,split):page;
+    workshopParts.description.textContent=split>=0?page.slice(split+2):'';
+    workshopParts.pills.replaceChildren();
+    for(const name of workshopTags[index]){
+     const tag=document.createElement('span');
+     tag.className='workshopPill';tag.textContent=name;
+     workshopParts.pills.appendChild(tag);
+    }
+    workshopParts.pills.hidden=workshopTags[index].length===0;
+    workshopParts.construction.hidden=index!==1;
+    workshopParts.actionRow.hidden=index!==2&&index!==3;
+    workshopParts.pdf.hidden=index!==2;
+    workshopParts.figma.hidden=index!==3;
+    workshopParts.note.textContent=index===2?
+     (workshopPdfAvailable?'PDF · 7 curated pages · opens as a download':
+      'Checking PDF availability...'):
+     index===3?'Interactive prototype · opens in a new tab':'';
+    if(index===2){
+     if(!workshopPdfAvailable)workshopParts.pdf.setAttribute('aria-disabled','true');
+     checkWorkshopPdf();
+    }
+   }
+   const canvas=scene.game&&scene.game.canvas;
+   if(!canvas){workshopHD.hidden=true;return;}
+   const bounds=canvas.getBoundingClientRect();
+   const mainRect=document.querySelector('main').getBoundingClientRect();
+   if(!bounds.width||!bounds.height){workshopHD.hidden=true;return;}
+   const sx=bounds.width/W,sy=bounds.height/H;
+   const x=bounds.left-mainRect.left+128*sx;
+   const y=bounds.top-mainRect.top+175*sy;
+   const key=[x,y,sx,sy].map(n=>n.toFixed(4)).join('|');
+   if(scene.workshopHDLayoutKey!==key||workshopHD.hidden){
+    scene.workshopHDLayoutKey=key;
+    workshopHD.style.left=x+'px';
+    workshopHD.style.top=y+'px';
+    workshopHD.style.transform='scale('+sx+','+sy+')';
+   }
+   workshopHD.hidden=false;
+  };
   const DISTRICT_BUILDING_SIZE={width:392,height:326};
   const NPC_HINT_Y=-Math.ceil(175*NPC_CHARACTER_SCALE)-30;
   // Each imported portrait is a distinct half-body image drawn for its NPC.
@@ -1083,10 +1236,12 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
   "subtitle": "WORKSHOP / PROJECT DISPLAY",
   "accent": 14724470,
   "pages": [
-   "PROJECT SHOWCASE\n\nThis space will feature selected product design case studies, focusing on the problem, my role, and the thinking behind each solution.",
-   "CASE STUDIES IN PREPARATION\n\nProject visuals, process details, and outcomes will be published here once ready. I want each story to be clear and accurate rather than filled with placeholder results."
+    "A WORK IN PROGRESS\n\nThis playable portfolio was built in just two weeks, alongside my full-time office work. Some areas—especially the project case studies—are still being refined. Rather than make you wait to see my work, I've collected selected projects in a downloadable PDF and an external Figma portfolio. Exploring them takes an extra step, and I appreciate your patience. Thank you for taking the time to look around!",
+    "NOSEBLEED WORLD\n\nThe Nosebleed World website case study is currently under construction. I'm organizing the design process, decisions, and visuals into a presentation that does the project justice. This case study isn't available to view yet, but it's on the way.",
+    "GRAPHIC DESIGN / 2026\n\nIn 2026, I've been working as a graphic designer, creating a variety of campaign and promotional visuals. This seven-page PDF presents selected work from more than 50 projects, including partner promotions and marketing materials. Download the collection to explore the designs in more detail.",
+    "UI/UX & EARLIER WORK\n\nFor my UI/UX and other digital design projects from before 2025, I've put together an interactive portfolio in Figma. It covers earlier work and gives you a closer look at my design journey. Open the prototype in a new tab to explore these projects at your own pace."
   ]
- },
+},
  "hub": {
   "label": "CONTACT CONSOLE",
   "verb": "View Contact Information",
@@ -2857,7 +3012,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    desktop.strokeRoundedRect(128,175,704,232,6);
    // HOME, LAB and CONTACT HUB keep the reading panel clean, without
    // the inner vertical neon stripe or horizontal divider.
-   if(this.place!=='home'&&this.place!=='lab'&&this.place!=='hub'){
+   if(this.place!=='home'&&this.place!=='lab'&&this.place!=='hub'&&this.place!=='workshop'){
     desktop.fillStyle(pcTheme.accent,.91);
     desktop.fillRoundedRect(129,187,3,208,2);
     desktop.lineStyle(1,pcTheme.border,.42);
@@ -2870,7 +3025,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    desktop.strokeRoundedRect(128,420,704,42,5);
    this.readerComputerBackground=desktop;
    this.readerComputerLabels=[
-    deskText(154,188,this.place==='home'||this.place==='lab'||this.place==='hub'?'':pcTheme.section,11,pcTheme.muted,true),
+    deskText(154,188,this.place==='home'||this.place==='lab'||this.place==='hub'||this.place==='workshop'?'':pcTheme.section,11,pcTheme.muted,true),
     deskText(145,434,pcTheme.footerLabel,11,pcTheme.muted,true)
    ];
    this.readerComputerHeading=add(this.add.text(154,this.place==='home'?191:224,'',{
@@ -2954,10 +3109,10 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
     this.readerNotesHeading.setText(this.readerObject==='home-notebook'?heading:'');
     this.readerBlueprintHeading.setText(this.readerObject==='home-blueprint'?heading:'');
     this.readerDnaHeading.setText(this.readerObject==='lab-samples'?heading:'');
-    this.readerComputerHeading.setText(this.readerObject==='lab'||this.readerObject==='hub'?'':COMPUTER_READER_IDS.has(this.readerObject)?heading:'');
+    this.readerComputerHeading.setText(this.readerObject==='lab'||this.readerObject==='hub'||this.readerObject==='workshop'?'':COMPUTER_READER_IDS.has(this.readerObject)?heading:'');
     this.readerComputerHeading.setPosition(isHomePhotoPage?372:154,this.readerObject==='home'?191:224);
     this.readerComputerHeading.setWordWrapWidth(isHomePhotoPage?438:655,true);
-    this.readerBody.setText(this.readerObject==='lab'||this.readerObject==='hub'?'':split>=0?page.slice(split+2):page);
+    this.readerBody.setText(this.readerObject==='lab'||this.readerObject==='hub'||this.readerObject==='workshop'?'':split>=0?page.slice(split+2):page);
     if(this.readerObject==='home-notebook'){
      // Keep all eight original notes readable within the e-paper field,
      // below the heading and above the footer divider at y=407.
@@ -3014,6 +3169,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    syncHDHomeToolIcons(this);
    syncHDLabCareer(this);
    syncHDContact(this);
+   syncHDWorkshop(this);
   }
   openReader(id){
    if(!this.readerElements||!PORTFOLIO_STATIONS[id])return;
@@ -3101,6 +3257,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
    syncHDHomeToolIcons(this);
    syncHDLabCareer(this);
    syncHDContact(this);
+   syncHDWorkshop(this);
    syncPopupControls(this);
    if(this.readerJustCompleted)this.createJourneyHUD(this.lastJourneyDiscovery);
    // Restore the rebuilt QUEST HUD (if the interaction completed a mission)
@@ -3319,6 +3476,7 @@ if (document.documentElement.classList.contains('portfolio-handheld')) {
     }
     if(this.readerObject==='lab')syncHDLabCareer(this);
     if(this.readerObject==='hub')syncHDContact(this);
+    if(this.readerObject==='workshop')syncHDWorkshop(this);
     this.updateWorldLighting(delta);
    const k=this.keys;let x=0,y=0;
    if(k.A.isDown||k.LEFT.isDown||pressed.has('left'))x--;
