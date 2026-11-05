@@ -3,51 +3,9 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#17252f">
-<!-- Baio's original in-game dialogue portrait is the favicon source. -->
-<link id="baioFavicon" rel="icon" type="image/webp" href="./assets/player/portraits/v1685/baio-prologue-talk.webp?v=16.85">
-<script>
-/* Render a face-focused PNG favicon from the real game portrait, without
-   editing or duplicating the original character asset in the repository. */
-(function(){
- var source='./assets/player/portraits/v1685/baio-prologue-talk.webp?v=16.85';
- var portrait=new Image();
- portrait.decoding='async';
- portrait.onload=function(){
-  try{
-   var canvas=document.createElement('canvas');
-   canvas.width=128;canvas.height=128;
-   var ctx=canvas.getContext('2d');
-   if(!ctx)return;
-   ctx.imageSmoothingEnabled=true;
-   ctx.imageSmoothingQuality='high';
-   ctx.fillStyle='#0d2737';
-   ctx.fillRect(0,0,128,128);
-   // Square crop of Baio's head and shoulders, centered in a teal bezel.
-   var crop=Math.min(portrait.naturalWidth,portrait.naturalHeight*0.72);
-   var left=(portrait.naturalWidth-crop)/2;
-   var top=Math.min(portrait.naturalHeight-crop,
-    portrait.naturalHeight*0.045);
-   ctx.save();
-   ctx.beginPath();
-   ctx.roundRect(5,5,118,118,14);
-   ctx.clip();
-   ctx.drawImage(portrait,left,top,crop,crop,5,5,118,118);
-   ctx.restore();
-   ctx.strokeStyle='#6fe0e8';
-   ctx.lineWidth=5;
-   ctx.strokeRect(2.5,2.5,123,123);
-   var favicon=document.getElementById('baioFavicon');
-   if(favicon){
-    favicon.type='image/png';
-    favicon.href=canvas.toDataURL('image/png');
-   }
-  }catch(error){
-   // The original portrait remains a valid fallback icon.
-  }
- };
- portrait.src=source;
-})();
-</script>
+<!-- Cropped head of Baio's in-game character, with a neon-teal frame. -->
+<link rel="icon" type="image/png" sizes="64x64" href="./favicon-baio-head.png?v=2">
+<link rel="shortcut icon" type="image/png" href="./favicon-baio-head.png?v=2">
 <script>
 /* Identify phones and tablets before first paint, including desktop-UA iPads. */
 (function(){
