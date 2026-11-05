@@ -222,7 +222,13 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
 .contactChannel:hover,.contactChannel:focus-visible{background:#543368;
  border-color:#f8c9ff;outline:1px solid #f8c9ff;outline-offset:1px}
 .contactSymbol{font:24px/1 monospace;color:#ecb4fb}
-.contactChannelText{display:flex;flex-direction:column;gap:3px}
+.contactChannelText{display:flex;flex-direction:column;gap:3px;min-width:0}
+.contactClickHint{margin-left:auto;flex-shrink:0;align-self:center;
+ padding:4px 6px;border:1px solid #d7a2f1;border-radius:4px;
+ background:#603a77;color:#fff5ff;font:bold 8px/11px monospace;
+ white-space:nowrap;letter-spacing:.025em}
+.contactChannel:hover .contactClickHint,.contactChannel:focus-visible .contactClickHint{
+ background:#8b54ab;border-color:#ffe0ff}
 .contactChannelLabel{font:bold 10px/13px monospace;color:#e8b5fb}
 .contactChannelDetail{font:12px/15px monospace;color:#fff8ff}
 .contactClosing{font:bold 11px/16px monospace;letter-spacing:.075em;
@@ -259,6 +265,12 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
  background:#633d29;border-radius:5px;color:#fff0da;text-decoration:none;
  font:bold 12px/17px monospace;letter-spacing:.04em;
  pointer-events:auto;cursor:pointer}
+.workshopClickHint{display:inline-flex;align-items:center;justify-content:center;
+ padding:4px 7px;margin-left:3px;white-space:nowrap;
+ border:1px solid #ffd5a8;border-radius:4px;
+ background:#895132;color:#fff7e9;font:bold 9px/12px monospace}
+.workshopAction:hover .workshopClickHint,.workshopAction:focus-visible .workshopClickHint{
+ background:#af6636;border-color:#fff3d5}
 #workshopPdfLink[hidden],#workshopFigmaLink[hidden]{display:none}
 .workshopAction:hover,.workshopAction:focus-visible{
  background:#865033;border-color:#ffe1b6;outline:1px solid #ffe0b6;
@@ -361,11 +373,13 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
    <span class="contactSymbol" aria-hidden="true">✉</span>
    <span class="contactChannelText"><span class="contactChannelLabel">EMAIL ME</span>
     <span class="contactChannelDetail">baiqcakrap.bc@gmail.com</span></span>
+   <span class="contactClickHint" aria-hidden="true">CLICK HERE</span>
   </a>
   <a class="contactChannel" href="https://wa.me/6285804119744" target="_blank" rel="noopener noreferrer" aria-label="Message Laksamana Baio on WhatsApp">
    <span class="contactSymbol" aria-hidden="true">✆</span>
    <span class="contactChannelText"><span class="contactChannelLabel">WHATSAPP</span>
     <span class="contactChannelDetail">+62 858-0411-9744</span></span>
+   <span class="contactClickHint" aria-hidden="true">CLICK HERE</span>
   </a>
  </div>
  <div class="contactClosing" id="contactClosing" hidden></div>
@@ -387,11 +401,13 @@ footer{display:none}/* Controls are shown in the in-game HUD, avoiding bottom-co
   <a id="workshopPdfLink" class="workshopAction" href="./assets/workshop/Laksamana%20Baio%20-%20Graphic%20Design%20-%202026.pdf"
    download="Laksamana-Baio-Graphic-Design-2026.pdf" hidden>
    <span aria-hidden="true">↓</span> DOWNLOAD PDF
+   <span class="workshopClickHint" aria-hidden="true">CLICK HERE</span>
   </a>
   <a id="workshopFigmaLink" class="workshopAction"
    href="https://www.figma.com/proto/dv72DwWnBEH0FdwcfC62Nk/Laksamana-Baio-Online-Portfolio?node-id=269-2&amp;t=spsVNgxCirVDbjkw-0&amp;scaling=scale-down&amp;content-scaling=fixed&amp;page-id=0%3A1&amp;starting-point-node-id=269%3A2"
    target="_blank" rel="noopener noreferrer" hidden>
    <span aria-hidden="true">↗</span> OPEN FIGMA PORTFOLIO
+   <span class="workshopClickHint" aria-hidden="true">CLICK HERE</span>
   </a>
   <span class="workshopActionNote" id="workshopActionNote"></span>
  </div>
